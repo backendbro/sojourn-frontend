@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { login, loginWithGoogle, signup } from "@/http/api";
+import { getGoogleUser, login, loginWithGoogle, signup } from "@/http/api";
 import Spinner from "../svgs/Spinner";
 import { useEffect, useState } from "react";
 import useQueryString from "@/hooks/useQueryString";
@@ -84,40 +84,40 @@ export default () => {
     mutation.mutate(data);
   }
 
-  // useEffect(() => {
-  //   const fetchGoogleUser = async () => {
-  //     if (user.access_token) {
-  //       const data = await getGoogleUser(user.access_token);
-  //       setProfile(data);
-  //     }
-  //   };
-  //   fetchGoogleUser();
-  // }, [user]);
-
   useEffect(() => {
     const fetchGoogleUser = async () => {
-      if (!user.access_token) return;
-
-      try {
-        const response = await axios.post(
-          "https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo",
-          { access_token: user.access_token },
-          {
-            withCredentials: true,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        // ✅ this must be response.data
-        setProfile(response.data);
-      } catch (err: any) {
-        console.error("Proxy request failed:", err);
-        toast("Could not fetch Google profile. Check console for details.");
+      if (user.access_token) {
+        const data = await getGoogleUser(user.access_token);
+        setProfile(data);
       }
     };
-
     fetchGoogleUser();
-  }, [user.access_token]);
+  }, [user]);
+
+  // useEffect(() => {
+  //   const fetchGoogleUser = async () => {
+  //     if (!user.access_token) return;
+
+  //     try {
+  //       const response = await axios.post(
+  //         "https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo",
+  //         { access_token: user.access_token },
+  //         {
+  //           withCredentials: true,
+  //           headers: { "Content-Type": "application/json" },
+  //         }
+  //       );
+
+  //       // ✅ this must be response.data
+  //       setProfile(response.data);
+  //     } catch (err: any) {
+  //       console.error("Proxy request failed:", err);
+  //       toast("Could not fetch Google profile. Check console for details.");
+  //     }
+  //   };
+
+  //   fetchGoogleUser();
+  // }, [user.access_token]);
 
   useEffect(() => {
     const googleSignin = async () => {
@@ -288,40 +288,40 @@ function SingupModal() {
     signupMutation.mutate({ ...data, ...(refererId && { refererId }) });
   }
 
-  // useEffect(() => {
-  //   const fetchGoogleUser = async () => {
-  //     if (user.access_token) {
-  //       const data = await getGoogleUser(user.access_token);
-  //       setProfile(data);
-  //     }
-  //   };
-  //   fetchGoogleUser();
-  // }, [user]);
-
   useEffect(() => {
     const fetchGoogleUser = async () => {
-      if (!user.access_token) return;
-
-      try {
-        const response = await axios.post(
-          "https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo",
-          { access_token: user.access_token },
-          {
-            withCredentials: true,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        // ✅ this must be response.data
-        setProfile(response.data);
-      } catch (err: any) {
-        console.error("Proxy request failed:", err);
-        toast("Could not fetch Google profile. Check console for details.");
+      if (user.access_token) {
+        const data = await getGoogleUser(user.access_token);
+        setProfile(data);
       }
     };
-
     fetchGoogleUser();
-  }, [user.access_token]);
+  }, [user]);
+
+  // useEffect(() => {
+  //   const fetchGoogleUser = async () => {
+  //     if (!user.access_token) return;
+
+  //     try {
+  //       const response = await axios.post(
+  //         "https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo",
+  //         { access_token: user.access_token },
+  //         {
+  //           withCredentials: true,
+  //           headers: { "Content-Type": "application/json" },
+  //         }
+  //       );
+
+  //       // ✅ this must be response.data
+  //       setProfile(response.data);
+  //     } catch (err: any) {
+  //       console.error("Proxy request failed:", err);
+  //       toast("Could not fetch Google profile. Check console for details.");
+  //     }
+  //   };
+
+  //   fetchGoogleUser();
+  // }, [user.access_token]);
 
   useEffect(() => {
     const gooleSingup = async () => {

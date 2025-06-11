@@ -84,14 +84,14 @@ const Login = () => {
   useEffect(() => {
     const fetchGoogleUser = async () => {
       if (user.access_token) {
-        // const data = await getGoogleUser(user.access_token);
-        // setProfile(data);
-        const response = await axios.post(
-          `https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo`,
-          { access_token: user.access_token },
-          { withCredentials: true }
-        );
-        console.log(response);
+        const data = await getGoogleUser(user.access_token);
+        setProfile(data);
+        // const response = await axios.post(
+        //   `https://sojourn-backend-api-xk5x.onrender.com/api/v1/google/userinfo`,
+        //   { access_token: user.access_token },
+        //   { withCredentials: true }
+        // );
+        // console.log(response);
       }
     };
     fetchGoogleUser();
