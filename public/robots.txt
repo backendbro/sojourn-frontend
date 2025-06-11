@@ -1,0 +1,20 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /dashboard/
+Disallow: /hosts/dashboard/
+Disallow: /hosts/signup
+Disallow: /hosts/setup
+Disallow: /account-created
+Disallow: /hosts/account-created
+Disallow: /hosts/checkout/
+Disallow: /checkout/
+Disallow: /reviews/
+Disallow: /properties/
+Disallow: /reset-password/
+Disallow: /verify-email/
+
+
+User-agent: Bingbot
+Crawl-delay: 10
