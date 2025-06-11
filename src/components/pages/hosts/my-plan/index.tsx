@@ -67,7 +67,7 @@ export default () => {
     ? PLANS.find((p) => p.name === "Premium")
     : PLANS.find((p) => p.name === "Lite");
 
-  console.log(`${plan}`);
+  console.log(`From my-plan file: ${plan}`);
 
   const upgradeLink = isLitePlan
     ? checked
