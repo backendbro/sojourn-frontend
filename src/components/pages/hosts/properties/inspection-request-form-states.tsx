@@ -421,7 +421,7 @@ export const UploadPropertyImages: FC<{
           </div>
         ) : (
           <>
-            <h3 className="text-xl md:text-3xl mb-5">Add property photoses.</h3>
+            <h3 className="text-xl md:text-3xl mb-5">Add property photos.</h3>
             <div className="w-full flex justify-center h-[300px]">
               <div className="w-5/6 h-full flex items-center flex-col space-y-2 justify-center bg-[#fef7ea] rounded-md border-2 border-dashed border-[#F0AE2F] md:w-3/6">
                 <p className="text-sm  px-2 md:text-md md:px-0 text-black">
@@ -630,7 +630,7 @@ export const PropertyLocation: FC<{
       <div className="w-5/6 flex flex-col items-center min-h-[100px] md:w-5/6 about-one max-w-[1400px] mx-auto">
         <div className="w-full md:w-4/6 lg:w-1/2 flex flex-col items-center">
           <h3 className="w-full text-xl md:text-3xl mb-5 md:text-center">
-            Where is this property locatedededed?
+            Where is this property located?
           </h3>
           {isLocationFormValid ? (
             <span className="text-primary font-semibold ">
