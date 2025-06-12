@@ -46,6 +46,7 @@
     "human-number": "^2.0.4",
     "is-online": "^11.0.0",
     "jspdf": "^2.5.1",
+    "keen-slider": "^6.8.6",
     "lucide-react": "^0.378.0",
     "next": "14.2.3",
     "next-themes": "^0.3.0",
