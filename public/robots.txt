@@ -18,3 +18,5 @@ Disallow: /verify-email/
 
 User-agent: Bingbot
 Crawl-delay: 10
+User-agent: *
+Sitemap: https://sojourn.ng/sitemap.xml
