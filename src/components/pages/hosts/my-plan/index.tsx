@@ -316,6 +316,27 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import Spinner from "@/components/svgs/Spinner";
 import { toast } from "sonner";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Shortlet Hosting Plans in Nigeria | Sojourn Subscription",
+  description:
+    "Choose the best hosting plan for your shortlet property in Nigeria. Flexible options for all hosts.",
+  keywords: [
+    "shortlet hosting plans Nigeria",
+    "Nigeria property subscription",
+    "host membership Nigeria",
+    "Lagos shortlet hosting",
+    "Nigeria shortlet booking",
+    "hosting process Nigeria",
+    "sojourn nigeria",
+    "sojourn naija",
+    "sojourn abuja",
+    "sojourn lagos",
+    "shorlets in abuja",
+    "shorlets in lagos",
+  ],
+};
 
 const SubscriptionTable = dynamic(() => import("./subscription-table"));
 

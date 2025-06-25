@@ -1,8 +1,17 @@
 "use client";
 
 import { useWindowSize } from "@/hooks/useWindowSize";
+import { Metadata } from "next";
 import Image from "next/image";
 import Carousel from "react-multi-carousel";
+
+export const metadata: Metadata = {
+  title: "Refer a Host to Sojourn | Earn Rewards",
+  description:
+    "Refer property owners to Sojourn and earn rewards. Join our referral program today.",
+  keywords:
+    "refer a host Sojourn, Sojourn referral program, host referral rewards",
+};
 
 const responsive = {
   desktop: {
