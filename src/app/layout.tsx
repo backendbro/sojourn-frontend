@@ -12,6 +12,7 @@ import Prompt from "@/components/ui/prompt";
 import NetworkProvider from "@/components/network/network-provider";
 import NotificationProvider from "@/components/notification/notification-provider";
 import FacebookAdsScript from "@/components/scripts/facebook-ads-script";
+import StructuredData from "@/components/StructuredData/StructuredData";
 
 export const metadata: Metadata = {
   title: "Sojourn | Book Unique Stays & Travel Experiences Worldwide",
@@ -59,6 +60,14 @@ export const metadata: Metadata = {
       },
     ],
   },
+  other: {
+    "google-site-verification": "mCQUQ_-DYgnrdxZ3BLJHR6WxhLq1vHl2AEWWbsJyqq8",
+  },
+  verification: {
+    google: "mCQUQ_-DYgnrdxZ3BLJHR6WxhLq1vHl2AEWWbsJyqq8",
+  },
+  metadataBase: new URL("https://sojourn.ng"),
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({
@@ -73,17 +82,29 @@ export default function RootLayout({
         src="https://www.googletagmanager.com/gtag/js?id=G-E34PC8GDB6"
         strategy="afterInteractive"
       />
-      <Script strategy="afterInteractive" id="google-analytics">
+      {/* <Script strategy="afterInteractive" id="google-analytics">
         {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-E34PC8GDB6');`}
+      </Script> */}
+
+      <Script strategy="afterInteractive" id="google-analytics">
+        {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-E34PC8GDB6', {
+      page_path: window.location.pathname,
+    });
+  `}
       </Script>
       <Script
         src="https://code.tidio.co/z4gvzirnqym0ttmipzijrxrrhd7um6o1.js"
         async
       />
       <body className={`${raleway.variable} ${inter.variable} font-sans`}>
+        <StructuredData />
         <AppProvider>
           <Prompt />
           <NotificationProvider>
