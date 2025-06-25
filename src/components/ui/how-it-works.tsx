@@ -1,5 +1,6 @@
 "use client";
 
+import { Metadata } from "next";
 import {
   Carousel,
   CarouselContent,
@@ -8,6 +9,14 @@ import {
   CarouselPrevious,
 } from "./carousel";
 import { useMediaQuery } from "@react-hook/media-query";
+
+export const metadata: Metadata = {
+  title: "How to Host a Shortlet in Nigeria | Sojourn Host Guide",
+  description:
+    "Learn how to successfully host your shortlet property in Nigeria. Step-by-step guide to maximizing your earnings.",
+  keywords:
+    "how to host shortlet in Nigeria, shortlet hosting guide, Nigeria property hosting, how to host shortlet in Abuja, how to host shortlet in Lagos, how to host shortlet in Delta, how to host shortlet in Benin, how to host shortlet in Oyo",
+};
 
 export default () => {
   const matches = useMediaQuery("screen and (max-width: 750px)");
