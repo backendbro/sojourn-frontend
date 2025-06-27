@@ -100,13 +100,94 @@ export default function Home() {
     //   <Footer />
     // </div>
 
+    // <div className="w-full min-h-screen overflow-x-hidden">
+    //   <Animations />
+    //   {/* Hero Section */}
+    //   <div className="w-full relative">
+    //     <header
+    //       id="custom-search"
+    //       className="w-full min-h-[100vh] relative flex flex-col items-center justify-center hero-banner"
+    //     >
+    //       {/* Overlay */}
+    //       <div className="absolute inset-0 bg-black/20" />
+
+    //       {/* Background Pattern */}
+    //       <div className="absolute inset-0 bg-grid-pattern opacity-5 mix-blend-overlay" />
+
+    //       {/* Hero Content */}
+    //       <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10">
+    //         <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
+    //           Experience Luxury
+    //           <span className="block mt-2">Away from Home</span>
+    //         </h1>
+
+    //         <p className="text-lg md:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
+    //           Discover exceptional stays across Nigeria. Your perfect home away
+    //           from home awaits, combining comfort, style, and authentic local
+    //           experiences.
+    //         </p>
+
+    //         {/* Search Component with Animation */}
+    //         <div className="w-full max-w-4xl animate-slide-up">
+    //           <CustomSearch />
+    //         </div>
+
+    //         {/* Scroll Indicator */}
+    //         <Link
+    //           href="#how-it-works"
+    //           className="absolute bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
+    //         >
+    //           <span className="text-sm font-medium">Scroll to explore</span>
+    //           <ArrowDown size={20} />
+    //         </Link>
+    //       </div>
+    //     </header>
+    //   </div>
+
+    //   {/* How It Works Section */}
+    //   <div id="how-it-works" className="w-full bg-white relative">
+    //     <div className="absolute inset-0 bg-wave-pattern opacity-5" />
+    //     <div className="relative z-10 py-20">
+    //       <HowItWorksSection />
+    //     </div>
+    //   </div>
+
+    //   {/* Properties Showcase */}
+    //   <section className="w-full py-20 bg-white">
+    //     <RecommendedProperties />
+    //   </section>
+
+    //   {/* Discovery Section with Parallax */}
+    //   <section className="w-full py-20 bg-[#FFF1D7]">
+    //     <DiscoverProperties />
+    //   </section>
+
+    //   {/* Referral Program */}
+    //   <section className="w-full py-20 bg-white">
+    //     <ReferAndEarn />
+    //   </section>
+
+    //   {/* Explore Cities */}
+    //   <section className="w-full py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
+    //     <Explore />
+    //   </section>
+
+    //   {/* Reviews Section   */}
+    //   <section className="w-full py-20 bg-white">
+    //     <Reviews />
+    //   </section>
+
+    //   {/* Footer */}
+    //   <Footer />
+    // </div>
+
     <div className="w-full min-h-screen overflow-x-hidden">
       <Animations />
       {/* Hero Section */}
       <div className="w-full relative">
         <header
           id="custom-search"
-          className="w-full min-h-[100vh] relative flex flex-col items-center justify-center hero-banner"
+          className="w-full min-h-[90vh] md:min-h-screen relative flex flex-col items-center justify-center hero-banner"
         >
           {/* Overlay */}
           <div className="absolute inset-0 bg-black/20" />
@@ -115,27 +196,27 @@ export default function Home() {
           <div className="absolute inset-0 bg-grid-pattern opacity-5 mix-blend-overlay" />
 
           {/* Hero Content */}
-          <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
+          <div className="max-w-[1200px] px-4 md:px-6 lg:px-10 flex flex-col items-center space-y-6 md:space-y-8 z-10">
+            <h1 className="text-3xl md:text-5xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
               Experience Luxury
-              <span className="block mt-2">Away from Home</span>
+              <span className="block mt-1 md:mt-2">Away from Home</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
+            <p className="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
               Discover exceptional stays across Nigeria. Your perfect home away
               from home awaits, combining comfort, style, and authentic local
               experiences.
             </p>
 
             {/* Search Component with Animation */}
-            <div className="w-full max-w-4xl animate-slide-up">
+            <div className="w-full max-w-4xl px-2 animate-slide-up">
               <CustomSearch />
             </div>
 
             {/* Scroll Indicator */}
             <Link
               href="#how-it-works"
-              className="absolute bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
+              className="absolute bottom-6 md:bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
             >
               <span className="text-sm font-medium">Scroll to explore</span>
               <ArrowDown size={20} />
@@ -144,36 +225,39 @@ export default function Home() {
         </header>
       </div>
 
-      {/* How It Works Section */}
-      <div id="how-it-works" className="w-full bg-white relative">
+      {/* How It Works Section - Added scroll-margin-top */}
+      <div
+        id="how-it-works"
+        className="w-full bg-white relative scroll-mt-16 md:scroll-mt-24"
+      >
         <div className="absolute inset-0 bg-wave-pattern opacity-5" />
-        <div className="relative z-10 py-20">
+        <div className="relative z-10 py-16 md:py-20">
           <HowItWorksSection />
         </div>
       </div>
 
       {/* Properties Showcase */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-16 md:py-20 bg-white">
         <RecommendedProperties />
       </section>
 
       {/* Discovery Section with Parallax */}
-      <section className="w-full py-20 bg-[#FFF1D7]">
+      <section className="w-full py-16 md:py-20 bg-[#FFF1D7]">
         <DiscoverProperties />
       </section>
 
       {/* Referral Program */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-16 md:py-20 bg-white">
         <ReferAndEarn />
       </section>
 
       {/* Explore Cities */}
-      <section className="w-full py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
+      <section className="w-full py-16 md:py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
         <Explore />
       </section>
 
       {/* Reviews Section */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-16 md:py-20 bg-white">
         <Reviews />
       </section>
 
