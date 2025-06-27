@@ -210,7 +210,7 @@ export default function Home() {
             </p>
 
             {/* Search Component with Extra Padding Below */}
-            <div className="w-full max-w-4xl animate-slide-up pb-28 md:pb-8">
+            <div className="w-full max-w-4xl animate-slide-up pb-24 md:pb-8">
               {/* ↑ Increased from pb-20 to pb-28 (mobile), md:pb-8 (desktop) */}
               <CustomSearch />
             </div>
