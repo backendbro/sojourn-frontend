@@ -11,37 +11,6 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { LazyMotion, domAnimation, m, Variants } from "framer-motion";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "List Your Apartment in Nigeria | Sojourn Host Platform",
-  description:
-    "Earn money by listing your apartment as a shortlet in Nigeria. Join Sojourn's hosting platform today.",
-  keywords: [
-    "list apartment in Nigeria",
-    "shortlet hosting Nigeria",
-    "rent out apartment Nigeria",
-    "how to host a shortlet in Nigeria",
-    "how to list shortlet in Nigeria",
-    "Lagos shortlet hosting",
-    "Nigeria shortlet booking",
-    "hosting process Nigeria",
-    "sojourn nigeria",
-    "sojourn naija",
-    "sojourn abuja",
-    "sojourn lagos",
-    "shorlets in abuja",
-    "shorlets in lagos",
-    "list apartment in Nigeria",
-    "list apartment in lagos",
-    "list apartment in abuja",
-    "list apartment in portharcourt",
-    "list apartment in akwa ibom",
-    "list apartment in benin",
-    "list apartment in delta",
-    "list apartment in oyo",
-  ],
-};
 
 const fadeIn: Variants = {
   initial: { opacity: 0, y: 20 },
