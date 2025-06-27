@@ -209,16 +209,16 @@ export default function Home() {
               experiences.
             </p>
 
-            {/* Search Component with Animation */}
-            <div className="w-full max-w-4xl animate-slide-up pb-20 md:pb-0">
-              {/* 👆 Add bottom padding on small screens */}
+            {/* Search Component with Extra Padding Below */}
+            <div className="w-full max-w-4xl animate-slide-up pb-28 md:pb-8">
+              {/* ↑ Increased from pb-20 to pb-28 (mobile), md:pb-8 (desktop) */}
               <CustomSearch />
             </div>
 
             {/* Scroll Indicator */}
             <Link
               href="#how-it-works"
-              className="absolute bottom-6 md:bottom-10 flex flex-col items-center space-y-1 md:space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
+              className="absolute bottom-4 md:bottom-8 flex flex-col items-center space-y-1 md:space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
             >
               <span className="text-xs md:text-sm font-medium">
                 Scroll to explore
@@ -232,7 +232,7 @@ export default function Home() {
       {/* How It Works Section */}
       <div
         id="how-it-works"
-        className="w-full bg-white relative scroll-mt-20 md:scroll-mt-32 pt-10 md:pt-20"
+        className="w-full bg-white relative scroll-mt-24 md:scroll-mt-32 pt-12 md:pt-20"
       >
         <div className="absolute inset-0 bg-wave-pattern opacity-5" />
         <div className="relative z-10">
