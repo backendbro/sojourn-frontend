@@ -195,8 +195,8 @@ export default function Home() {
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-grid-pattern opacity-5 mix-blend-overlay" />
 
-          {/* Hero Content */}
-          <div className="max-w-[1200px] px-4 md:px-6 lg:px-10 flex flex-col items-center space-y-6 md:space-y-8 z-10">
+          {/* Hero Content with Bottom Padding */}
+          <div className="max-w-[1200px] px-4 md:px-6 lg:px-10 flex flex-col items-center space-y-6 md:space-y-8 z-10 pb-16 md:pb-0">
             <h1 className="text-3xl md:text-5xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
               Experience Luxury
               <span className="block mt-1 md:mt-2">Away from Home</span>
@@ -212,20 +212,20 @@ export default function Home() {
             <div className="w-full max-w-4xl px-2 animate-slide-up">
               <CustomSearch />
             </div>
-
-            {/* Scroll Indicator */}
-            <Link
-              href="#how-it-works"
-              className="absolute bottom-6 md:bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
-            >
-              <span className="text-sm font-medium">Scroll to explore</span>
-              <ArrowDown size={20} />
-            </Link>
           </div>
+
+          {/* Scroll Indicator with Safe Positioning */}
+          <Link
+            href="#how-it-works"
+            className="absolute bottom-6 md:bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors z-20"
+          >
+            <span className="text-sm font-medium">Scroll to explore</span>
+            <ArrowDown size={20} />
+          </Link>
         </header>
       </div>
 
-      {/* How It Works Section - Added scroll-margin-top */}
+      {/* How It Works Section with Scroll Margin */}
       <div
         id="how-it-works"
         className="w-full bg-white relative scroll-mt-16 md:scroll-mt-24"
@@ -236,32 +236,27 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Properties Showcase */}
+      {/* Other sections remain the same with responsive padding */}
       <section className="w-full py-16 md:py-20 bg-white">
         <RecommendedProperties />
       </section>
 
-      {/* Discovery Section with Parallax */}
       <section className="w-full py-16 md:py-20 bg-[#FFF1D7]">
         <DiscoverProperties />
       </section>
 
-      {/* Referral Program */}
       <section className="w-full py-16 md:py-20 bg-white">
         <ReferAndEarn />
       </section>
 
-      {/* Explore Cities */}
       <section className="w-full py-16 md:py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
         <Explore />
       </section>
 
-      {/* Reviews Section */}
       <section className="w-full py-16 md:py-20 bg-white">
         <Reviews />
       </section>
 
-      {/* Footer */}
       <Footer />
     </div>
   );
