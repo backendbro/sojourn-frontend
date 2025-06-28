@@ -204,7 +204,7 @@ export const ChildrenAndInfantCalculator = () => {
       <div
         ref={modalRef}
         className="absolute z-[999999999] top-[100%] left-1/2 transform -translate-x-1/2 mt-2
-               w-[90vw] max-w-sm sm:max-w-md md:max-w-lg bg-paper shadow-lg rounded-lg py-1"
+               w-[80vw] max-w-sm sm:max-w-md md:max-w-lg bg-paper shadow-lg rounded-lg py-1"
       >
         <ul className="w-full overflow-hidden py-1 m-0">
           {pathname !== "/" && (
