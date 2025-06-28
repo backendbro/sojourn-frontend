@@ -203,10 +203,11 @@ export const ChildrenAndInfantCalculator = () => {
     openChildrenCalculator && (
       <div
         ref={modalRef}
-        className="w-full bg-paper absolute shadow-lg left-2/4 md:left-3/4 w-auto z-[999999999] top-[100%] rounded-lg py-1 mt-0 sm:w-auto"
+        className="absolute z-[999999999] top-[100%] left-1/2 transform -translate-x-1/2 mt-2
+               w-[90vw] max-w-sm sm:max-w-md md:max-w-lg bg-paper shadow-lg rounded-lg py-1"
       >
         <ul className="w-full overflow-hidden py-1 m-0">
-          {!(pathname === "/") ? (
+          {pathname !== "/" && (
             <li className="flex items-center px-3 justify-between py-4 sm:py-2">
               <div className="flex items-center space-x-2 lg:space-x-4">
                 <div>Adults</div>
@@ -217,7 +218,6 @@ export const ChildrenAndInfantCalculator = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-
                     setSearchValue((prevState) => ({
                       ...prevState,
                       searchValues: {
@@ -237,7 +237,6 @@ export const ChildrenAndInfantCalculator = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-
                     setSearchValue((prevState) => ({
                       ...prevState,
                       searchValues: {
@@ -252,9 +251,9 @@ export const ChildrenAndInfantCalculator = () => {
                 </button>
               </div>
             </li>
-          ) : (
-            ""
           )}
+
+          {/* Children */}
           <li className="flex items-center px-3 justify-between py-4 sm:py-2">
             <div className="ChildrenAndInfantCalculator">Children</div>
             <div className="flex items-center space-x-2">
@@ -262,7 +261,6 @@ export const ChildrenAndInfantCalculator = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-
                   if (children === 0) return;
                   setSearchValue((prevState) => ({
                     ...prevState,
@@ -272,7 +270,7 @@ export const ChildrenAndInfantCalculator = () => {
                     },
                   }));
                 }}
-                className="outline-none border-0  p-2 rounded-full hover:bg-red-50"
+                className="outline-none border-0 p-2 rounded-full hover:bg-red-50"
               >
                 <DashIcon />
               </button>
@@ -281,7 +279,6 @@ export const ChildrenAndInfantCalculator = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-
                   setSearchValue((prevState) => ({
                     ...prevState,
                     searchValues: {
@@ -290,13 +287,15 @@ export const ChildrenAndInfantCalculator = () => {
                     },
                   }));
                 }}
-                className="outline-none border-0 font-[300] text-2xl  p-3 rounded-full hover:bg-red-50"
+                className="outline-none border-0 font-[300] text-2xl p-3 rounded-full hover:bg-red-50"
               >
                 <PlusIcon size={12} />
               </button>
             </div>
           </li>
-          <li className="flex items-center  px-3 justify-between py-4 sm:py-2">
+
+          {/* Infants */}
+          <li className="flex items-center px-3 justify-between py-4 sm:py-2">
             <div className="flex items-center">
               <div className="ChildrenAndInfantCalculator">Infants</div>
               <div className="text-slate-400 text-xs min-w-[50px] mx-1">
@@ -308,7 +307,6 @@ export const ChildrenAndInfantCalculator = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-
                   if (infants === 0) return;
                   setSearchValue((prevState) => ({
                     ...prevState,
@@ -318,15 +316,15 @@ export const ChildrenAndInfantCalculator = () => {
                     },
                   }));
                 }}
-                className="outline-none border-0  p-2 rounded-full hover:bg-red-50"
+                className="outline-none border-0 p-2 rounded-full hover:bg-red-50"
               >
                 <DashIcon />
               </button>
               <div className="text-[20px]">{infants}</div>
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
                   e.preventDefault();
+                  e.stopPropagation();
                   setSearchValue((prevState) => ({
                     ...prevState,
                     searchValues: {
@@ -335,7 +333,7 @@ export const ChildrenAndInfantCalculator = () => {
                     },
                   }));
                 }}
-                className="outline-none border-0 font-[300] text-2xl  p-3 rounded-full hover:bg-red-50"
+                className="outline-none border-0 font-[300] text-2xl p-3 rounded-full hover:bg-red-50"
               >
                 <PlusIcon size={12} />
               </button>
