@@ -30,6 +30,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 import { MONTHS_OF_THE_YEAR } from "@/constants";
 import useQueryString from "@/hooks/useQueryString";
@@ -44,6 +45,8 @@ import {
   Mail,
   ShieldBan,
   X,
+  Shield,
+  Home,
 } from "lucide-react";
 import dynamicImport from "next/dynamic";
 import Image from "next/image";
