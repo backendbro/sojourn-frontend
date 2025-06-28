@@ -47,6 +47,13 @@ import {
   X,
   Shield,
   Home,
+  Church,
+  TreeDeciduous,
+  Store,
+  Plane,
+  UtensilsCrossed,
+  ShoppingCart,
+  Beer,
 } from "lucide-react";
 import dynamicImport from "next/dynamic";
 import Image from "next/image";
@@ -120,6 +127,21 @@ export default ({
     checkOutDate: checkOutDate ? new Date(checkOutDate) : dayAfterTomorrow,
     infants: isNaN(infants) ? 0 : infants,
     cursor: 0,
+  };
+
+  const getPlaceIcon = (place: string) => {
+    const placeMap: { [key: string]: any } = {
+      church: Church,
+      park: TreeDeciduous,
+      market: Store,
+      airport: Plane,
+      restaurant: UtensilsCrossed,
+      mall: ShoppingCart,
+      "bar/club": Beer,
+    };
+
+    const Icon = placeMap[place.toLowerCase()] || CheckCircle;
+    return <Icon size={16} className="text-primary" />;
   };
 
   const { data, error, isLoading } = useQuery({
@@ -647,7 +669,7 @@ export default ({
               <span className="text-[20px]">{data.maxNumberOfPeople}</span>
             </div>
           </div>
-          <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-2 mt-10 lg:w-1/2">
+          {/* <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-2 mt-10 lg:w-1/2">
             <div className="col-span-2 md:col-span-3">
               <h4 className="text-[20px] font-semibold">What is near</h4>
             </div>
@@ -657,7 +679,23 @@ export default ({
                 <span className="capitalize font-[500]">{place}</span>
               </div>
             ))}
+          </div> */}
+
+          <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-2 mt-10 lg:w-1/2">
+            <div className="col-span-2 md:col-span-3">
+              <h4 className="text-[20px] font-semibold">What is near</h4>
+            </div>
+            {data.nearbyPlaces.map((place: string, idx: number) => (
+              <div
+                key={idx}
+                className="flex items-center space-x-2 py-1.5 px-3 rounded-md bg-white/50 hover:bg-white transition-colors duration-200"
+              >
+                {getPlaceIcon(place)}
+                <span className="capitalize font-[500] text-sm">{place}</span>
+              </div>
+            ))}
           </div>
+
           <div className="w-full my-10 pb-10 border-b-2 border-b-secondary">
             <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-4 lg:gap-y-3 gap-3 md:w-4/5">
               <div className="col-span-2 md:col-span-3 lg:col-span-5 ">

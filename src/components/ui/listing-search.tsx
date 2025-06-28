@@ -45,7 +45,7 @@ const ListingSearch: FC<{ showIcon?: boolean }> = ({ showIcon = true }) => {
           }}
           value={value}
           className={`w-full text-[16px] outline-0 border-0 ${landingPageCss} px-2 ${bgInputField} rounded-t-3xl placeholder:text-gray-400  placeholder:font-[700] placeholder:text-[16px] focus:outline-none lg:py-0 placeholder:font-sans placeholder:font-[300] lg:px-4`}
-          placeholder="Location"
+          placeholder="Where are you going?"
         />
         <SearchPopover />
       </div>
