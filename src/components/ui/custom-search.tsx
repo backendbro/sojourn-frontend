@@ -275,12 +275,12 @@ const CustomSearch = () => {
         <div className="relative group">
           <div className="flex items-center space-x-3 p-4 rounded-xl bg-gray-50 group-hover:bg-gray-100 transition-colors duration-200">
             <MapPin className="w-5 h-5 text-primary" />
-            <div className="flex-1">
+            <ListingSearch />
+            {/* <div className="flex-1">
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Location
               </label>
-              <ListingSearch />
-            </div>
+            </div> */}
           </div>
         </div>
 
