@@ -271,20 +271,19 @@ const CustomSearch = () => {
       className="w-full max-w-[1000px] mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl"
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-        {/* Location */}
-        <div className="relative group">
+        {/* <div className="relative group">
           <div className="flex items-center space-x-3 p-4 rounded-xl bg-gray-50 group-hover:bg-gray-100 transition-colors duration-200">
             <MapPin className="w-5 h-5 text-primary" />
-            <ListingSearch />
-            {/* <div className="flex-1">
+            <div className="flex-1">
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Location
               </label>
-            </div> */}
+            </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Dates */}
+        <ListingSearch />
         <div className="relative group">
           <div className="flex items-center space-x-3 p-4 rounded-xl bg-gray-50 group-hover:bg-gray-100 transition-colors duration-200">
             <Calendar className="w-5 h-5 text-primary" />
