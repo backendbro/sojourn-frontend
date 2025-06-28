@@ -386,7 +386,7 @@ export default ({
           <div className="w-full flex min-h-[300px] flex flex-col pb-5 border-b-2 border-b-secondary md:flex-row">
             <article className="w-full h-full lg:w-3/5">
               <div className="w-full flex mb-4 flex-col md:flex-row md:justify-between shadow-md bg-white rounded-md p-4 ">
-                <div className="w-full py-4 flex flex-col space-y-3 md:space-y-0 md:flex-row items-center md:items-start justify-between">
+                {/* <div className="w-full py-4 flex flex-col space-y-3 md:space-y-0 md:flex-row items-center md:items-start justify-between">
                   <div className="w-full flex flex-col space-y-2 md:space-y-0 md:flex-row items-center md:space-x-2">
                     <div className="w-[130px] h-[130px] md:w-[80px] md:h-[80px] relative rounded-full overflow-hidden">
                       <Image src={hostUrl} alt="host_profile_photo" fill />
@@ -418,6 +418,8 @@ export default ({
                       </div>
                     </div>
                   </div>
+
+
                   <Tooltip>
                     <Dialog>
                       <DialogTrigger className="py-2 px-3 bg-black text-white rounded-md flex items-center justify-center">
@@ -480,6 +482,138 @@ export default ({
                     </Dialog>
                     <TooltipContent>Message host</TooltipContent>
                   </Tooltip>
+                </div> */}
+
+                <div className="w-full flex flex-col space-y-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 relative rounded-full overflow-hidden ring-2 ring-offset-2 ring-gray-100">
+                      <Image
+                        src={hostUrl}
+                        alt={`${data.contactName}'s profile photo`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <h3 className="text-xl font-medium">
+                        Hosted by{" "}
+                        <span className="font-semibold">
+                          {data.contactName}
+                        </span>
+                      </h3>
+                      <div className="flex flex-col mt-2 space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Rating
+                            numberOfComments={data.numberOfReviews || 0}
+                            rating={4}
+                          />
+                        </div>
+                        <p className="text-gray-600 text-sm">
+                          Hosting since{" "}
+                          {new Date(data.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "long", year: "numeric" }
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-4 h-4 text-green-600" />
+                      <span className="text-gray-600">Identity verified</span>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Home className="w-4 h-4 text-primary" />
+                      <span className="text-gray-600">Superhost</span>
+                    </div>
+                  </div>
+
+                  <Dialog>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <DialogTrigger className="w-full md:w-auto flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-sm">
+                            <div className="flex items-center space-x-2">
+                              <Mail className="w-4 h-4" />
+                              <span className="font-medium">Message host</span>
+                            </div>
+                          </DialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Send a message to the host</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <DialogContent className="md:max-w-md">
+                      <div className="w-full flex justify-between items-center">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl font-semibold">
+                            Message the Host
+                          </DialogTitle>
+                          <DialogDescription className="text-gray-600">
+                            Send a message to {data.contactName}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogClose className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
+                          <X className="w-4 h-4" />
+                        </DialogClose>
+                      </div>
+                      <form
+                        className="w-full space-y-4 mt-4"
+                        onSubmit={createNewTicket}
+                      >
+                        <div className="w-full">
+                          <label
+                            htmlFor="title"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Subject
+                          </label>
+                          <input
+                            id="title"
+                            name="title"
+                            onChange={handleChange}
+                            value={newChat.title}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                            placeholder="What would you like to discuss?"
+                          />
+                        </div>
+                        <div className="w-full">
+                          <label
+                            htmlFor="message"
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
+                            Message
+                          </label>
+                          <textarea
+                            id="message"
+                            name="message"
+                            value={newChat.message}
+                            onChange={handleChange}
+                            rows={4}
+                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                            placeholder="Type your message here..."
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="w-full py-2.5 rounded-lg flex items-center justify-center space-x-2 bg-primary text-white font-medium transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          {ticket.isPending ? (
+                            <Spinner color="white" size={20} />
+                          ) : (
+                            <>
+                              <span>Send message</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
               <div className="w-full flex flex-col shadow-md bg-white rounded-md p-4">
