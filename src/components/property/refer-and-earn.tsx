@@ -189,16 +189,6 @@ const slides = [
     mobileImage: "/assets/imgs/refer-mobile.jpg",
     overlayColor: "from-purple-900/80 to-primary/80",
   },
-  {
-    title: "Choose Sojourn",
-    subtitle: "Your home away from home",
-    description: "Experience luxury and comfort in every stay",
-    cta: "Browse Properties",
-    ctaLink: "/properties",
-    desktopImage: "/assets/imgs/choose-desktop.jpg",
-    mobileImage: "/assets/imgs/choose-mobile.jpg",
-    overlayColor: "from-emerald-900/80 to-primary/80",
-  },
 ];
 
 export default function ReferAndEarn() {
