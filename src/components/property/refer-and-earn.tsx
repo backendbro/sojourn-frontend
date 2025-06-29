@@ -179,15 +179,25 @@ const responsive = {
 };
 
 const slides = [
+  // {
+  //   title: "Refer & Earn",
+  //   subtitle: "Share the joy of comfortable stays",
+  //   description: "Earn ₦1000 when you refer a guest to Sojourn",
+  //   cta: "Start Referring Now",
+  //   ctaLink: "/referral",
+  //   desktopImage: "/assets/imgs/refer.jpg",
+  //   mobileImage: "/assets/imgs/refer-mobile.jpg",
+  //   overlayColor: "from-purple-900/80 to-primary/80",
+  // },
   {
-    title: "Refer & Earn",
-    subtitle: "Share the joy of comfortable stays",
-    description: "Earn ₦1000 when you refer a guest to Sojourn",
-    cta: "Start Referring Now",
-    ctaLink: "/referral",
-    desktopImage: "/assets/imgs/refer.jpg",
-    mobileImage: "/assets/imgs/refer-mobile.jpg",
-    overlayColor: "from-purple-900/80 to-primary/80",
+    title: "Choose Sojourn",
+    subtitle: "Your home away from home",
+    description: "Experience luxury and comfort in every stay",
+    cta: "Browse Properties",
+    ctaLink: "/properties",
+    desktopImage: "/assets/imgs/choose-desktop.jpg",
+    mobileImage: "/assets/imgs/choose-mobile.jpg",
+    overlayColor: "from-emerald-900/80 to-primary/80",
   },
 ];
 
