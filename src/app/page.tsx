@@ -256,7 +256,7 @@ export default function Home() {
       </section>
 
       {/* Explore Cities */}
-      <section className="w-full py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
+      <section className="w-full py-15 bg-gradient-to-b from-white to-[#FFF1D7]">
         <Explore />
       </section>
 
