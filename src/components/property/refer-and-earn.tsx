@@ -209,9 +209,9 @@ export default function ReferAndEarn() {
     <div className="w-full max-w-[1400px] mx-auto overflow-hidden px-6 -mt-8">
       <div className="rounded-3xl shadow-xl overflow-hidden">
         <Carousel
-          swipeable={true}
-          draggable={true}
-          showDots={true}
+          // swipeable={true}
+          //draggable={true}
+          //showDots={true}
           responsive={responsive}
           ssr={true}
           infinite={true}
