@@ -193,7 +193,7 @@ const slides = [
     title: "Choose Sojourn",
     subtitle: "Your home away from home",
     description: "Experience luxury and comfort in every stay",
-    cta: "Browse Properties",
+    cta: "Learn more",
     ctaLink: "/properties",
     desktopImage: "/assets/imgs/choose-desktop.jpg",
     mobileImage: "/assets/imgs/choose-mobile.jpg",

@@ -274,82 +274,207 @@ export const WHY_HOST_WITH_SOJOURN = [
   },
 ];
 
-export const PLANS = [
+// export const PLANS = [
+//   {
+//     icon: "/assets/icons/paper-plane.png",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Basic",
+//     price: {
+//       monthly: {
+//         id: "",
+//         amount: 0,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "",
+//         amount: 0,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Ideal for starting out",
+//     list: [
+//       "2% commission on bookings",
+//       "Up to 3 listings",
+//       "24/7 chat and email support",
+//     ],
+//   },
+//   {
+//     icon: "/assets/icons/aeroplane.png",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Lite",
+//     price: {
+//       monthly: {
+//         id: "PLN_p2wo7ln2yju2h8y",
+//         amount: 35000,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "PLN_h6xpbpqlj0trlxe",
+//         amount: 420000,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Best value for growing business",
+//     list: [
+//       "No commision on bookings",
+//       "Up to 10 listings",
+//       "Enhanced visibility option",
+//       "24/7 chat and email support",
+//       "Analytics and insights",
+//       "Basic optimization kit",
+//       "Sojourn cover",
+//     ],
+//   },
+//   {
+//     icon: "/assets/icons/Rocket.svg",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Premium",
+//     price: {
+//       monthly: {
+//         id: "PLN_36mz1l3oj2rg4vl",
+//         amount: 50000,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "PLN_uqcwn2pugyzn19j",
+//         amount: 600000,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Bespoke solution for luxury",
+//     list: [
+//       "No commision on bookings",
+//       "Unlimited listings",
+//       "Advanced visibility option",
+//       "24/7 chat and email support",
+//       "Analytics and support insights",
+//       "Premium optimization kit",
+//       "Sojourn cover",
+//     ],
+//   },
+// ];
+
+// interface Plan {
+//   name: string;
+//   desc: string;
+//   monthlyPrice: number;
+//   yearlyPrice: number;
+//   yearlySavings: string;
+//   popular?: boolean;
+//   list: string[];
+// }
+
+interface Plan {
+  name: string;
+  desc: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  yearlySavings: string;
+  popular?: boolean;
+  locked?: boolean; // 👈 Add this
+  list: string[];
+}
+
+// export const PLANS: Plan[] = [
+//   {
+//     name: "Basic",
+//     desc: "Perfect for getting started",
+//     monthlyPrice: 4999,
+//     yearlyPrice: 3999,
+//     yearlySavings: "₦12,000",
+//     list: [
+//       "Up to 3 listings",
+//       "Basic analytics",
+//       "Standard support",
+//       "Basic property tools",
+//       "Standard visibility",
+//     ],
+//   },
+//   {
+//     name: "Professional",
+//     desc: "Best value for growing business",
+//     monthlyPrice: 9999,
+//     yearlyPrice: 7999,
+//     yearlySavings: "₦24,000",
+//     popular: true,
+//     list: [
+//       "Up to 10 listings",
+//       "Advanced analytics",
+//       "Priority support",
+//       "Professional tools suite",
+//       "Enhanced visibility",
+//       "Marketing assistance",
+//       "Booking management",
+//     ],
+//   },
+//   {
+//     name: "Enterprise",
+//     desc: "For large-scale operations",
+//     monthlyPrice: 19999,
+//     yearlyPrice: 15999,
+//     yearlySavings: "₦48,000",
+//     list: [
+//       "Unlimited listings",
+//       "Enterprise analytics",
+//       "24/7 dedicated support",
+//       "Full property management suite",
+//       "Maximum visibility",
+//       "Custom marketing campaigns",
+//       "Advanced booking tools",
+//       "API access",
+//     ],
+//   },
+// ];
+
+export const PLANS: Plan[] = [
   {
-    icon: "/assets/icons/paper-plane.png",
-    iconWhite: "/assets/icons/paper-plane-white.svg",
     name: "Basic",
-    price: {
-      monthly: {
-        id: "",
-        amount: 0,
-        type: "monthly",
-      },
-      annually: {
-        id: "",
-        amount: 0,
-        type: "annually",
-      },
-    },
-    desc: "Ideal for starting out",
+    desc: "Perfect for getting started",
+    monthlyPrice: 4999,
+    yearlyPrice: 3999,
+    yearlySavings: "₦12,000",
     list: [
-      "2% commission on bookings",
       "Up to 3 listings",
-      "24/7 chat and email support",
+      "Basic analytics",
+      "Standard support",
+      "Basic property tools",
+      "Standard visibility",
     ],
   },
   {
-    icon: "/assets/icons/aeroplane.png",
-    iconWhite: "/assets/icons/paper-plane-white.svg",
-    name: "Lite",
-    price: {
-      monthly: {
-        id: "PLN_p2wo7ln2yju2h8y",
-        amount: 35000,
-        type: "monthly",
-      },
-      annually: {
-        id: "PLN_h6xpbpqlj0trlxe",
-        amount: 420000,
-        type: "annually",
-      },
-    },
+    name: "Professional",
     desc: "Best value for growing business",
+    monthlyPrice: 9999,
+    yearlyPrice: 7999,
+    yearlySavings: "₦24,000",
+    popular: true,
+    locked: true, // 👈 Add this
     list: [
-      "No commision on bookings",
       "Up to 10 listings",
-      "Enhanced visibility option",
-      "24/7 chat and email support",
-      "Analytics and insights",
-      "Basic optimization kit",
-      "Sojourn cover",
+      "Advanced analytics",
+      "Priority support",
+      "Professional tools suite",
+      "Enhanced visibility",
+      "Marketing assistance",
+      "Booking management",
     ],
   },
   {
-    icon: "/assets/icons/Rocket.svg",
-    iconWhite: "/assets/icons/paper-plane-white.svg",
-    name: "Premium",
-    price: {
-      monthly: {
-        id: "PLN_36mz1l3oj2rg4vl",
-        amount: 50000,
-        type: "monthly",
-      },
-      annually: {
-        id: "PLN_uqcwn2pugyzn19j",
-        amount: 600000,
-        type: "annually",
-      },
-    },
-    desc: "Bespoke solution for luxury",
+    name: "Enterprise",
+    desc: "For large-scale operations",
+    monthlyPrice: 19999,
+    yearlyPrice: 15999,
+    yearlySavings: "₦48,000",
+    locked: true, // 👈 Add this
     list: [
-      "No commision on bookings",
       "Unlimited listings",
-      "Advanced visibility option",
-      "24/7 chat and email support",
-      "Analytics and support insights",
-      "Premium optimization kit",
-      "Sojourn cover",
+      "Enterprise analytics",
+      "24/7 dedicated support",
+      "Full property management suite",
+      "Maximum visibility",
+      "Custom marketing campaigns",
+      "Advanced booking tools",
+      "API access",
     ],
   },
 ];

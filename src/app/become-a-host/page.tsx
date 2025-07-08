@@ -291,8 +291,19 @@ const BecomeAHostPage: React.FC = () => {
                   whileHover={{ y: -10, transition: { duration: 0.3 } }}
                   className={`bg-white rounded-3xl shadow-xl p-8 relative overflow-hidden ${
                     plan.popular ? "border-2 border-primary" : ""
-                  }`}
+                  } ${plan.locked ? "opacity-50 pointer-events-none" : ""}`}
                 >
+                  {plan.locked && (
+                    <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex flex-col justify-center items-center text-center">
+                      <div className="text-xl font-semibold text-gray-800">
+                        Coming Soon
+                      </div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Stay tuned!
+                      </div>
+                    </div>
+                  )}
+
                   {plan.popular && (
                     <div className="absolute top-6 right-6">
                       <div className="bg-primary text-white text-sm font-medium px-3 py-1 rounded-full">
