@@ -81,12 +81,19 @@ export default () => {
           lat: string;
           lng: string;
           id: string;
+          photos: string[];
+          country: string;
+          reviews: string[];
         }) => ({
           title: r.title,
           price: r.price,
           address: `${r.house_number} ${r.street}  ${r.city}`,
           coords: [+r.lat, +r.lng],
           href: `/properties/${r.id}`,
+          photos: Array.isArray(r.photos) ? r.photos : [], // ✅ make sure it's always an array
+          city: r.city,
+          country: r.country,
+          reviews: r.reviews || [],
         })
       )
     : [];

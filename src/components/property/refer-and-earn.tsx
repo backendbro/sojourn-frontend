@@ -194,7 +194,7 @@ const slides = [
     subtitle: "Your home away from home",
     description: "Experience luxury and comfort in every stay",
     cta: "Learn more",
-    ctaLink: "/properties",
+    ctaLink: "/about-us",
     desktopImage: "/assets/imgs/choose-desktop.jpg",
     mobileImage: "/assets/imgs/choose-mobile.jpg",
     overlayColor: "from-emerald-900/80 to-primary/80",
