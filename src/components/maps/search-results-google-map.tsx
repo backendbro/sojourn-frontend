@@ -119,7 +119,7 @@ import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { Marker } from "@googlemaps/markerclusterer";
 
 import useQueryString from "@/hooks/useQueryString";
-import SearchResultCard from "@/components/property/search-result-card";
+import SearchResultCardRedesign from "./search-result-card-design";
 
 export const dynamic = "force-dynamic";
 
@@ -140,13 +140,49 @@ type LocationType = {
   }[];
 };
 
+const MarkerWithModal = ({
+  location,
+  markerKey,
+  onClick,
+}: {
+  location: LocationType;
+  markerKey: number;
+  onClick: (ev: google.maps.MapMouseEvent) => void;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const position = {
+    lat: location.coords[0],
+    lng: location.coords[1],
+  };
+
+  return (
+    <AdvancedMarker key={markerKey} position={position} onClick={onClick}>
+      <div
+        className="relative flex flex-col items-center group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="custom-map-marker font-sans">
+          ₦{new Number(location.price).toLocaleString()}
+        </div>
+
+        {isHovered && (
+          <div className="absolute bottom-full mb-2 z-[9999] w-[300px] bg-white rounded-lg shadow-xl border border-gray-200">
+            <SearchResultCardRedesign {...location} />
+          </div>
+        )}
+      </div>
+    </AdvancedMarker>
+  );
+};
+
 export default ({ locations = [] }: { locations: LocationType[] }) => {
   const map = useMap();
   const { router } = useQueryString();
 
   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
   const clusterer = useRef<MarkerClusterer | null>(null);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const setMarkerRef = (marker: Marker | null, key: string) => {
     if (marker && markers[key]) return;
@@ -173,59 +209,14 @@ export default ({ locations = [] }: { locations: LocationType[] }) => {
     lng: locations.length ? locations[0].coords[1] : 0,
   };
 
-  const Places = locations.map((l, key: number) => {
-    const position = {
-      lat: l.coords[0],
-      lng: l.coords[1],
-    };
-    const isHovered = hoveredId === l.id;
-
-    return (
-      <AdvancedMarker
-        key={key}
-        position={position}
-        onClick={handleClick(l)}
-        ref={(marker) => setMarkerRef(marker, `${key}`)}
-      >
-        <div className="relative flex flex-col items-center group">
-          <div
-            className="custom-map-marker font-sans"
-            onMouseEnter={() => setHoveredId(l.id)}
-            onMouseLeave={() => setHoveredId(null)}
-          >
-            ₦{new Number(l.price).toLocaleString()}
-          </div>
-
-          {isHovered && (
-            <div className="absolute bottom-full mb-2 z-[9999] w-[300px] bg-white rounded-lg shadow-xl p-2">
-              <div className="w-full h-[150px] relative overflow-hidden rounded-md mb-2">
-                {l.photos?.[0] ? (
-                  <img
-                    src={l.photos[0]}
-                    alt="Property"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
-                    No Image
-                  </div>
-                )}
-              </div>
-              <div className="px-1">
-                <h4 className="text-[14px] font-bold truncate">{l.title}</h4>
-                <p className="text-xs text-gray-500">
-                  {l.city}, {l.country}
-                </p>
-                <p className="text-red-600 text-sm font-semibold mt-1">
-                  ₦{l.price.toLocaleString()} / night
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </AdvancedMarker>
-    );
-  });
+  const Places = locations.map((l, key) => (
+    <MarkerWithModal
+      location={l}
+      markerKey={key}
+      key={key}
+      onClick={handleClick(l)}
+    />
+  ));
 
   useEffect(() => {
     if (!map) return;
