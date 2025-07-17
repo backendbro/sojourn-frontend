@@ -371,7 +371,7 @@ interface Plan {
   yearlyPrice: number;
   yearlySavings: string;
   popular?: boolean;
-  locked?: boolean; // 👈 Add this
+  locked?: boolean;
   list: string[];
 }
 
@@ -430,9 +430,9 @@ export const PLANS: Plan[] = [
   {
     name: "Basic",
     desc: "Perfect for getting started",
-    monthlyPrice: 4999,
-    yearlyPrice: 3999,
-    yearlySavings: "₦12,000",
+    monthlyPrice: 0.0,
+    yearlyPrice: 0.0,
+    yearlySavings: "₦0,00",
     list: [
       "Up to 3 listings",
       "Basic analytics",
@@ -444,11 +444,11 @@ export const PLANS: Plan[] = [
   {
     name: "Professional",
     desc: "Best value for growing business",
-    monthlyPrice: 9999,
-    yearlyPrice: 7999,
-    yearlySavings: "₦24,000",
+    monthlyPrice: 0.0,
+    yearlyPrice: 0.0,
+    yearlySavings: "₦0",
     popular: true,
-    locked: true, // 👈 Add this
+    locked: true,
     list: [
       "Up to 10 listings",
       "Advanced analytics",
@@ -462,9 +462,9 @@ export const PLANS: Plan[] = [
   {
     name: "Enterprise",
     desc: "For large-scale operations",
-    monthlyPrice: 19999,
-    yearlyPrice: 15999,
-    yearlySavings: "₦48,000",
+    monthlyPrice: 0.0,
+    yearlyPrice: 0.0,
+    yearlySavings: "₦0",
     locked: true, // 👈 Add this
     list: [
       "Unlimited listings",
