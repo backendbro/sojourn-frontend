@@ -316,12 +316,12 @@ export const PLANS = [
     price: {
       monthly: {
         id: "PLN_p2wo7ln2yju2h8y",
-        amount: 35000,
+        amount: 0,
         type: "monthly",
       },
       annually: {
         id: "PLN_h6xpbpqlj0trlxe",
-        amount: 420000,
+        amount: 0,
         type: "annually",
       },
     },
@@ -343,12 +343,12 @@ export const PLANS = [
     price: {
       monthly: {
         id: "PLN_36mz1l3oj2rg4vl",
-        amount: 50000,
+        amount: 0,
         type: "monthly",
       },
       annually: {
         id: "PLN_uqcwn2pugyzn19j",
-        amount: 600000,
+        amount: 0,
         type: "annually",
       },
     },
