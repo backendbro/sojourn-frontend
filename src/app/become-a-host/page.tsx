@@ -324,6 +324,14 @@ const BecomeAHostPage: React.FC = () => {
                     plan.popular ? "border-2 border-primary" : ""
                   }`}
                 >
+                  {["Lite", "Premium"].includes(plan.name) && (
+                    <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
+                      <span className="text-gray-500 font-medium">
+                        Coming Soon
+                      </span>
+                    </div>
+                  )}
+
                   {plan.popular && (
                     <div className="absolute top-6 right-6">
                       <div className="bg-primary text-white text-sm font-medium px-3 py-1 rounded-full">
