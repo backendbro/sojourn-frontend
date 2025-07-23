@@ -70,6 +70,37 @@ const BecomeAHostPage: React.FC = () => {
   const monthlyActiveCss = checked === false ? "text-primary" : "text-gray-400";
   const yearlyActiveCss = checked === true ? "text-primary" : "text-gray-400";
 
+  const renderPlanButton = (plan: any) => {
+    if (isLoggedInAndNotHost) {
+      return (
+        <AddHost
+          className={`w-full justify-center ${
+            plan.popular
+              ? "bg-primary"
+              : "bg-[#FFF1D7] text-primary hover:bg-primary hover:text-white"
+          }`}
+        />
+      );
+    }
+    if (isLoggedInAndHostAndGuest) {
+      return null;
+    }
+    return (
+      <BecomeAHost>
+        <button
+          className={`w-full py-3 px-6 rounded-full font-semibold transition-all flex items-center justify-center gap-2 ${
+            plan.popular
+              ? "bg-primary text-white"
+              : "bg-[#FFF1D7] text-primary hover:bg-primary hover:text-white"
+          }`}
+        >
+          Get Started
+          <ArrowRight className="w-4 h-4" />
+        </button>
+      </BecomeAHost>
+    );
+  };
+
   return (
     <LazyMotion features={domAnimation}>
       <div className="w-full overflow-hidden">
@@ -291,19 +322,8 @@ const BecomeAHostPage: React.FC = () => {
                   whileHover={{ y: -10, transition: { duration: 0.3 } }}
                   className={`bg-white rounded-3xl shadow-xl p-8 relative overflow-hidden ${
                     plan.popular ? "border-2 border-primary" : ""
-                  } ${plan.locked ? "opacity-50 pointer-events-none" : ""}`}
+                  }`}
                 >
-                  {plan.locked && (
-                    <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex flex-col justify-center items-center text-center">
-                      <div className="text-xl font-semibold text-gray-800">
-                        Coming Soon
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">
-                        Stay tuned!
-                      </div>
-                    </div>
-                  )}
-
                   {plan.popular && (
                     <div className="absolute top-6 right-6">
                       <div className="bg-primary text-white text-sm font-medium px-3 py-1 rounded-full">
@@ -321,7 +341,9 @@ const BecomeAHostPage: React.FC = () => {
                     <div className="flex items-end gap-1 mb-1">
                       <span className="text-4xl font-bold">
                         {formatPrice(
-                          checked ? plan.yearlyPrice : plan.monthlyPrice
+                          checked
+                            ? plan.price.annually.amount
+                            : plan.price.monthly.amount
                         )}
                       </span>
                       <span className="text-gray-600 mb-1">/mo</span>
@@ -342,30 +364,7 @@ const BecomeAHostPage: React.FC = () => {
                     ))}
                   </ul>
 
-                  <div className="mt-auto">
-                    {isLoggedInAndNotHost ? (
-                      <AddHost
-                        className={`w-full justify-center ${
-                          plan.popular
-                            ? "bg-primary"
-                            : "bg-[#FFF1D7] text-primary hover:bg-primary hover:text-white"
-                        }`}
-                      />
-                    ) : isLoggedInAndHostAndGuest ? null : (
-                      <BecomeAHost>
-                        <div
-                          className={`w-full py-3 px-6 rounded-full font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                            plan.popular
-                              ? "bg-primary text-white"
-                              : "bg-[#FFF1D7] text-primary hover:bg-primary hover:text-white"
-                          }`}
-                        >
-                          Get Started
-                          <ArrowRight className="w-4 h-4" />
-                        </div>
-                      </BecomeAHost>
-                    )}
-                  </div>
+                  <div className="mt-auto">{renderPlanButton(plan)}</div>
                 </m.div>
               ))}
             </m.div>

@@ -274,6 +274,16 @@ export const WHY_HOST_WITH_SOJOURN = [
   },
 ];
 
+interface Plan {
+  name: string;
+  desc: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  yearlySavings: string;
+  popular?: boolean;
+  list: string[];
+}
+
 export const PLANS = [
   {
     icon: "/assets/icons/paper-plane.png",
@@ -302,6 +312,7 @@ export const PLANS = [
     icon: "/assets/icons/aeroplane.png",
     iconWhite: "/assets/icons/paper-plane-white.svg",
     name: "Lite",
+    popular: true,
     price: {
       monthly: {
         id: "PLN_p2wo7ln2yju2h8y",
