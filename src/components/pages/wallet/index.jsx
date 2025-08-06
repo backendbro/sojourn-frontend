@@ -1,22 +1,22 @@
-import React, { useState } from 'react'
-import { 
-  Search, 
-  Filter, 
-  Download, 
+import React, { useState } from "react";
+import {
+  Search,
+  Filter,
+  Download,
   MoreHorizontal,
   TrendingUp,
   TrendingDown,
   CreditCard,
   ArrowUpRight,
-  ArrowDownRight
-} from 'lucide-react'
-import TransactionTable from './TransactionTable'
-import BalanceCard from './BalanceCard'
-import TransactionFilters from './TransactionFilters'
+  ArrowDownRight,
+} from "lucide-react";
+import TransactionTable from "./TransactionTable";
+import BalanceCard from "./BalanceCard";
+import TransactionFilters from "./TransactionFilters";
 
-const WalletPage = () => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showFilters, setShowFilters] = useState(false)
+export default function () {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -24,9 +24,11 @@ const WalletPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Wallet</h1>
-          <p className="text-gray-600 mt-1">Manage your transactions and withdrawals</p>
+          <p className="text-gray-600 mt-1">
+            Manage your transactions and withdrawals
+          </p>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           <button className="btn-secondary flex items-center space-x-2">
             <Download className="w-4 h-4" />
@@ -43,7 +45,9 @@ const WalletPage = () => {
         <div className="card p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Earnings</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Earnings
+              </p>
               <p className="text-2xl font-bold text-gray-900">₦2,000.00</p>
             </div>
             <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
@@ -59,7 +63,9 @@ const WalletPage = () => {
         <div className="card p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Total Withdrawals</p>
+              <p className="text-sm font-medium text-gray-600">
+                Total Withdrawals
+              </p>
               <p className="text-2xl font-bold text-gray-900">₦613.20</p>
             </div>
             <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -101,7 +107,7 @@ const WalletPage = () => {
               className="input-field pl-10"
             />
           </div>
-          
+
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="btn-secondary flex items-center space-x-2"
@@ -117,7 +123,7 @@ const WalletPage = () => {
       {/* Transaction Table */}
       <TransactionTable searchQuery={searchQuery} />
     </div>
-  )
+  );
 }
 
-export default WalletPage 
+//export default WalletPage
