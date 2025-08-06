@@ -14,7 +14,7 @@ import TransactionTable from "./TransactionTable";
 import BalanceCard from "./BalanceCard";
 import TransactionFilters from "./TransactionFilters";
 
-const WalletPage = () => {
+export default () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -126,4 +126,4 @@ const WalletPage = () => {
   );
 };
 
-export default WalletPage;
+//export default WalletPage;
