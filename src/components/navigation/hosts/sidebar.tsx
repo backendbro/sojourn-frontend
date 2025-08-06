@@ -33,7 +33,7 @@ interface SidebarProps {
   setCollapsed?: (collapsed: boolean) => void;
 }
 
-export default function Sidebar({
+export default function ({
   open,
   setOpen,
   collapsed = false,
