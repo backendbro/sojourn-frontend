@@ -1,219 +1,129 @@
-"use client";
-
-import Spinner from "@/components/svgs/Spinner";
+import React, { useState } from "react";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import TableLoader from "@/components/ui/table-loader";
-import useQueryString from "@/hooks/useQueryString";
-import { getSojournCreditsByUserId, transferSojournCredits } from "@/http/api";
-import { RootState } from "@/store";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { ArrowRight, Copy, X } from "lucide-react";
-import dynamic from "next/dynamic";
-import { useState, MouseEvent, useCallback, ChangeEvent } from "react";
-import { useSelector } from "react-redux";
-import { toast } from "sonner";
+  Search,
+  Filter,
+  Download,
+  MoreHorizontal,
+  TrendingUp,
+  TrendingDown,
+  CreditCard,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
+import TransactionTable from "./TransactionTable";
+import BalanceCard from "./BalanceCard";
+import TransactionFilters from "./TransactionFilters";
 
-const Credits = dynamic(() => import("./credits-table"), { ssr: false });
-const Referals = dynamic(() => import("./referals-table"), { ssr: false });
-
-type TabState = "referals" | "credits";
-
-type TransferType = {
-  email: string;
-  amount: number;
-  error: string;
-};
-
-export default () => {
-  const id = useSelector((state: RootState) => state.user.me?.user?.id);
-
-  const { params } = useQueryString();
-
-  const client = useQueryClient();
-
-  const [state, setState] = useState<TransferType>({
-    email: "",
-    amount: 0,
-    error: "",
-  });
-
-  const [open, setOpen] = useState(false);
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["wallet-credits"],
-    queryFn: () => getSojournCreditsByUserId(id),
-    refetchOnReconnect: true,
-  });
-
-  const mutation = useMutation({
-    mutationKey: ["transfer-credit"],
-    mutationFn: transferSojournCredits,
-    async onSuccess() {
-      await client.invalidateQueries({ queryKey: ["wallet-credits"] });
-      setOpen(false);
-    },
-    onError(error: AxiosError) {
-      setState((prevState) => ({
-        ...prevState,
-        //@ts-ignore
-        error: error.response?.data?.message,
-      }));
-    },
-  });
-
-  const [tabState, setTabState] = useState<TabState>(() => {
-    return (params.get("tabState") as TabState) ?? "referals";
-  });
-
-  const isReferals = tabState === "referals";
-
-  const isCredits = tabState === "credits";
-
-  const onTabChange = useCallback(
-    (currentTab: TabState) => (e: MouseEvent<HTMLButtonElement>) => {
-      setTabState(currentTab);
-    },
-    []
-  );
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target;
-    switch (type) {
-      case "text":
-        if (isNaN(+value) || +value <= 0) break;
-        setState((prevState) => ({ ...prevState, [name]: +value }));
-        break;
-      default:
-        setState((prevState) => ({ ...prevState, [name]: value }));
-        break;
-    }
-  };
-
-  const onSubmit = (e: MouseEvent<HTMLButtonElement>) => {
-    if (!state.email || !Number(state.amount) || Number(state.amount) < 0) {
-      return;
-    }
-    mutation.mutate({ ...state, userId: id });
-  };
-
-  if (error) {
-    toast("Error getting Inspections", {
-      position: "bottom-left",
-    });
-  }
-
-  if (isLoading) {
-    return (
-      <div className="w-full mt-4">
-        <Skeleton className="h-8 w-1/3 bg-gray-200 mt-2" />
-        {[1, 2, 3, 4].map((_, idx: number) => (
-          <TableLoader key={idx} />
-        ))}
-      </div>
-    );
-  }
+export default function () {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="w-full py-[50px] px-2 md:px-8">
-      <div className="w-full flex flex-col space-y-7 justify-between md:flex-row md:items-center md:space-y-0">
-        <div className="w-full min-h-[40px] flex flex-col space-y-7 md:space-y-0 md:flex-row md:items-center md:justify-between">
-          <div className="w-full md:w-2/5">
-            <button
-              onClick={onTabChange("referals")}
-              className={`w-1/2 border-b-2 border-b-red-200 pb-4 ${
-                isReferals && "border-b-red-600 text-primary font-bold"
-              }`}
-            >
-              Referrals
-            </button>
-            <button
-              onClick={onTabChange("credits")}
-              className={`w-1/2 border-b-2 border-b-red-200 pb-4 ${
-                isCredits && "border-b-red-600 text-primary font-bold"
-              }`}
-            >
-              Credits
-            </button>
-          </div>
-          {tabState === "referals" ? (
-            <button
-              className="flex items-center justify-center space-x-1 bg-transparent text-black rounded-full px-5 py-3 ease duration-300 border border-black hover:bg-red-50"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `https://www.sojourn.ng/?ref=${id}`
-                );
-                toast("Referral Action.", {
-                  description: "Copied referral link.",
-                  closeButton: true,
-                });
-              }}
-            >
-              <span className="font-[600] text-[16px]">Copy referral link</span>
-              <Copy size={16} color="black" />
-            </button>
-          ) : (
-            <Dialog
-              open={open}
-              onOpenChange={(value) => {
-                setOpen(value);
-              }}
-            >
-              <DialogTrigger className="flex items-center justify-center space-x-1 bg-primary text-white rounded-full px-5 py-3 ease duration-300 hover:bg-red-700">
-                <span className="font-[600] text-[16px]">Transfer</span>
-                <ArrowRight size={20} color="white" />
-              </DialogTrigger>
-              <DialogContent>
-                <div className="full flex items-center justify-between">
-                  <DialogTitle>Transfer Credits</DialogTitle>
-                </div>
-                <span className="text-primary text-md font-[600]">
-                  {state.error}
-                </span>
-                <div className="w-full flex flex-col items-center justify-center space-y-4">
-                  <input
-                    type="email"
-                    value={state.email}
-                    onChange={handleChange}
-                    className="w-full py-3 px-2 my-3 outline-none border-b border-b-secondary placeholder:text-gray-400 text-[16px]"
-                    placeholder="Enter email address"
-                    name="email"
-                  />
-                  <input
-                    value={String(state.amount)}
-                    onChange={handleChange}
-                    className="w-full py-3 px-2 my-3 outline-none border-b border-b-secondary placeholder:text-gray-400 text-[16px]"
-                    placeholder="Amount of credits"
-                    name="amount"
-                    type="text"
-                  />
-                  <button
-                    onClick={onSubmit}
-                    className="w-full flex items-center justify-center py-5 px-3 rounded-full bg-primary text-white text-[20px] font-semibold hover:bg-red-700"
-                  >
-                    {mutation.isPending ? (
-                      <Spinner size={20} color="red" />
-                    ) : (
-                      <div className="flex space-x-2 items-center">
-                        <span>Send</span>
-                        <ArrowRight color="white" size={25} />
-                      </div>
-                    )}
-                  </button>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
+    <div className="space-y-6 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Wallet</h1>
+          <p className="text-gray-600 mt-1">
+            Manage your transactions and withdrawals
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <button className="btn-secondary flex items-center space-x-2">
+            <Download className="w-4 h-4" />
+            <span>Export</span>
+          </button>
         </div>
       </div>
-      {tabState === "credits" ? <Credits data={data} /> : <Referals />}
+
+      {/* Balance Card */}
+      <BalanceCard />
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Total Earnings
+              </p>
+              <p className="text-2xl font-bold text-gray-900">₦2,000.00</p>
+            </div>
+            <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-success-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm text-success-600">
+            <ArrowUpRight className="w-4 h-4 mr-1" />
+            <span>+12.5% from last month</span>
+          </div>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                Total Withdrawals
+              </p>
+              <p className="text-2xl font-bold text-gray-900">₦613.20</p>
+            </div>
+            <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+              <TrendingDown className="w-6 h-6 text-primary-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm text-primary-600">
+            <ArrowDownRight className="w-4 h-4 mr-1" />
+            <span>₦547.50 this month</span>
+          </div>
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Pending</p>
+              <p className="text-2xl font-bold text-gray-900">₦0.00</p>
+            </div>
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <CreditCard className="w-6 h-6 text-gray-600" />
+            </div>
+          </div>
+          <div className="mt-4 flex items-center text-sm text-gray-600">
+            <span>No pending transactions</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="card p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by amount, payment type, or date..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="input-field pl-10"
+            />
+          </div>
+
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="btn-secondary flex items-center space-x-2"
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filters</span>
+          </button>
+        </div>
+
+        {showFilters && <TransactionFilters />}
+      </div>
+
+      {/* Transaction Table */}
+      <TransactionTable searchQuery={searchQuery} />
     </div>
   );
-};
+}
+
+// export default WalletPage;
