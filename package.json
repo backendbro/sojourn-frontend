@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.5.3",
+    "@headlessui/react": "^2.2.7",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.3.4",
     "@nestjs/cache-manager": "^2.2.2",
     "@paystack/inline-js": "^2.20.3",

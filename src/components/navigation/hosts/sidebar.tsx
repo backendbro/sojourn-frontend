@@ -1,95 +1,202 @@
-"use client";
+import { Fragment, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import {
+  XMarkIcon,
+  BuildingOfficeIcon,
+  CalendarIcon,
+  WalletIcon,
+  EnvelopeIcon,
+  UserPlusIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
+import { clsx } from "clsx";
 
-import AccountingIcon from "@/components/svgs/AccountingIcon";
-import BookingIcon from "@/components/svgs/BookingIcon";
-import PropertiesIcon from "@/components/svgs/PropertiesIcon";
-import { HOST_PROPERTIES_MENU } from "@/constants";
-import { Mail, Wallet } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+const navigation = [
+  { name: "Properties", href: "#", icon: BuildingOfficeIcon, current: true },
+  { name: "Bookings", href: "#", icon: CalendarIcon, current: false },
+  { name: "Wallet", href: "#", icon: WalletIcon, current: false },
+  { name: "Inbox", href: "#", icon: EnvelopeIcon, current: false },
+  {
+    name: "My Plan",
+    href: "#",
+    icon: UserPlusIcon,
+    current: false,
+    badge: "Pro",
+  },
+];
 
-export default () => {
-  const pathname = usePathname();
+interface SidebarProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
+}
 
-  const openSidebar = !pathname.includes("inbox");
-
-  const isOnCreateListing = pathname.includes(
-    "/hosts/dashboard/properties/create"
-  );
-
-  const Links = HOST_PROPERTIES_MENU.map(({ text, link }, idx: number) => {
-    const activeTabCss = pathname.startsWith(link)
-      ? "text-primary font-bold"
-      : "";
-
-    const IconColor = pathname.startsWith(link) ? "#DE5353" : "#677073";
-
-    let Icon = <PropertiesIcon color={IconColor} size={18} />;
-    if (text.includes("properties")) {
-      Icon = <PropertiesIcon color={IconColor} size={18} />;
-    } else if (text.includes("bookings")) {
-      Icon = <BookingIcon color={IconColor} size={18} />;
-    } else if (text.includes("wallet")) {
-      Icon = (<Wallet color={IconColor} size={18} />) as any;
-    } else if (text.includes("inbox")) {
-      Icon = (<Mail color={IconColor} size={18} />) as any;
-    } else {
-      if (text === "my plan") {
-        Icon = (
-          <div className="relative">
-            <span className="absolute -top-[15px] -right-[17px] w-[24px] h-[24px] bg-primary rounded-full flex items-center justify-center text-white font-bold text-xs shadow-md font-inter ">
-              Pro
-            </span>
-            <AccountingIcon color={IconColor} size={18} />
-          </div>
-        );
-      } else {
-        Icon = <AccountingIcon color={IconColor} size={18} />;
-      }
-    }
-
-    return (
-      <li
-        key={idx}
-        className="w-full flex flex-col list-none lg:flex-row lg:border-b lg:border-b-gray-300"
-      >
-        <Link
-          className={`w-full flex flex-col py-4  capitalize font-semibold text-[#677073] flex items-center justify-center space-y-2 space-x-0 hover:bg-red-50 lg:flex-row lg:px-3 lg:space-x-4 lg:space-y-0`}
-          href={link}
-        >
-          {Icon}
-          {openSidebar ? (
-            <span
-              className={`${activeTabCss} hidden lg:block truncate font-bold lg:font-[500] text-black text-center text-xs lg:text-sm w-4/5 lg:w-full lg:text-left `}
-            >
-              {text}
-            </span>
-          ) : (
-            ""
-          )}
-          <span
-            className={`${activeTabCss}block lg:hidden  truncate font-bold lg:font-[500] text-black text-center text-xs lg:text-sm w-4/5 lg:w-full lg:text-left `}
-          >
-            {text}
-          </span>
-        </Link>
-      </li>
-    );
-  });
-
-  const hostSidebarWidth = openSidebar
-    ? isOnCreateListing
-      ? "hidden"
-      : "lg:w-1/6 lg:h-[264px]"
-    : "lg:w-[55px] lg:h-[256px]";
-
+export default function Sidebar({
+  open,
+  setOpen,
+  collapsed = false,
+  setCollapsed,
+}: SidebarProps) {
   return (
-    <div
-      className={`w-full fixed bottom-0 z-[9999] h-[70px] flex items-center sj-shadow bg-white border border-gray-300 lg:sticky lg:top-[120px] lg:flex-col ${hostSidebarWidth} lg:items-start`}
-    >
-      <ul className="w-full grid grid-cols-5 lg:grid-cols-1 lg:overflow-hidden">
-        {Links}
-      </ul>
-    </div>
+    <>
+      {/* Mobile sidebar */}
+      <Transition.Root show={open} as={Fragment}>
+        <Dialog as="div" className="relative z-50 lg:hidden" onClose={setOpen}>
+          <Transition.Child
+            as={Fragment}
+            enter="transition-opacity ease-linear duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transition-opacity ease-linear duration-300"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-900/80" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 flex">
+            <Transition.Child
+              as={Fragment}
+              enter="transition ease-in-out duration-300 transform"
+              enterFrom="-translate-x-full"
+              enterTo="translate-x-0"
+              leave="transition ease-in-out duration-300 transform"
+              leaveFrom="translate-x-0"
+              leaveTo="-translate-x-full"
+            >
+              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+                  <div className="flex h-16 shrink-0 items-center">
+                    <img
+                      src="/sojourn-logo.svg"
+                      alt="Sojourn"
+                      className="h-8 w-auto"
+                    />
+                  </div>
+                  <nav className="flex flex-1 flex-col">
+                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                      <li>
+                        <ul role="list" className="-mx-2 space-y-1">
+                          {navigation.map((item) => (
+                            <li key={item.name}>
+                              <a
+                                href={item.href}
+                                className={clsx(
+                                  item.current
+                                    ? "bg-primary-50 text-primary-600 border-r-2 border-primary-600"
+                                    : "text-gray-700 hover:text-primary-600 hover:bg-gray-50",
+                                  "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors duration-200"
+                                )}
+                              >
+                                <item.icon
+                                  className={clsx(
+                                    item.current
+                                      ? "text-primary-600"
+                                      : "text-gray-400 group-hover:text-primary-600",
+                                    "h-6 w-6 shrink-0"
+                                  )}
+                                  aria-hidden="true"
+                                />
+                                <span className="flex items-center gap-2">
+                                  {item.name}
+                                  {item.badge && (
+                                    <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-1 text-xs font-medium text-primary-700">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      {/* Desktop sidebar */}
+      <div
+        className={clsx(
+          "hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ease-in-out",
+          collapsed ? "lg:w-16" : "lg:w-72"
+        )}
+      >
+        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4 relative">
+          {/* Toggle Button */}
+          <button
+            onClick={() => setCollapsed && setCollapsed(!collapsed)}
+            className="absolute -right-3 top-8 bg-white border border-gray-200 rounded-full p-1.5 hover:bg-gray-50 transition-colors duration-200 shadow-sm"
+          >
+            {collapsed ? (
+              <ChevronRightIcon className="h-4 w-4 text-gray-600" />
+            ) : (
+              <ChevronLeftIcon className="h-4 w-4 text-gray-600" />
+            )}
+          </button>
+
+          <div className="flex h-16 shrink-0 items-center">
+            <img
+              src="/sojourn-logo.svg"
+              alt="Sojourn"
+              className={clsx(
+                "shrink-0 transition-all duration-300",
+                collapsed ? "h-8 w-8" : "h-8 w-auto"
+              )}
+            />
+          </div>
+
+          <nav className="flex flex-1 flex-col">
+            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+              <li>
+                <ul role="list" className="-mx-2 space-y-1">
+                  {navigation.map((item) => (
+                    <li key={item.name}>
+                      <a
+                        href={item.href}
+                        className={clsx(
+                          item.current
+                            ? "bg-primary-50 text-primary-600 border-r-2 border-primary-600"
+                            : "text-gray-700 hover:text-primary-600 hover:bg-gray-50",
+                          "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-medium transition-colors duration-200",
+                          collapsed && "justify-center"
+                        )}
+                        title={collapsed ? item.name : undefined}
+                      >
+                        <item.icon
+                          className={clsx(
+                            item.current
+                              ? "text-primary-600"
+                              : "text-gray-400 group-hover:text-primary-600",
+                            "h-6 w-6 shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                        {!collapsed && (
+                          <span className="flex items-center gap-2">
+                            {item.name}
+                            {item.badge && (
+                              <span className="inline-flex items-center rounded-full bg-primary-100 px-2 py-1 text-xs font-medium text-primary-700">
+                                {item.badge}
+                              </span>
+                            )}
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </>
   );
-};
+}

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useMenuState } from "@/context/MenuContext";
 import ChevronDownIcon from "../svgs/chevronDownIcon";
 import { usePathname } from "next/navigation";
-import ProfileMenu from "./hosts/profile-menu";
+import ProfileMenu from "./hostse/profile-menu";
 import React from "react";
 import { setCurrency } from "@/store/features/currency-slice";
 import { useDispatch, useSelector } from "react-redux";
