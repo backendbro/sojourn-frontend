@@ -14,7 +14,7 @@ import TransactionTable from "./TransactionTable";
 import BalanceCard from "./BalanceCard";
 import TransactionFilters from "./TransactionFilters";
 
-export default () => {
+export default function () {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -124,6 +124,6 @@ export default () => {
       <TransactionTable searchQuery={searchQuery} />
     </div>
   );
-};
+}
 
-//export default WalletPage;
+// export default WalletPage;
