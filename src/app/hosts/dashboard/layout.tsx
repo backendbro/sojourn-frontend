@@ -1,4 +1,4 @@
-import Sidebar from "@/components/hostse/sidebar";
+import Sidebar from "@/components/navigation/hosts/sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
