@@ -10,7 +10,7 @@ import {
   ArrowDownRight,
 } from "lucide-react";
 import TransactionTable from "./TransactionTable";
-import BalanceCard from "./BalanceCard";
+import BalanceCard from "./balance-card";
 import TransactionFilters from "./TransactionFilters";
 
 export default () => {
