@@ -174,6 +174,7 @@ const BalanceCard = () => {
     fontSize: "2.25rem",
     fontWeight: 700,
     margin: "0 0 0.5rem 0",
+    color: "white",
   };
 
   const lastUpdatedStyle = {
