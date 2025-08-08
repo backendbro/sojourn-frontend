@@ -18,19 +18,60 @@ export default () => {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+        animation: "fadeIn 0.5s ease-in-out",
+      }}
+    >
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Wallet</h1>
-          <p className="text-gray-600 mt-1">
+          <h1
+            style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#111827",
+            }}
+          >
+            Wallet
+          </h1>
+          <p style={{ color: "#4b5563", marginTop: "0.25rem" }}>
             Manage your transactions and withdrawals
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
-          <button className="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center space-x-2">
-            <Download className="w-4 h-4" />
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <button
+            style={{
+              backgroundColor: "#ffffff",
+              color: "#374151",
+              fontWeight: 500,
+              padding: "0.5rem 1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #d1d5db",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              cursor: "pointer",
+              transition: "background-color 0.2s ease-in-out",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor = "#f9fafb")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor = "#ffffff")
+            }
+          >
+            <Download style={{ width: "1rem", height: "1rem" }} />
             <span>Export</span>
           </button>
         </div>
@@ -40,78 +81,276 @@ export default () => {
       <BalanceCard />
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "1.5rem",
+        }}
+      >
+        {/* Total Earnings */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "0.75rem",
+            boxShadow:
+              "0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04)",
+            border: "1px solid #f3f4f6",
+            padding: "1.5rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "#4b5563",
+                }}
+              >
                 Total Earnings
               </p>
-              <p className="text-2xl font-bold text-gray-900">₦2,000.00</p>
+              <p
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "#111827",
+                }}
+              >
+                ₦2,000.00
+              </p>
             </div>
-            <div className="w-12 h-12 bg-success-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-success-600" />
+            <div
+              style={{
+                width: "3rem",
+                height: "3rem",
+                backgroundColor: "#dcfce7",
+                borderRadius: "0.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <TrendingUp
+                style={{ width: "1.5rem", height: "1.5rem", color: "#16a34a" }}
+              />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm text-success-600">
-            <ArrowUpRight className="w-4 h-4 mr-1" />
+          <div
+            style={{
+              marginTop: "1rem",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "0.875rem",
+              color: "#16a34a",
+            }}
+          >
+            <ArrowUpRight
+              style={{ width: "1rem", height: "1rem", marginRight: "0.25rem" }}
+            />
             <span>+12.5% from last month</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
+        {/* Total Withdrawals */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "0.75rem",
+            boxShadow:
+              "0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04)",
+            border: "1px solid #f3f4f6",
+            padding: "1.5rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <div>
-              <p className="text-sm font-medium text-gray-600">
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "#4b5563",
+                }}
+              >
                 Total Withdrawals
               </p>
-              <p className="text-2xl font-bold text-gray-900">₦613.20</p>
+              <p
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "#111827",
+                }}
+              >
+                ₦613.20
+              </p>
             </div>
-            <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-              <TrendingDown className="w-6 h-6 text-primary-600" />
+            <div
+              style={{
+                width: "3rem",
+                height: "3rem",
+                backgroundColor: "#fee2e2",
+                borderRadius: "0.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <TrendingDown
+                style={{ width: "1.5rem", height: "1.5rem", color: "#dc2626" }}
+              />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm text-primary-600">
-            <ArrowDownRight className="w-4 h-4 mr-1" />
+          <div
+            style={{
+              marginTop: "1rem",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "0.875rem",
+              color: "#dc2626",
+            }}
+          >
+            <ArrowDownRight
+              style={{ width: "1rem", height: "1rem", marginRight: "0.25rem" }}
+            />
             <span>₦547.50 this month</span>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
-          <div className="flex items-center justify-between">
+        {/* Pending */}
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "0.75rem",
+            boxShadow:
+              "0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04)",
+            border: "1px solid #f3f4f6",
+            padding: "1.5rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <div>
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-bold text-gray-900">₦0.00</p>
+              <p
+                style={{
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "#4b5563",
+                }}
+              >
+                Pending
+              </p>
+              <p
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  color: "#111827",
+                }}
+              >
+                ₦0.00
+              </p>
             </div>
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-gray-600" />
+            <div
+              style={{
+                width: "3rem",
+                height: "3rem",
+                backgroundColor: "#f3f4f6",
+                borderRadius: "0.5rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <CreditCard
+                style={{ width: "1.5rem", height: "1.5rem", color: "#4b5563" }}
+              />
             </div>
           </div>
-          <div className="mt-4 flex items-center text-sm text-gray-600">
-            <span>No pending transactions</span>
+          <div
+            style={{
+              marginTop: "1rem",
+              fontSize: "0.875rem",
+              color: "#4b5563",
+            }}
+          >
+            No pending transactions
           </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "0.75rem",
+          boxShadow:
+            "0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04)",
+          border: "1px solid #f3f4f6",
+          padding: "1.5rem",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ flex: 1, position: "relative" }}>
+            <Search
+              style={{
+                position: "absolute",
+                left: "0.75rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "1.25rem",
+                height: "1.25rem",
+                color: "#9ca3af",
+              }}
+            />
             <input
               type="text"
               placeholder="Search by amount, payment type, or date..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 pl-10"
+              style={{
+                width: "100%",
+                padding: "0.5rem 0.75rem 0.5rem 2.5rem",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.5rem",
+                outline: "none",
+                transition: "border-color 0.2s ease-in-out",
+                fontSize: "0.875rem",
+              }}
             />
           </div>
 
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center space-x-2"
+            style={{
+              backgroundColor: "#ffffff",
+              color: "#374151",
+              fontWeight: 500,
+              padding: "0.5rem 1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #d1d5db",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              cursor: "pointer",
+            }}
           >
-            <Filter className="w-4 h-4" />
+            <Filter style={{ width: "1rem", height: "1rem" }} />
             <span>Filters</span>
           </button>
         </div>
