@@ -13,7 +13,7 @@ const BalanceCard = () => {
         <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full translate-x-12 translate-y-12"></div>
       </div>
 
-      <div className="relative card border-0 bg-transparent text-white p-8">
+      <div className="relative bg-white rounded-xl shadow-soft border border-gray-100 border-0 bg-transparent text-white p-8">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-4">
