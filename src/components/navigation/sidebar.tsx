@@ -27,7 +27,7 @@ export default () => {
 
   const Links = GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
     const activeTabCss =
-      pathname.slice(0) === link ? "text-primary font-bold" : "";
+      pathname.slice(0) === link ? "text-primary font-bold bg-primary" : "";
 
     const IconColor = pathname.slice(0) === link ? "#DE5353" : "#677073";
 
