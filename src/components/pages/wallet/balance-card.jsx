@@ -170,6 +170,7 @@ const BalanceCard = () => {
                   fontSize: "2.25rem",
                   fontWeight: "bold",
                   marginBottom: "0.5rem",
+                  color: "white",
                 }}
               >
                 ₦4,386.80
