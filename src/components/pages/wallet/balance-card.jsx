@@ -71,7 +71,8 @@ const BalanceCard = () => {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(to right, #2563eb, #1d4ed8, #1e40af)", // Tailwind primary-600/700/800 equivalents
+          background: "linear-gradient(to right, #dc143c, #b01030, #800020)", // crimson to darker crimson/burgundy
+          // Tailwind primary-600/700/800 equivalents
         }}
       ></div>
 
