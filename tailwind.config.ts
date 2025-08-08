@@ -4,12 +4,13 @@ import plugin from "tailwindcss/plugin";
 const config = {
   important: true,
   darkMode: ["class"],
-  content: [
-    "./pages/**/*.{jsx,ts,tsx}",
-    "./components/**/*.{jsx, ts,tsx}",
-    "./app/**/*.{jsx, ts,tsx}",
-    "./src/**/*.{jsx, ts,tsx}",
-  ],
+  // content: [
+  //   "./pages/**/*.{jsx,ts,tsx}",
+  //   "./components/**/*.{jsx, ts,tsx}",
+  //   "./app/**/*.{jsx, ts,tsx}",
+  //   "./src/**/*.{jsx, ts,tsx}",
+  // ],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   prefix: "",
   theme: {
     container: {
