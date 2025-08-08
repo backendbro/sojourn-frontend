@@ -3,7 +3,6 @@ import {
   Search,
   Filter,
   Download,
-  MoreHorizontal,
   TrendingUp,
   TrendingDown,
   CreditCard,
@@ -30,7 +29,7 @@ export default () => {
         </div>
 
         <div className="flex items-center space-x-3">
-          <button className="btn-secondary flex items-center space-x-2">
+          <button className="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center space-x-2">
             <Download className="w-4 h-4" />
             <span>Export</span>
           </button>
@@ -42,7 +41,7 @@ export default () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card p-6">
+        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -60,7 +59,7 @@ export default () => {
           </div>
         </div>
 
-        <div className="card p-6">
+        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
@@ -78,7 +77,7 @@ export default () => {
           </div>
         </div>
 
-        <div className="card p-6">
+        <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
@@ -95,7 +94,7 @@ export default () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="card p-6">
+      <div className="bg-white rounded-xl shadow-soft border border-gray-100 p-6">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -104,13 +103,13 @@ export default () => {
               placeholder="Search by amount, payment type, or date..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input-field pl-10"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 pl-10"
             />
           </div>
 
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="btn-secondary flex items-center space-x-2"
+            className="bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 flex items-center space-x-2"
           >
             <Filter className="w-4 h-4" />
             <span>Filters</span>
@@ -125,5 +124,3 @@ export default () => {
     </div>
   );
 };
-
-//export default WalletPage
