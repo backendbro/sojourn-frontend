@@ -31,7 +31,7 @@ const BalanceCard = () => {
             </div>
 
             <div className="mb-6">
-              <p className="text-4xl font-bold mb-2">₦1,386.80</p>
+              <p className="text-4xl font-bold mb-2">₦4,386.80</p>
               <p className="text-white/70 text-sm">Last updated: Just now</p>
             </div>
 
