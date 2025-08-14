@@ -8,7 +8,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState, MouseEvent, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import BookingMetrics from "./BookingMetrics";
 
 const Inspections = dynamic(() => import("./inspection-table"), { ssr: false });
 const Properties = dynamic(() => import("./properties-table"), { ssr: false });
@@ -47,7 +46,6 @@ export default () => {
     <div className="w-full py-[50px] px-8">
       <div className="w-full flex flex-col space-y-7 justify-between md:flex-row md:items-center md:space-y-0">
         <div className="w-full min-h-[40px] flex items-center md:w-2/5">
-          <BookingMetrics />
           <button
             onClick={onTabChange("inspections")}
             className={`w-1/2 border-b-2 border-b-red-200 pb-4 ${
