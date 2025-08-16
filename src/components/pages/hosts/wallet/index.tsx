@@ -11,7 +11,7 @@ import MakeWithdrawal from "./make-withdrawal";
 import { Suspense } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import WalletTable from "@/components/pages/zwallet/wallet-table";
+import WalletTable from "@/components/pages/wallet/TransactionTable";
 import { useQuery } from "@tanstack/react-query";
 import { getWalletById } from "@/http/api";
 import Spinner from "@/components/svgs/Spinner";
@@ -82,7 +82,7 @@ export default () => {
         </div>
       </div>
       <div className="w-full">
-        <WalletTable />
+        <WalletTable searchQuery={""} />
       </div>
     </Suspense>
   );

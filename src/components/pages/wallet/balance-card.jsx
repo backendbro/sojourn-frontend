@@ -288,19 +288,6 @@ const BalanceCard = () => {
                 />
                 <span>Withdraw</span>
               </button>
-
-              <button
-                type="button"
-                aria-label="Add funds"
-                style={addFundsBtnBase}
-                onMouseEnter={(e) => hoverLighten(e, 0.2)}
-                onMouseLeave={(e) => hoverReset(e, 0.1)}
-              >
-                <ArrowDownRight
-                  style={{ width: "1rem", height: "1rem", color: "#ffffff" }}
-                />
-                <span>Add Funds</span>
-              </button>
             </div>
           </div>
 
