@@ -10,6 +10,7 @@ import { useState, MouseEvent, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BookingMetrics from "./BookingMetrics";
 import PropertiesDashboard from "./PropertiesDashboard";
+import PropertyPreview from "./PropertyPreview";
 
 const Inspections = dynamic(() => import("./inspection-table"), { ssr: false });
 const Properties = dynamic(() => import("./properties-table"), { ssr: false });
@@ -82,7 +83,7 @@ export default () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
           <BookingMetrics />
           <PropertiesDashboard />
-          {/* <PropertyPreview />  */}
+          <PropertyPreview />
         </div>
       </main>
     </div>
