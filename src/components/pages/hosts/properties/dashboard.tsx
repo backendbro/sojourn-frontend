@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useState, MouseEvent, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BookingMetrics from "./BookingMetrics";
+import PropertiesDashboard from "./PropertiesDashboard";
 
 const Inspections = dynamic(() => import("./inspection-table"), { ssr: false });
 const Properties = dynamic(() => import("./properties-table"), { ssr: false });
@@ -80,8 +81,8 @@ export default () => {
       <main className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
           <BookingMetrics />
-          {/* <PropertiesDashboard />
-            <PropertyPreview /> */}
+          <PropertiesDashboard />
+          {/* <PropertyPreview />  */}
         </div>
       </main>
     </div>
