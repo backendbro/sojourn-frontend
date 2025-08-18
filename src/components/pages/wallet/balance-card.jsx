@@ -62,6 +62,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { getWalletRecordsByHostId } from "../../../http/api";
 
 const BalanceCard = () => {
   // detect 'lg' breakpoint (matches your Tailwind config: lg = 1025px)
@@ -78,6 +79,22 @@ const BalanceCard = () => {
       else mq.removeListener(handler);
     };
   }, []);
+
+  async function getTotalHostEarnings() {
+    try {
+      const res = await getWalletRecordsByHostId(
+        "6cd7afed-8dc3-40c7-995d-0ee805a55426"
+      ); // uses your existing exported function
+      console.log("worked");
+      console.log(res);
+      return res;
+    } catch (err) {
+      // surface friendly error (preserve original)
+      throw new Error(`Failed to fetch host earnings: ${err.message || err}`);
+    }
+  }
+
+  getTotalHostEarnings();
 
   // Colors (from your tailwind config)
   const primary600 = "#dc2626";
@@ -224,6 +241,17 @@ const BalanceCard = () => {
   const hoverReset = (e, level = 0.2) => {
     e.currentTarget.style.backgroundColor = `rgba(255,255,255,${level})`;
   };
+
+  /**
+   * Fetches and returns the host's total earnings.
+   *
+   * Strategy:
+   * 1. Call /wallet/hosts/:hostId and inspect the response.
+   * 2. If response is an object with a numeric balance/total/available field -> return that.
+   * 3. If response is an array of transactions -> sum credit-like transactions (type/direction/isCredit).
+   *
+   * NOTE: Adjust the field checks below to match your real API (e.g. `amount`, `type`, `direction`, `status`).
+   */
 
   return (
     <div style={rootStyle}>
