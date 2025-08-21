@@ -104,7 +104,7 @@ export const HOST_PROPERTIES_MENU = [
   },
   {
     text: "wallet",
-    link: "/hosts/dashboard/wallet",
+    link: "/hosts/dashboard/admin-wallet",
   },
   {
     text: "inbox",
