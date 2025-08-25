@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Search,
   Filter,
@@ -12,10 +12,165 @@ import {
 import TransactionTable from "./TransactionTable";
 import BalanceCard from "./balance-card";
 import TransactionFilters from "./TransactionFilters";
+import { getWalletById, me } from "../../../http/api";
+import { computePaymentSummary } from "./summary";
 
-export default () => {
+export default function WalletPage(): JSX.Element {
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [hostId, setHostId] = useState<number | null>(null);
+  const [walletData, setWalletData] = useState<any>(null); // keep as any for now
+  const [loading, setLoading] = useState(false);
+  const [loadingWallet, setLoadingWallet] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const result = await me("hosts");
+        if (cancelled) return;
+        const id = result?.host?.id ?? null;
+        setHostId(id);
+      } catch (err) {
+        console.error("Failed to load current user:", err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hostId) return;
+    let cancelled = false;
+
+    const getTotalHostEarnings = async () => {
+      setLoadingWallet(true);
+      try {
+        const id = hostId.toString();
+        const res = await getWalletById(id);
+        if (cancelled) return;
+        setWalletData(res);
+      } catch (err) {
+        console.error(`Failed to fetch host earnings for ${hostId}:`, err);
+      } finally {
+        if (!cancelled) setLoadingWallet(false);
+      }
+    };
+
+    getTotalHostEarnings();
+    return () => {
+      cancelled = true;
+    };
+  }, [hostId]);
+
+  // ensure we pass an array to the summary function (avoid undefined)
+  const payments = walletData?.payments ?? [];
+  const summary = useMemo(
+    () => computePaymentSummary(payments, { now: new Date() }),
+    [payments]
+  );
+
+  // safe destructure with defaults (these are the fields you gave)
+  const {
+    earningsPctIncrease = 0,
+    lastMonthEarnings = 0,
+    lastMonthWithdrawals = 0,
+    pendingTotal = 0,
+    thisMonthEarnings = 0,
+    thisMonthWithdrawals = 0,
+    totalEarnings = 0,
+    totalWithdrawals = 0,
+    withdrawalsPctIncrease = 0,
+  } = summary ?? {};
+
+  // currency formatter for Naira, falls back gracefully in browsers
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 2,
+    }).format(value ?? 0);
+
+  // format percentage with sign
+  const formatPct = (n: number) => {
+    const sign = n > 0 ? "+" : n < 0 ? "" : "";
+    return `${sign}${Number(n).toFixed(1)}%`;
+  };
+
+  // pick small arrow icon + color for the small caption line
+  const renderPctBadge = (pct: number) => {
+    if (pct > 0) {
+      return (
+        <span
+          style={{ display: "flex", alignItems: "center", color: "#16a34a" }}
+        >
+          <ArrowUpRight
+            style={{ width: "1rem", height: "1rem", marginRight: 6 }}
+          />
+          {formatPct(pct)}
+        </span>
+      );
+    }
+    if (pct < 0) {
+      return (
+        <span
+          style={{ display: "flex", alignItems: "center", color: "#dc2626" }}
+        >
+          <ArrowDownRight
+            style={{ width: "1rem", height: "1rem", marginRight: 6 }}
+          />
+          {formatPct(pct)}
+        </span>
+      );
+    }
+    // zero or no-change
+    return (
+      <span style={{ display: "flex", alignItems: "center", color: "#6b7280" }}>
+        {formatPct(0)}
+      </span>
+    );
+  };
+
+  // large trend square (top-right of each card) - uses trending icons
+  const TrendSquare = ({ pct }: { pct: number }) => {
+    const common = {
+      width: "3rem",
+      height: "3rem",
+      borderRadius: "0.5rem",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    } as React.CSSProperties;
+
+    if (pct > 0)
+      return (
+        <div style={{ ...common, backgroundColor: "#dcfce7" }}>
+          <TrendingUp
+            style={{ width: "1.5rem", height: "1.5rem", color: "#16a34a" }}
+          />
+        </div>
+      );
+    if (pct < 0)
+      return (
+        <div style={{ ...common, backgroundColor: "#fee2e2" }}>
+          <TrendingDown
+            style={{ width: "1.5rem", height: "1.5rem", color: "#dc2626" }}
+          />
+        </div>
+      );
+    return (
+      <div style={{ ...common, backgroundColor: "#f3f4f6" }}>
+        <CreditCard
+          style={{ width: "1.5rem", height: "1.5rem", color: "#4b5563" }}
+        />
+      </div>
+    );
+  };
 
   return (
     <div
@@ -123,38 +278,30 @@ export default () => {
                   color: "#111827",
                 }}
               >
-                ₦2,000.00
+                {formatCurrency(totalEarnings)}
               </p>
             </div>
-            <div
-              style={{
-                width: "3rem",
-                height: "3rem",
-                backgroundColor: "#dcfce7",
-                borderRadius: "0.5rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <TrendingUp
-                style={{ width: "1.5rem", height: "1.5rem", color: "#16a34a" }}
-              />
-            </div>
+            <TrendSquare pct={earningsPctIncrease} />
           </div>
+
           <div
             style={{
               marginTop: "1rem",
               display: "flex",
               alignItems: "center",
               fontSize: "0.875rem",
-              color: "#16a34a",
+              color:
+                earningsPctIncrease > 0
+                  ? "#16a34a"
+                  : earningsPctIncrease < 0
+                  ? "#dc2626"
+                  : "#6b7280",
             }}
           >
-            <ArrowUpRight
-              style={{ width: "1rem", height: "1rem", marginRight: "0.25rem" }}
-            />
-            <span>+12.5% from last month</span>
+            {renderPctBadge(earningsPctIncrease)}
+            <span style={{ marginLeft: 8 }}>{`from last month (${formatCurrency(
+              lastMonthEarnings
+            )})`}</span>
           </div>
         </div>
 
@@ -193,38 +340,32 @@ export default () => {
                   color: "#111827",
                 }}
               >
-                ₦613.20
+                {formatCurrency(totalWithdrawals)}
               </p>
             </div>
-            <div
-              style={{
-                width: "3rem",
-                height: "3rem",
-                backgroundColor: "#fee2e2",
-                borderRadius: "0.5rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <TrendingDown
-                style={{ width: "1.5rem", height: "1.5rem", color: "#dc2626" }}
-              />
-            </div>
+            <TrendSquare pct={withdrawalsPctIncrease} />
           </div>
+
           <div
             style={{
               marginTop: "1rem",
               display: "flex",
               alignItems: "center",
               fontSize: "0.875rem",
-              color: "#dc2626",
+              color:
+                withdrawalsPctIncrease > 0
+                  ? "#16a34a"
+                  : withdrawalsPctIncrease < 0
+                  ? "#dc2626"
+                  : "#6b7280",
             }}
           >
-            <ArrowDownRight
-              style={{ width: "1rem", height: "1rem", marginRight: "0.25rem" }}
-            />
-            <span>₦547.50 this month</span>
+            {renderPctBadge(withdrawalsPctIncrease)}
+            <span style={{ marginLeft: 8 }}>{`${formatCurrency(
+              thisMonthWithdrawals
+            )} this month (last month: ${formatCurrency(
+              lastMonthWithdrawals
+            )})`}</span>
           </div>
         </div>
 
@@ -263,7 +404,7 @@ export default () => {
                   color: "#111827",
                 }}
               >
-                ₦0.00
+                {formatCurrency(pendingTotal)}
               </p>
             </div>
             <div
@@ -282,6 +423,7 @@ export default () => {
               />
             </div>
           </div>
+
           <div
             style={{
               marginTop: "1rem",
@@ -289,7 +431,9 @@ export default () => {
               color: "#4b5563",
             }}
           >
-            No pending transactions
+            {pendingTotal > 0
+              ? `${formatCurrency(pendingTotal)} pending`
+              : "No pending transactions"}
           </div>
         </div>
       </div>
@@ -362,4 +506,4 @@ export default () => {
       <TransactionTable searchQuery={searchQuery} />
     </div>
   );
-};
+}
