@@ -651,6 +651,7 @@ export default function PropertyPreview(): JSX.Element {
         if (cancelled) return;
 
         setPropertiesRaw(propsRes);
+        console.log(propsRes);
       } catch (err) {
         console.error("Failed to load properties:", err);
       } finally {
@@ -789,7 +790,7 @@ export default function PropertyPreview(): JSX.Element {
       textOverflow: "ellipsis",
     },
 
-    typeText: { margin: 0, fontSize: 12, color: palette.gray500 },
+    typeText: { margin: 0, fontSize: 14, color: "#000" },
 
     locationRow: {
       display: "flex",
@@ -926,10 +927,12 @@ export default function PropertyPreview(): JSX.Element {
                 : (prop.image as string) ??
                   (prop.imageUrl as string) ??
                   "https://via.placeholder.com/800x500?text=No+image";
-            const views = prop.views ?? "-";
+            const views = prop.views ?? "0";
             const bookings = prop.bookings ?? 0;
-            const rating = prop.rating ?? "-";
-            const reviews = prop.reviews ?? "-";
+            const rating = prop.rating ?? "0";
+            const reviews = Number.isFinite(prop.reviews)
+              ? prop.reviews
+              : prop.reviews ?? 0;
 
             const isHovered = hoveredId === pid;
             const isBtnHovered = btnHoverId === pid;
