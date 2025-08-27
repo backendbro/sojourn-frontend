@@ -1,28 +1,28 @@
-import React, { useState } from 'react'
-import { Calendar, X } from 'lucide-react'
+import React, { useState } from "react";
+import { Calendar, X } from "lucide-react";
 
 const TransactionFilters = () => {
   const [filters, setFilters] = useState({
-    dateRange: '',
-    paymentType: '',
-    minAmount: '',
-    maxAmount: '',
-    status: ''
-  })
+    dateRange: "",
+    paymentType: "",
+    minAmount: "",
+    maxAmount: "",
+    status: "",
+  });
 
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const clearFilters = () => {
     setFilters({
-      dateRange: '',
-      paymentType: '',
-      minAmount: '',
-      maxAmount: '',
-      status: ''
-    })
-  }
+      dateRange: "",
+      paymentType: "",
+      minAmount: "",
+      maxAmount: "",
+      status: "",
+    });
+  };
 
   return (
     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -36,7 +36,7 @@ const TransactionFilters = () => {
             <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <select
               value={filters.dateRange}
-              onChange={(e) => handleFilterChange('dateRange', e.target.value)}
+              onChange={(e) => handleFilterChange("dateRange", e.target.value)}
               className="input-field pl-10"
             >
               <option value="">All time</option>
@@ -56,7 +56,7 @@ const TransactionFilters = () => {
           </label>
           <select
             value={filters.paymentType}
-            onChange={(e) => handleFilterChange('paymentType', e.target.value)}
+            onChange={(e) => handleFilterChange("paymentType", e.target.value)}
             className="input-field"
           >
             <option value="">All types</option>
@@ -76,7 +76,7 @@ const TransactionFilters = () => {
             type="number"
             placeholder="₦0"
             value={filters.minAmount}
-            onChange={(e) => handleFilterChange('minAmount', e.target.value)}
+            onChange={(e) => handleFilterChange("minAmount", e.target.value)}
             className="input-field"
           />
         </div>
@@ -90,7 +90,7 @@ const TransactionFilters = () => {
             type="number"
             placeholder="₦∞"
             value={filters.maxAmount}
-            onChange={(e) => handleFilterChange('maxAmount', e.target.value)}
+            onChange={(e) => handleFilterChange("maxAmount", e.target.value)}
             className="input-field"
           />
         </div>
@@ -102,7 +102,7 @@ const TransactionFilters = () => {
           </label>
           <select
             value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
             className="input-field"
           >
             <option value="">All status</option>
@@ -117,21 +117,22 @@ const TransactionFilters = () => {
       <div className="flex items-center justify-between mt-6">
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600">Active filters:</span>
-          {Object.entries(filters).map(([key, value]) => 
-            value && (
-              <span
-                key={key}
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
-              >
-                {key}: {value}
-                <button
-                  onClick={() => handleFilterChange(key, '')}
-                  className="ml-1 hover:bg-primary-200 rounded-full p-0.5"
+          {Object.entries(filters).map(
+            ([key, value]) =>
+              value && (
+                <span
+                  key={key}
+                  className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            )
+                  {key}: {value}
+                  <button
+                    onClick={() => handleFilterChange(key, "")}
+                    className="ml-1 hover:bg-primary-200 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )
           )}
         </div>
 
@@ -143,7 +144,7 @@ const TransactionFilters = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TransactionFilters 
+export default TransactionFilters;
