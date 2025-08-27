@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-const Wallet = dynamic(() => import("@/components/pages/wallet"));
+const Wallet = dynamic(() => import("@/components/pages/a-wallet"));
 
 export default () => {
   return (

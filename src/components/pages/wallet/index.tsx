@@ -203,33 +203,6 @@ export default function WalletPage(): JSX.Element {
             Manage your transactions and withdrawals
           </p>
         </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <button
-            style={{
-              backgroundColor: "#ffffff",
-              color: "#374151",
-              fontWeight: 500,
-              padding: "0.5rem 1rem",
-              borderRadius: "0.5rem",
-              border: "1px solid #d1d5db",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              cursor: "pointer",
-              transition: "background-color 0.2s ease-in-out",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.backgroundColor = "#f9fafb")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.backgroundColor = "#ffffff")
-            }
-          >
-            <Download style={{ width: "1rem", height: "1rem" }} />
-            <span>Export</span>
-          </button>
-        </div>
       </div>
 
       {/* Balance Card */}

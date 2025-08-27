@@ -469,7 +469,7 @@ const styles: { [k: string]: React.CSSProperties } = {
   },
   headerTitle: {
     margin: 0,
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 600,
     color: palette.gray900,
   },
@@ -545,30 +545,35 @@ function getChipStyle(color: string): React.CSSProperties {
         backgroundColor: palette.blue50,
         color: palette.blue600,
         border: `1px solid ${palette.blue200}`,
+        marginBottom: 10,
       };
     case "green":
       return {
         backgroundColor: palette.green50,
         color: palette.green600,
         border: `1px solid ${palette.green200}`,
+        marginBottom: 10,
       };
     case "purple":
       return {
         backgroundColor: palette.purple50,
         color: palette.purple600,
         border: `1px solid ${palette.purple200}`,
+        marginBottom: 10,
       };
     case "orange":
       return {
         backgroundColor: palette.orange50,
         color: palette.orange600,
         border: `1px solid ${palette.orange200}`,
+        marginBottom: 10,
       };
     default:
       return {
         backgroundColor: palette.gray50,
         color: palette.gray600,
         border: `1px solid ${palette.gray300}`,
+        marginBottom: 10,
       };
   }
 }
@@ -828,7 +833,7 @@ export default function BookingMetrics(): JSX.Element {
     <div style={styles.container}>
       <div style={styles.headerRow}>
         <div>
-          <h2 style={styles.headerTitle}>Booking Metrics</h2>
+          <h1 style={styles.headerTitle}>Welcome back</h1>
           <p style={styles.headerSubtitle}>
             Performance overview (computed from your properties)
           </p>
