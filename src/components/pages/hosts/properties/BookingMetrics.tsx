@@ -71,7 +71,12 @@ const palette = {
 };
 
 const styles: { [k: string]: React.CSSProperties } = {
-  container: { display: "flex", flexDirection: "column", gap: 24 },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 24,
+    padding: "16px",
+  },
 
   headerRow: {
     display: "flex",
@@ -84,7 +89,7 @@ const styles: { [k: string]: React.CSSProperties } = {
 
   headerTitle: {
     margin: 0,
-    fontSize: 34,
+    fontSize: "clamp(24px, 5vw, 34px)",
     fontWeight: 700,
     background: "linear-gradient(90deg, #ef4444 0%, #7c3aed 100%)",
     WebkitBackgroundClip: "text",
@@ -95,7 +100,7 @@ const styles: { [k: string]: React.CSSProperties } = {
 
   headerSubtitle: {
     margin: "6px 0 0 0",
-    fontSize: 13.5,
+    fontSize: "clamp(12px, 2.5vw, 13.5px)",
     color: palette.gray600,
     maxWidth: 760,
   },
@@ -112,6 +117,7 @@ const styles: { [k: string]: React.CSSProperties } = {
     fontSize: 14,
     cursor: "pointer",
     boxShadow: "0 6px 18px -8px rgba(239,68,68,0.45)",
+    whiteSpace: "nowrap",
   },
 
   headerLeft: {
@@ -121,9 +127,13 @@ const styles: { [k: string]: React.CSSProperties } = {
     minWidth: 0,
   },
 
-  metricsGrid: { display: "grid", gap: 24 },
+  metricsGrid: {
+    display: "grid",
+    gap: 16,
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+  },
   card: {
-    padding: 20,
+    padding: 16,
     borderRadius: 12,
     background: "#fff",
     border: `1px solid ${palette.gray300}`,
@@ -149,35 +159,43 @@ const styles: { [k: string]: React.CSSProperties } = {
   },
   metricTitle: {
     margin: 0,
-    fontSize: 13,
+    fontSize: "clamp(12px, 3vw, 13px)",
     color: palette.gray600,
     fontWeight: 500,
   },
   metricValue: {
     margin: 0,
-    fontSize: 26,
+    fontSize: "clamp(20px, 5vw, 26px)",
     color: palette.gray900,
     fontWeight: 700,
   },
-  metricComparison: { margin: 0, fontSize: 12, color: palette.gray500 },
+  metricComparison: {
+    margin: 0,
+    fontSize: "clamp(11px, 2.5vw, 12px)",
+    color: palette.gray500,
+  },
 
-  statsGrid: { display: "grid", gap: 24 },
+  statsGrid: {
+    display: "grid",
+    gap: 16,
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  },
   smallCardTitle: {
     margin: 0,
-    fontSize: 13,
+    fontSize: "clamp(12px, 3vw, 13px)",
     color: palette.gray600,
     fontWeight: 500,
     marginBottom: 8,
   },
   smallCardValue: {
     margin: 0,
-    fontSize: 20,
+    fontSize: "clamp(18px, 4.5vw, 20px)",
     color: palette.gray900,
     fontWeight: 700,
   },
   smallCardMeta: {
     margin: 0,
-    fontSize: 12,
+    fontSize: "clamp(11px, 2.5vw, 12px)",
     color: palette.gray500,
     marginTop: 6,
   },
@@ -276,7 +294,11 @@ function extractBookingAmount(b: any): number {
   return 0;
 }
 
-function aggregateBookingsForPeriod(bookings: any[], periodStart: Date, periodEnd: Date) {
+function aggregateBookingsForPeriod(
+  bookings: any[],
+  periodStart: Date,
+  periodEnd: Date
+) {
   let totalBookings = 0;
   let revenue = 0;
   let bookedNights = 0;
@@ -285,7 +307,9 @@ function aggregateBookingsForPeriod(bookings: any[], periodStart: Date, periodEn
   let ratingWeightedSum = 0;
 
   for (const b of bookings) {
-    const checkIn = toDateSafe(b?.checkIn ?? b?.check_in_date ?? b?.createdAt ?? b?.created_at);
+    const checkIn = toDateSafe(
+      b?.checkIn ?? b?.check_in_date ?? b?.createdAt ?? b?.created_at
+    );
     const checkOut = toDateSafe(b?.checkOut ?? b?.check_out_date);
     const createdAt = toDateSafe(b?.createdAt ?? b?.created_at);
 
@@ -304,7 +328,12 @@ function aggregateBookingsForPeriod(bookings: any[], periodStart: Date, periodEn
     revenue += amount;
 
     if (checkIn && checkOut) {
-      bookedNights += bookingNightsOverlap(checkIn, checkOut, periodStart, periodEnd);
+      bookedNights += bookingNightsOverlap(
+        checkIn,
+        checkOut,
+        periodStart,
+        periodEnd
+      );
     } else {
       bookedNights += 1;
     }
@@ -342,7 +371,9 @@ function reviewKey(r: any) {
   if (!r) return "";
   if (r.id) return String(r.id);
   // fallback to combination
-  return `${r.bookingId ?? r.booking_id ?? ""}:${r.userId ?? r.user_id ?? ""}:${r.propertyId ?? r.property_id ?? ""}:${r.createdAt ?? r.created_at ?? ""}`;
+  return `${r.bookingId ?? r.booking_id ?? ""}:${r.userId ?? r.user_id ?? ""}:${
+    r.propertyId ?? r.property_id ?? ""
+  }:${r.createdAt ?? r.created_at ?? ""}`;
 }
 
 /** dedupe array of reviews by the stable key */
@@ -411,14 +442,20 @@ export default function BookingMetrics(): JSX.Element {
           return;
         }
 
-        const [propsRes, bookingsRes] = await Promise.allSettled([getProperties(id), getBookingsByHostId(id)]);
+        const [propsRes, bookingsRes] = await Promise.allSettled([
+          getProperties(id),
+          getBookingsByHostId(id),
+        ]);
         if (cancelled) return;
 
         const list =
           propsRes.status === "fulfilled"
             ? Array.isArray(propsRes.value)
               ? propsRes.value
-              : propsRes.value?.data ?? propsRes.value?.properties ?? propsRes.value?.items ?? []
+              : propsRes.value?.data ??
+                propsRes.value?.properties ??
+                propsRes.value?.items ??
+                []
             : [];
         setPropertiesRaw(list);
 
@@ -426,7 +463,10 @@ export default function BookingMetrics(): JSX.Element {
           bookingsRes.status === "fulfilled"
             ? Array.isArray(bookingsRes.value)
               ? bookingsRes.value
-              : bookingsRes.value?.data ?? bookingsRes.value?.bookings ?? bookingsRes.value?.items ?? []
+              : bookingsRes.value?.data ??
+                bookingsRes.value?.bookings ??
+                bookingsRes.value?.items ??
+                []
             : [];
         setBookingsRaw(bookingsList);
       } catch (err) {
@@ -445,7 +485,11 @@ export default function BookingMetrics(): JSX.Element {
   }, []);
 
   // fetch reviews with react-query using your existing endpoint
-  const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useQuery({
+  const {
+    data: reviewsData,
+    isLoading: reviewsLoading,
+    error: reviewsError,
+  } = useQuery({
     queryKey: ["reviews"],
     queryFn: getReviews,
   });
@@ -473,42 +517,64 @@ export default function BookingMetrics(): JSX.Element {
     const prevMonthStart = startOfMonth(prev);
     const prevMonthEnd = endOfMonth(prev);
 
-    const aggThis = aggregateBookingsForPeriod(bookings, thisMonthStart, thisMonthEnd);
-    const aggPrev = aggregateBookingsForPeriod(bookings, prevMonthStart, prevMonthEnd);
+    const aggThis = aggregateBookingsForPeriod(
+      bookings,
+      thisMonthStart,
+      thisMonthEnd
+    );
+    const aggPrev = aggregateBookingsForPeriod(
+      bookings,
+      prevMonthStart,
+      prevMonthEnd
+    );
 
-    const hasBookingData = bookings.length > 0 && (aggThis.totalBookings > 0 || aggPrev.totalBookings > 0);
+    const hasBookingData =
+      bookings.length > 0 &&
+      (aggThis.totalBookings > 0 || aggPrev.totalBookings > 0);
 
     const totalBookings = hasBookingData
       ? aggThis.totalBookings
       : props.reduce((s, p) => s + (Number(p.bookings) || 0), 0);
-    const revenue = hasBookingData ? aggThis.revenue : props.reduce((s, p) => s + (Number(p.revenue) || 0), 0);
+    const revenue = hasBookingData
+      ? aggThis.revenue
+      : props.reduce((s, p) => s + (Number(p.revenue) || 0), 0);
 
     const prevTotalBookings = hasBookingData ? aggPrev.totalBookings : null;
     const prevRevenue = hasBookingData ? aggPrev.revenue : null;
 
-    const avgBookingValue = totalBookings > 0 ? Math.ceil(revenue / totalBookings) : 0;
+    const avgBookingValue =
+      totalBookings > 0 ? Math.ceil(revenue / totalBookings) : 0;
 
     let occupancyRate: number | null = null;
     if (hasBookingData) {
       const bookedNights = aggThis.bookedNights;
       const daysInPeriod = daysInMonth(thisMonthStart);
       const denom = activeProperties > 0 ? activeProperties * daysInPeriod : 0;
-      occupancyRate = denom > 0 ? Math.min(100, (bookedNights / denom) * 100) : (bookedNights > 0 ? null : 0);
+      occupancyRate =
+        denom > 0
+          ? Math.min(100, (bookedNights / denom) * 100)
+          : bookedNights > 0
+          ? null
+          : 0;
     } else {
       const occupancyVals = props
         .map((p) => (p.occupancyRate ? Number(p.occupancyRate) : null))
         .filter((v) => v !== null) as number[];
 
       if (occupancyVals.length > 0) {
-        occupancyRate = occupancyVals.reduce((a, b) => a + b, 0) / occupancyVals.length;
+        occupancyRate =
+          occupancyVals.reduce((a, b) => a + b, 0) / occupancyVals.length;
       } else {
         const denom = activeProperties * 30;
-        occupancyRate = denom > 0 ? Math.min(100, (totalBookings / denom) * 100) : null;
+        occupancyRate =
+          denom > 0 ? Math.min(100, (totalBookings / denom) * 100) : null;
       }
     }
 
     // --- Reviews: combine endpoint reviews + booking-embedded reviews, dedupe, filter to host properties
-    const reviewsFromEndpoint = Array.isArray(reviewsData) ? reviewsData : (reviewsData?.data ?? reviewsData ?? []);
+    const reviewsFromEndpoint = Array.isArray(reviewsData)
+      ? reviewsData
+      : reviewsData?.data ?? reviewsData ?? [];
     // collect booking-level reviews (if any)
     const bookingEmbeddedReviews: any[] = [];
     for (const b of bookings) {
@@ -522,18 +588,33 @@ export default function BookingMetrics(): JSX.Element {
     // combine and dedupe
     const combinedReviews = [...reviewsFromEndpoint, ...bookingEmbeddedReviews];
     const propertyIds = props.map((p) => p?.id).filter(Boolean) as string[];
-    const { totalCount, totalSum, perProperty } = aggregateReviewsForProperties(combinedReviews, propertyIds);
+    const { totalCount, totalSum, perProperty } = aggregateReviewsForProperties(
+      combinedReviews,
+      propertyIds
+    );
 
-    const guestSatisfactionRating = totalCount > 0 ? totalSum / totalCount : null;
+    const guestSatisfactionRating =
+      totalCount > 0 ? totalSum / totalCount : null;
 
-    const uniqueGuests = hasBookingData ? aggThis.uniqueGuests : props.reduce((s, p) => s + (Number(p.uniqueGuests) || Number(p.bookings) || 0), 0);
+    const uniqueGuests = hasBookingData
+      ? aggThis.uniqueGuests
+      : props.reduce(
+          (s, p) => s + (Number(p.uniqueGuests) || Number(p.bookings) || 0),
+          0
+        );
 
     // per-property breakdown (map to property titles)
     const perPropertyList = props.map((p) => {
       const pid = p?.id;
-      const r = pid && perProperty[pid] ? perProperty[pid] : { count: 0, sum: 0 };
+      const r =
+        pid && perProperty[pid] ? perProperty[pid] : { count: 0, sum: 0 };
       const avg = r.count > 0 ? r.sum / r.count : null;
-      return { id: pid, title: p?.title ?? p?.name ?? "Untitled", reviewCount: r.count, avgRating: avg };
+      return {
+        id: pid,
+        title: p?.title ?? p?.name ?? "Untitled",
+        reviewCount: r.count,
+        avgRating: avg,
+      };
     });
 
     return {
@@ -559,10 +640,20 @@ export default function BookingMetrics(): JSX.Element {
       id: "bookings",
       title: "Total Bookings",
       value: formatNumber(computed.totalBookings),
-      change: formatPercentChangeSafe(computed.totalBookings, computed.prevTotalBookings),
+      change: formatPercentChangeSafe(
+        computed.totalBookings,
+        computed.prevTotalBookings
+      ),
       changeType:
-        computed.prevTotalBookings == null ? "neutral" : (computed.totalBookings >= (computed.prevTotalBookings ?? 0) ? "increase" : "decrease"),
-      comparison: computed.prevTotalBookings != null ? `vs ${formatNumber(computed.prevTotalBookings)} last month` : "No previous month data",
+        computed.prevTotalBookings == null
+          ? "neutral"
+          : computed.totalBookings >= (computed.prevTotalBookings ?? 0)
+          ? "increase"
+          : "decrease",
+      comparison:
+        computed.prevTotalBookings != null
+          ? `vs ${formatNumber(computed.prevTotalBookings)} last month`
+          : "No previous month data",
       icon: CalendarIcon,
       color: "blue",
     },
@@ -571,8 +662,16 @@ export default function BookingMetrics(): JSX.Element {
       title: "Revenue Generated",
       value: formatCurrency(computed.revenue),
       change: formatPercentChangeSafe(computed.revenue, computed.prevRevenue),
-      changeType: computed.prevRevenue == null ? "neutral" : (computed.revenue >= (computed.prevRevenue ?? 0) ? "increase" : "decrease"),
-      comparison: computed.prevRevenue != null ? `vs ${formatCurrency(computed.prevRevenue)} last month` : "No previous month data",
+      changeType:
+        computed.prevRevenue == null
+          ? "neutral"
+          : computed.revenue >= (computed.prevRevenue ?? 0)
+          ? "increase"
+          : "decrease",
+      comparison:
+        computed.prevRevenue != null
+          ? `vs ${formatCurrency(computed.prevRevenue)} last month`
+          : "No previous month data",
       icon: CurrencyDollarIcon,
       color: "green",
     },
@@ -590,42 +689,18 @@ export default function BookingMetrics(): JSX.Element {
 
   // small stats
   const avgBookingValue = computed.avgBookingValue;
-  const avgBookingValueStr = avgBookingValue ? formatCurrency(avgBookingValue) : formatCurrency(0);
+  const avgBookingValueStr = avgBookingValue
+    ? formatCurrency(avgBookingValue)
+    : formatCurrency(0);
   const avgBookingValueChange = formatPercentChangeSafe(avgBookingValue, null);
 
   const occupancyRate = computed.occupancyRate;
-  const occupancyRateStr = occupancyRate != null ? `${occupancyRate.toFixed(1)}%` : "N/A";
+  const occupancyRateStr =
+    occupancyRate != null ? `${occupancyRate.toFixed(1)}%` : "N/A";
   const occupancyChange = formatPercentChangeSafe(occupancyRate ?? 0, null);
 
   const guestSatRating = computed.guestSatisfactionRating ?? null;
   const guestSatReviews = computed.totalReviewCount || 0;
-
-  const [windowWidth, setWindowWidth] = useState<number | null>(null);
-  useEffect(() => {
-    function update() {
-      if (typeof window !== "undefined") setWindowWidth(window.innerWidth);
-    }
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  const metricsCols = (() => {
-    if (windowWidth === null) return Math.min(metrics.length, 3);
-    if (windowWidth < 768) return 1;
-    if (windowWidth < 1024) return Math.min(2, metrics.length);
-    return Math.min(metrics.length, 3);
-  })();
-
-  const metricsGridStyle: React.CSSProperties = {
-    ...styles.metricsGrid,
-    gridTemplateColumns: `repeat(${metricsCols}, minmax(0, 1fr))`,
-  };
-
-  const statsGridStyle: React.CSSProperties = {
-    ...styles.statsGrid,
-    gridTemplateColumns: `repeat(3, minmax(0, 1fr))`,
-  };
 
   return (
     <div style={styles.container}>
@@ -633,7 +708,8 @@ export default function BookingMetrics(): JSX.Element {
         <div style={styles.headerLeft}>
           <h1 style={styles.headerTitle}>Welcome back — great to see you!</h1>
           <p style={styles.headerSubtitle}>
-            Here’s your performance snapshot — quick insights from your properties so you can take action fast.
+            Here’s your performance snapshot — quick insights from your
+            properties so you can take action fast.
           </p>
         </div>
 
@@ -651,7 +727,7 @@ export default function BookingMetrics(): JSX.Element {
       </div>
 
       {/* Metrics Grid */}
-      <div style={metricsGridStyle}>
+      <div style={styles.metricsGrid}>
         {metrics.map((metric) => {
           const Icon = (metric.icon as any) ?? CalendarIcon;
           const chipStyle = {
@@ -693,7 +769,9 @@ export default function BookingMetrics(): JSX.Element {
                         style={{
                           fontSize: 13,
                           fontWeight: 500,
-                          color: changeIsIncrease ? palette.success600 : palette.red600,
+                          color: changeIsIncrease
+                            ? palette.success600
+                            : palette.red600,
                         }}
                       >
                         {changeLabel}
@@ -714,42 +792,70 @@ export default function BookingMetrics(): JSX.Element {
       </div>
 
       {/* Additional Stats */}
-      <div style={statsGridStyle}>
+      <div style={styles.statsGrid}>
         <div style={styles.card}>
           <h3 style={styles.smallCardTitle}>Average Booking Value</h3>
           <p style={styles.smallCardValue}>{avgBookingValueStr}</p>
-          <p style={styles.smallCardMeta}>{avgBookingValueChange ?? "No previous month data"} from last month</p>
+          <p style={styles.smallCardMeta}>
+            {avgBookingValueChange ?? "No previous month data"} from last month
+          </p>
         </div>
 
         <div style={styles.card}>
           <h3 style={styles.smallCardTitle}>Occupancy Rate</h3>
           <p style={styles.smallCardValue}>{occupancyRateStr}</p>
-          <p style={styles.smallCardMeta}>{occupancyChange ?? "No previous month data"} from last month</p>
+          <p style={styles.smallCardMeta}>
+            {occupancyChange ?? "No previous month data"} from last month
+          </p>
         </div>
 
         <div style={styles.card}>
           <h3 style={styles.smallCardTitle}>Guest Satisfaction</h3>
-          <p style={styles.smallCardValue}>{guestSatRating ? `${guestSatRating.toFixed(1)}/5` : "N/A"}</p>
+          <p style={styles.smallCardValue}>
+            {guestSatRating ? `${guestSatRating.toFixed(1)}/5` : "N/A"}
+          </p>
           <p style={styles.smallCardMeta}>
-            {guestSatReviews > 0 ? `Based on ${formatNumber(guestSatReviews)} reviews` : "No reviews yet"}
+            {guestSatReviews > 0
+              ? `Based on ${formatNumber(guestSatReviews)} reviews`
+              : "No reviews yet"}
           </p>
         </div>
       </div>
 
       {/* Per-property breakdown (reviews) */}
       <div style={{ marginTop: 18 }}>
-        <h3 style={{ margin: "0 0 8px 0", fontSize: 15 }}>Per-property ratings</h3>
+        <h3 style={{ margin: "0 0 8px 0", fontSize: 15 }}>
+          Per-property ratings
+        </h3>
         <div style={{ display: "grid", gap: 8 }}>
           {Array.isArray(computed.perPropertyList) &&
             computed.perPropertyList.map((p) => (
-              <div key={p.id} style={{ display: "flex", justifyContent: "space-between", padding: 12, borderRadius: 8, border: "1px solid #ececec", background: "#fff" }}>
+              <div
+                key={p.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ececec",
+                  background: "#fff",
+                }}
+              >
                 <div>
                   <div style={{ fontWeight: 600 }}>{p.title}</div>
-                  <div style={{ fontSize: 12, color: "#6b7280" }}>{p.reviewCount > 0 ? `${p.reviewCount} review(s)` : "No reviews"}</div>
+                  <div style={{ fontSize: 12, color: "#6b7280" }}>
+                    {p.reviewCount > 0
+                      ? `${p.reviewCount} review(s)`
+                      : "No reviews"}
+                  </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontWeight: 700 }}>{p.avgRating ? p.avgRating.toFixed(1) : "—"}</div>
-                  <div style={{ fontSize: 12, color: "#6b7280" }}>{p.avgRating ? "/5" : ""}</div>
+                  <div style={{ fontWeight: 700 }}>
+                    {p.avgRating ? p.avgRating.toFixed(1) : "—"}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#6b7280" }}>
+                    {p.avgRating ? "/5" : ""}
+                  </div>
                 </div>
               </div>
             ))}
