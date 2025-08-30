@@ -43,11 +43,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             isCollapsed ? "justify-center px-3 py-3" : "px-6 py-3",
             active
               ? "bg-red-50 text-primary shadow-sm ring-1 ring-red-100"
-              : "text-gray-700 hover:bg-gray-100"
+              : "text-gray-700 hover:bg-red-50 hover:text-primary"
           )}
           title={isCollapsed ? text : undefined}
         >
-          <span className="shrink-0 flex items-center justify-center">
+          <span className="shrink-0 flex items-center justify-center group-hover:text-primary">
             {pickIcon(text, active)}
           </span>
 
@@ -59,7 +59,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
               exit={{ opacity: 0, x: -6 }}
               transition={{ duration: 0.18 }}
               className={clsx(
-                "truncate text-sm tracking-wide font-medium",
+                "truncate text-sm tracking-wide font-medium group-hover:text-primary",
                 active ? "text-primary" : "text-gray-700"
               )}
             >
@@ -100,25 +100,25 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           aria-label="Host sidebar"
           style={{ left: 0 }}
         >
-          {/* Collapse toggle - moved down to avoid navbar overlap */}
+          {/* Collapse toggle - positioned to align with content header */}
           <motion.button
             onClick={() => setIsCollapsed((s) => !s)}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="absolute -right-3 top-20 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-gray-50 z-20"
+            className="absolute -right-3 top-24 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-20"
             whileTap={{ scale: 0.96 }}
             whileHover={{ scale: 1.05 }}
           >
             {isCollapsed ? (
-              <ChevronRight className="h-4 w-4 text-gray-600" />
+              <ChevronRight className="h-4 w-4 text-gray-600 hover:text-primary" />
             ) : (
-              <ChevronLeft className="h-4 w-4 text-gray-600" />
+              <ChevronLeft className="h-4 w-4 text-gray-600 hover:text-primary" />
             )}
           </motion.button>
 
-          {/* top spacer */}
+          {/* Adjusted top spacer to align with content header */}
           <motion.div
-            className="h-16 flex items-center justify-center px-3 border-b border-gray-200"
+            className="h-20 flex items-center justify-center px-3 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
           >
             {!isCollapsed ? (
@@ -137,7 +137,8 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             )}
           </motion.div>
 
-          <nav className="flex-1 px-2 py-4 overflow-y-auto">
+          {/* Navigation with adjusted padding to align with content */}
+          <nav className="flex-1 px-2 pt-2 pb-4 overflow-y-auto">
             <ul
               className={clsx(
                 "flex flex-col gap-1",
@@ -149,20 +150,20 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           </nav>
 
           <div className="px-3 py-4 border-t border-gray-100">
-            {/* Secondary collapse control */}
+            {/* Secondary collapse control with red hover */}
             <div className="hidden sm:block">
               <button
                 onClick={() => setIsCollapsed((s) => !s)}
                 aria-expanded={!isCollapsed}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                className="w-full inline-flex items-center justify-center gap-3 rounded-md bg-white border border-gray-200 px-3 py-2 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
+                className="w-full inline-flex items-center justify-center gap-3 rounded-md bg-white border border-gray-200 px-3 py-2 hover:bg-red-50 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
               >
                 {isCollapsed ? (
-                  <ChevronRight className="h-4 w-4 text-gray-600" />
+                  <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-primary" />
                 ) : (
-                  <ChevronLeft className="h-4 w-4 text-gray-600" />
+                  <ChevronLeft className="h-4 w-4 text-gray-600 group-hover:text-primary" />
                 )}
-                <span className="hidden sm:inline text-sm font-medium">
+                <span className="hidden sm:inline text-sm font-medium group-hover:text-primary">
                   {isCollapsed ? "" : "Collapse"}
                 </span>
               </button>
@@ -191,7 +192,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
                 <Link
                   href={link}
                   className={clsx(
-                    "p-3 rounded-md flex flex-col items-center",
+                    "p-3 rounded-md flex flex-col items-center hover:text-primary",
                     active ? "text-primary" : "text-gray-600"
                   )}
                 >
