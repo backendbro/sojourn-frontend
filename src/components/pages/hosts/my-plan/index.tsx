@@ -145,7 +145,9 @@ export default () => {
                     {checked ? (
                       <div
                         className={`${
-                          plan.name === "Basic" ? "" : "blur-lg"
+                          plan.name === "Basic" || plan.name === "Lite"
+                            ? ""
+                            : "blur-lg"
                         } text-[32px] font-[600] ${
                           plan.name === "Basic" ? "text-white" : "text-primary"
                         } font-inter`}
@@ -155,7 +157,9 @@ export default () => {
                     ) : (
                       <div
                         className={`${
-                          plan.name === "Basic" ? "" : "blur-lg"
+                          plan.name === "Basic" || plan.name === "Lite"
+                            ? ""
+                            : "blur-lg"
                         } text-[32px] font-[600] ${
                           plan.name === "Basic" ? "text-white" : "text-primary"
                         } font-inter`}
@@ -247,11 +251,10 @@ export default () => {
           return (
             <div
               key={idx}
-              // ${
-              //   plan.name === "Basic" ? "" : "blur-md pointer-events-none"
-              // }
               className={`${
-                plan.name === "Basic" ? "" : "blur-lg pointer-events-none"
+                plan.name === "Basic" || plan.name === "Lite"
+                  ? ""
+                  : "blur-lg pointer-events-none"
               } min-h-[350px] flex flex-col space-y-4 items-center py-10 rounded-3xl relative border border-gray-300 hover:border-primary cursor-pointer sj-shadow`}
             >
               <h4 className="font-[700] text-[20px]">{plan.name}</h4>
