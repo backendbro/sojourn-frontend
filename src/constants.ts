@@ -316,12 +316,12 @@ export const PLANS = [
     price: {
       monthly: {
         id: "PLN_p2wo7ln2yju2h8y",
-        amount: 0,
+        amount: 1,
         type: "monthly",
       },
       annually: {
         id: "PLN_h6xpbpqlj0trlxe",
-        amount: 0,
+        amount: 1,
         type: "annually",
       },
     },

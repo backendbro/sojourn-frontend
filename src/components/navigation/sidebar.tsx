@@ -1,21 +1,37 @@
 "use client";
 
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 import BookingIcon from "@/components/svgs/BookingIcon";
 import PropertiesIcon from "@/components/svgs/PropertiesIcon";
 import { GUEST_SIDEBAR_MENU } from "@/constants";
 import { RootState } from "@/store";
-import { Heart, Home, Mail, Wallet } from "lucide-react";
+import {
+  Heart,
+  Home,
+  Mail,
+  Wallet,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
+import clsx from "clsx";
 
-export default () => {
-  const pathname = usePathname();
+type Props = {
+  isCollapsed?: boolean;
+  setIsCollapsed?: (s: boolean) => void;
+};
 
+export default function GuestSidebar({
+  isCollapsed: isCollapsedProp,
+  setIsCollapsed: setIsCollapsedProp,
+}: Props) {
+  const pathname = usePathname() || "/";
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
 
   const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
-
   const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
 
   const isPropertiesOrHomeOrBecomeAHost =
@@ -23,75 +39,176 @@ export default () => {
     pathname.slice(0) === "/" ||
     pathname.includes("/become-a-host");
 
+  // hide on inbox (mirrors host behavior)
   const openSidebar = !pathname.includes("inbox");
 
+  // local collapse state fallback (parent can control via props)
+  const [localCollapsed, setLocalCollapsed] = useState(false);
+  const isCollapsed =
+    typeof isCollapsedProp === "boolean" ? isCollapsedProp : localCollapsed;
+  const setIsCollapsed = setIsCollapsedProp ?? setLocalCollapsed;
+
+  function pickIcon(text: string, active: boolean) {
+    const IconColor = active ? "#DE5353" : "#6B7280";
+    const lower = text.toLowerCase();
+    if (lower.includes("bookings"))
+      return <BookingIcon color={IconColor} size={20} />;
+    if (lower.includes("wallet")) return <Wallet color={IconColor} size={20} />;
+    if (lower.includes("inbox")) return <Mail color={IconColor} size={20} />;
+    if (lower.includes("wishlist") || lower.includes("saved"))
+      return <Heart color={IconColor} size={20} />;
+    if (lower.includes("properties"))
+      return <PropertiesIcon color={IconColor} size={20} />;
+    return <Home color={IconColor} size={20} />;
+  }
+
   const Links = GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
-    const activeTabCss =
-      pathname.slice(0) === link ? "text-primary font-bold" : "";
-
-    const IconColor = pathname.slice(0) === link ? "#DE5353" : "#677073";
-
-    const HomeLinkCss = text.toLowerCase() === "home" ? "flex lg:hidden" : "";
-
-    let Icon = <PropertiesIcon color={IconColor} size={18} />;
-    if (text.includes("bookings")) {
-      Icon = <BookingIcon color={IconColor} size={18} />;
-    } else if (text.includes("wallet")) {
-      Icon = (<Wallet color={IconColor} size={18} />) as any;
-    } else if (text.includes("inbox")) {
-      Icon = (<Mail color={IconColor} size={18} />) as any;
-    } else if (text.includes("wishlist")) {
-      Icon = (<Heart color={IconColor} size={18} />) as any;
-    } else {
-      Icon = <Home color={IconColor} size={18} />;
-    }
+    const active = pathname.startsWith(link);
 
     return (
-      <li
-        key={idx}
-        className={`w-full flex flex-col list-none lg:flex-row lg:border-b lg:border-b-gray-300 ${HomeLinkCss}`}
-      >
+      <li key={idx} className="w-full">
         <Link
-          className={`w-full flex flex-col py-4  capitalize font-semibold text-[#677073] flex items-center justify-center space-y-2 space-x-0 hover:bg-red-50 lg:flex-row lg:px-3 lg:space-x-4 lg:space-y-0`}
           href={link}
+          className={clsx(
+            "group flex items-center gap-3 w-full rounded-lg transition-all duration-200 ease-out",
+            isCollapsed || !openSidebar
+              ? "justify-center px-3 py-3"
+              : "px-6 py-3",
+            active
+              ? "bg-red-50 text-primary shadow-sm ring-1 ring-red-100"
+              : "text-gray-700 hover:bg-red-50 hover:text-primary"
+          )}
+          title={isCollapsed || !openSidebar ? text : undefined}
         >
-          {Icon}
-          {openSidebar ? (
-            <span
-              className={`${activeTabCss} hidden lg:block truncate font-bold lg:font-[500] text-black text-center text-xs lg:text-sm w-4/5 lg:w-full lg:text-left `}
+          <span className="shrink-0 flex items-center justify-center group-hover:text-primary">
+            {pickIcon(text, active)}
+          </span>
+
+          {!isCollapsed && openSidebar && (
+            <motion.span
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -6 }}
+              transition={{ duration: 0.18 }}
+              className={clsx(
+                "truncate text-sm tracking-wide font-medium group-hover:text-primary",
+                active ? "text-primary" : "text-gray-700"
+              )}
             >
               {text}
-            </span>
-          ) : null}
-          <span
-            className={`${activeTabCss}block lg:hidden  truncate font-bold lg:font-[500] text-black text-center text-xs lg:text-sm w-4/5 lg:w-full lg:text-left `}
-          >
-            {text}
-          </span>
+            </motion.span>
+          )}
         </Link>
       </li>
     );
   });
 
-  const hostSidebarWidth = openSidebar
-    ? "lg:w-1/6 lg:h-[210px]"
-    : "lg:w-[55px] lg:h-[200px]";
+  const showSidebar =
+    isOnUserAndLoggedin &&
+    !isOnCheckoutPage &&
+    (isPropertiesOrHomeOrBecomeAHost ? true : true);
+  if (!showSidebar) return null;
 
   return (
-    <div
-      className={`w-full ${
-        isOnUserAndLoggedin
-          ? isPropertiesOrHomeOrBecomeAHost
-            ? "flex md:hidden"
-            : isOnCheckoutPage
-            ? "hidden"
-            : "flex"
-          : "hidden"
-      } fixed bottom-0 z-[9999] h-[70px] items-center sj-shadow bg-white border border-gray-300 lg:sticky lg:top-[120px] lg:flex-col ${hostSidebarWidth} lg:items-start`}
-    >
-      <ul className="w-full grid grid-cols-5 lg:grid-cols-1 lg:overflow-hidden">
-        {Links}
-      </ul>
-    </div>
+    <>
+      {/* Desktop sidebar: fixed so it always touches the viewport left edge */}
+      <div className="hidden lg:block">
+        <motion.aside
+          initial={false}
+          animate={{ width: isCollapsed || !openSidebar ? 72 : 224 }}
+          transition={{
+            type: "spring",
+            stiffness: 200,
+            damping: 25,
+            mass: 0.5,
+          }}
+          className={clsx(
+            "fixed left-0 top-0 h-screen flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm z-40"
+          )}
+          aria-label="Guest sidebar"
+        >
+          {/* Collapse toggle - absolute so it overlaps the left edge like host */}
+          <motion.button
+            onClick={() => setIsCollapsed((s) => !s)}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="absolute -right-3 top-24 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
+            whileTap={{ scale: 0.96 }}
+            whileHover={{ scale: 1.05 }}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4 text-gray-600 hover:text-primary" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 text-gray-600 hover:text-primary" />
+            )}
+          </motion.button>
+
+          {/* Top spacer (no "Account" text) */}
+          <div className="h-20 flex items-center justify-center px-3 border-b border-gray-200">
+            {isCollapsed ? (
+              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+                <span className="text-white font-bold text-sm">G</span>
+              </div>
+            ) : (
+              <div className="w-full" />
+            )}
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-2 pt-2 pb-4 overflow-y-auto">
+            <ul
+              className={clsx(
+                "flex flex-col gap-1",
+                isCollapsed ? "items-center" : "items-stretch"
+              )}
+            >
+              {Links}
+            </ul>
+          </nav>
+
+          {/* Bottom collapse control removed as requested */}
+        </motion.aside>
+      </div>
+
+      {/* Mobile bottom nav (unchanged) */}
+      <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
+        <ul className="w-full grid grid-cols-5">
+          {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
+            const active = pathname.startsWith(link);
+            const IconColor = active ? "#DE5353" : "#6B7280";
+
+            let Icon = <PropertiesIcon color={IconColor} size={20} />;
+            if (text.toLowerCase().includes("bookings"))
+              Icon = <BookingIcon color={IconColor} size={20} />;
+            else if (text.toLowerCase().includes("wallet"))
+              Icon = <Wallet color={IconColor} size={20} />;
+            else if (text.toLowerCase().includes("inbox"))
+              Icon = <Mail color={IconColor} size={20} />;
+            else if (
+              text.toLowerCase().includes("wishlist") ||
+              text.toLowerCase().includes("saved")
+            )
+              Icon = <Heart color={IconColor} size={20} />;
+            else if (text.toLowerCase().includes("home"))
+              Icon = <Home color={IconColor} size={20} />;
+
+            return (
+              <li key={idx} className="flex items-center justify-center">
+                <Link
+                  href={link}
+                  className={clsx(
+                    "p-3 rounded-md flex flex-col items-center hover:text-primary",
+                    active ? "text-primary" : "text-gray-600"
+                  )}
+                >
+                  {Icon}
+                  <span className="text-xs mt-1">{text.split(" ")[0]}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </>
   );
-};
+}

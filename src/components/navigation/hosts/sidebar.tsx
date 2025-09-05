@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import AccountingIcon from "@/components/svgs/AccountingIcon";
 import BookingIcon from "@/components/svgs/BookingIcon";
@@ -11,7 +11,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
-export default function Sidebar({ isCollapsed, setIsCollapsed }) {
+type Props = {
+  isCollapsed: boolean;
+  setIsCollapsed: (s: boolean) => void;
+};
+
+export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
   const pathname = usePathname() || "/";
   const openSidebar = !pathname?.includes("inbox");
   const isOnCreateListing = pathname?.includes(
@@ -80,13 +85,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:items-stretch lg:relative">
+      {/* Desktop sidebar — fixed so it touches the viewport left edge */}
+      <div className="hidden lg:block">
         <motion.aside
           initial={false}
-          animate={{
-            width: isCollapsed ? 72 : 224,
-          }}
+          animate={{ width: isCollapsed ? 72 : 224 }}
           transition={{
             type: "spring",
             stiffness: 200,
@@ -94,8 +97,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             mass: 0.5,
           }}
           className={clsx(
-            "flex flex-col bg-gray-50 h-screen flex-shrink-0 border-r border-gray-200 transition-all ease-out relative",
-            "shadow-sm"
+            "fixed left-0 top-0 h-screen flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm z-40"
           )}
           aria-label="Host sidebar"
           style={{ left: 0 }}
@@ -105,7 +107,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             onClick={() => setIsCollapsed((s) => !s)}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="absolute -right-3 top-24 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-20"
+            className="absolute -right-3 top-24 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
             whileTap={{ scale: 0.96 }}
             whileHover={{ scale: 1.05 }}
           >
@@ -149,26 +151,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             </ul>
           </nav>
 
-          <div className="px-3 py-4 border-t border-gray-100">
-            {/* Secondary collapse control with red hover */}
-            <div className="hidden sm:block">
-              <button
-                onClick={() => setIsCollapsed((s) => !s)}
-                aria-expanded={!isCollapsed}
-                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-                className="w-full inline-flex items-center justify-center gap-3 rounded-md bg-white border border-gray-200 px-3 py-2 hover:bg-red-50 hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
-              >
-                {isCollapsed ? (
-                  <ChevronRight className="h-4 w-4 text-gray-600 group-hover:text-primary" />
-                ) : (
-                  <ChevronLeft className="h-4 w-4 text-gray-600 group-hover:text-primary" />
-                )}
-                <span className="hidden sm:inline text-sm font-medium group-hover:text-primary">
-                  {isCollapsed ? "" : "Collapse"}
-                </span>
-              </button>
-            </div>
-          </div>
+          {/* Bottom collapse control removed as requested */}
         </motion.aside>
       </div>
 
