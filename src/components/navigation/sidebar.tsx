@@ -36,6 +36,7 @@ export default function Sidebar() {
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
   const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
   const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
+  // keep variable for possible other logic but we will NOT use it to hide the sidebar itself
   const openSidebar = !pathname.includes("inbox");
 
   // If the user isn't the expected one or it's checkout, don't render sidebar
@@ -58,10 +59,21 @@ export default function Sidebar() {
   const collapsedWidth = 72;
   const expandedWidth = 224;
 
+  // helper to determine active state without treating "/" as a prefix for everything
+  function isActive(link: string | undefined) {
+    if (!link) return false;
+    if (link === "/") {
+      return selected === "/" || pathname === "/";
+    }
+    // for non-root links: consider exact match or prefix (so subroutes are active)
+    return selected === link || pathname === link || pathname.startsWith(link + "/") || pathname.startsWith(link);
+  }
+
   return (
     <>
-      {/* Desktop sidebar — wrapper made relative so the toggle can sit on the divider (sibling to the aside) */}
-      <div className="hidden lg:block relative" aria-hidden={!openSidebar}>
+      {/* Desktop sidebar — wrapper made relative so the toggle can sit on the divider (sibling to the aside)
+          NOTE: removed aria-hidden so the sidebar isn't implicitly hidden when on /dashboard/inbox */}
+      <div className="hidden lg:block relative">
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? collapsedWidth : expandedWidth }}
@@ -107,9 +119,8 @@ export default function Sidebar() {
               )}
             >
               {GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
-                // active if selected (clicked) OR URL starts with link
-                const active =
-                  selected === link || pathname.startsWith(link || "");
+                // active: use helper that treats "/" specially
+                const active = isActive(link);
                 return (
                   <li key={idx} className="w-full">
                     <Link
@@ -128,7 +139,8 @@ export default function Sidebar() {
                         {pickIcon(text, active)}
                       </span>
 
-                      {!isCollapsed && openSidebar && (
+                      {/* ---------- NOTE: removed openSidebar gating so labels still appear when on /dashboard/inbox ---------- */}
+                      {!isCollapsed && (
                         <motion.span
                           initial={{ opacity: 0, x: -6 }}
                           animate={{ opacity: 1, x: 0 }}
