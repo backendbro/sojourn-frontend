@@ -12,13 +12,15 @@ import NetworkProvider from "@/components/network/network-provider";
 import NotificationProvider from "@/components/notification/notification-provider";
 import FacebookAdsScript from "@/components/scripts/facebook-ads-script";
 import StructuredData from "@/components/StructuredData/StructuredData";
-import { SetStateAction } from "react";
+import { SetStateAction, useState } from "react";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <html lang="en">
       <Script
@@ -59,7 +61,6 @@ gtag('config', 'G-E34PC8GDB6');`}
                   isCollapsed={isCollapsed}
                   setIsCollapsed={setIsCollapsed}
                 />
-
                 {children}
               </SidebarProvider>
             </NetworkProvider>
