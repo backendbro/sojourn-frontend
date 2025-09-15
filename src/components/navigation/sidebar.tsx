@@ -1,7 +1,7 @@
 // components/navigation/sidebar.tsx
 "use client";
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import BookingIcon from "@/components/svgs/BookingIcon";
 import PropertiesIcon from "@/components/svgs/PropertiesIcon";
@@ -19,11 +19,14 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { SidebarContext } from "@/app/SidebarProvider";
 
-export default function Sidebar() {
+type SidebarProps = {
+  isCollapsed: boolean;
+  setIsCollapsed: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
   const pathname = usePathname() || "/";
-  const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
 
   // Track selected link so a clicked item stays active (works while collapsed)
   const [selected, setSelected] = useState<string>(pathname);
@@ -32,7 +35,7 @@ export default function Sidebar() {
     setSelected(pathname);
   }, [pathname]);
 
-  // Preserve old visibility rules
+  // Preserve old visibility rules (keeps your previous logic)
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
   const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
   const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
@@ -76,107 +79,107 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar — wrapper made relative so the toggle can sit on the divider (sibling to the aside)
-          NOTE: removed aria-hidden so the sidebar isn't implicitly hidden when on /dashboard/inbox */}
-      <div className="hidden lg:block relative">
-        <motion.aside
-          initial={false}
-          animate={{ width: isCollapsed ? collapsedWidth : expandedWidth }}
-          transition={{
-            type: "spring",
-            stiffness: 200,
-            damping: 25,
-            mass: 0.5,
-          }}
-          className={clsx(
-            "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
-            "flex flex-col transition-all ease-out"
-          )}
-          aria-label="Guest sidebar"
-          style={{ overflow: "hidden" }}
+      {/* Desktop: fixed sidebar so it doesn't move on scroll */}
+      <motion.aside
+        initial={false}
+        animate={{
+          width: isCollapsed ? `${collapsedWidth}px` : `${expandedWidth}px`,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 200,
+          damping: 25,
+          mass: 0.5,
+        }}
+        // fixed so sidebar stays put when the page scrolls
+        className={clsx(
+          "hidden lg:flex fixed left-0 top-0 h-screen z-40",
+          "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+          "flex flex-col transition-all ease-out"
+        )}
+        aria-label="Guest sidebar"
+        style={{ overflow: "hidden" }}
+      >
+        {/* HEADER */}
+        <motion.div
+          className="h-4 flex items-center px-4 border-b border-gray-200"
+          animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
         >
-          {/* HEADER (unchanged) */}
-          <motion.div
-            className="h-4 flex items-center px-4 border-b border-gray-200"
-            animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
+          <div
+            className={clsx(
+              "flex items-center gap-3 w-full",
+              isCollapsed ? "justify-center" : "justify-start"
+            )}
           >
-            <div
-              className={clsx(
-                "flex items-center gap-3 w-full",
-                isCollapsed ? "justify-center" : "justify-start"
-              )}
-            >
-              {!isCollapsed && (
-                <span className="font-semibold text-lg text-gray-800"> </span>
-              )}
-            </div>
-          </motion.div>
+            {!isCollapsed && (
+              <span className="font-semibold text-lg text-gray-800"> </span>
+            )}
+          </div>
+        </motion.div>
 
-          {/* Nav — internal scroll so sidebar never causes whole-page overflow */}
-          <nav
-            className="flex-1 px-2 pt-2 pb-4 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 80px)" }}
+        {/* Nav — internal scroll so sidebar never causes whole-page overflow */}
+        <nav
+          className="flex-1 px-2 pt-2 pb-4 overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 80px)" }}
+        >
+          <ul
+            className={clsx(
+              "flex flex-col gap-1",
+              isCollapsed ? "items-center" : "items-stretch"
+            )}
           >
-            <ul
-              className={clsx(
-                "flex flex-col gap-1",
-                isCollapsed ? "items-center" : "items-stretch"
-              )}
-            >
-              {GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
-                // active: use helper that treats "/" specially
-                const active = isActive(link);
-                return (
-                  <li key={idx} className="w-full">
-                    <Link
-                      href={link}
-                      onClick={() => setSelected(link)}
-                      className={clsx(
-                        "group flex items-center gap-3 w-full rounded-lg transition-all duration-150 ease-out",
-                        isCollapsed ? "justify-center px-3 py-3" : "px-6 py-3",
-                        active
-                          ? "bg-red-50 text-red-600 shadow-sm ring-1 ring-red-100"
-                          : "text-gray-700 hover:bg-red-50 hover:text-red-600"
-                      )}
-                      title={isCollapsed ? text : undefined}
-                    >
-                      <span className="shrink-0 flex items-center justify-center group-hover:text-red-600">
-                        {pickIcon(text, active)}
+            {GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
+              // active: use helper that treats "/" specially
+              const active = isActive(link);
+              return (
+                <li key={idx} className="w-full">
+                  <Link
+                    href={link}
+                    onClick={() => setSelected(link)}
+                    className={clsx(
+                      "group flex items-center gap-3 w-full rounded-lg transition-all duration-150 ease-out",
+                      isCollapsed ? "justify-center px-3 py-3" : "px-6 py-3",
+                      active
+                        ? "bg-red-50 text-red-600 shadow-sm ring-1 ring-red-100"
+                        : "text-gray-700 hover:bg-red-50 hover:text-red-600"
+                    )}
+                    title={isCollapsed ? text : undefined}
+                  >
+                    <span className="shrink-0 flex items-center justify-center group-hover:text-red-600">
+                      {pickIcon(text, active)}
+                    </span>
+
+                    {!isCollapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -6 }}
+                        transition={{ duration: 0.14 }}
+                        className={clsx(
+                          "truncate text-sm tracking-wide font-medium",
+                          active
+                            ? "text-red-600"
+                            : "text-gray-700 group-hover:text-red-600"
+                        )}
+                      >
+                        {text}
+                      </motion.span>
+                    )}
+
+                    {/* optional Pro badge for "My plan" item */}
+                    {!isCollapsed && text.toLowerCase() === "my plan" && (
+                      <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold rounded-full bg-red-600 text-white shadow-sm">
+                        Pro
                       </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
 
-                      {/* ---------- NOTE: removed openSidebar gating so labels still appear when on /dashboard/inbox ---------- */}
-                      {!isCollapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -6 }}
-                          transition={{ duration: 0.14 }}
-                          className={clsx(
-                            "truncate text-sm tracking-wide font-medium",
-                            active
-                              ? "text-red-600"
-                              : "text-gray-700 group-hover:text-red-600"
-                          )}
-                        >
-                          {text}
-                        </motion.span>
-                      )}
-
-                      {/* optional Pro badge for "My plan" item */}
-                      {!isCollapsed && text.toLowerCase() === "my plan" && (
-                        <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold rounded-full bg-red-600 text-white shadow-sm">
-                          Pro
-                        </span>
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        </motion.aside>
-
-        {/* ====== TOGGLE BUTTON: moved OUTSIDE the <aside> and placed on the divider (vertical rule) ====== */}
+        {/* ====== TOGGLE BUTTON: placed on the divider (sits just outside sidebar) ====== */}
         <motion.button
           onClick={() => setIsCollapsed((s) => !s)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -191,9 +194,9 @@ export default function Sidebar() {
             <ChevronLeft className="h-4 w-4 text-gray-600 hover:text-red-600" />
           )}
         </motion.button>
-      </div>
+      </motion.aside>
 
-      {/* Mobile bottom nav — unchanged from your version; will not render on homepage because the provider hides the whole Sidebar */}
+      {/* Mobile bottom nav — unchanged; fixed to bottom */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
