@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Sidebar from "@/components/navigation/sidebar";
+import Sidebar from "@/components/navigation/hosts/sidebar";
 import { Menu } from "lucide-react";
 import clsx from "clsx";
 
@@ -23,8 +23,9 @@ export default function RootLayout({
       </button>
 
       {/* Sidebar */}
-      {/* We now render the Sidebar as a fixed element (component handles fixed positioning) */}
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      <div className="fixed left-0 top-0 h-screen z-30">
+        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+      </div>
 
       {/* Overlay for mobile when sidebar is open */}
       {!isCollapsed && (
@@ -38,7 +39,6 @@ export default function RootLayout({
       <div
         className={clsx(
           "w-full min-h-screen transition-all duration-300",
-          // keep these left paddings in sync with the sidebar's widths (collapsed/expanded)
           isCollapsed ? "lg:pl-20" : "lg:pl-56"
         )}
       >
