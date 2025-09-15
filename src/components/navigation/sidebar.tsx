@@ -66,7 +66,12 @@ export default function Sidebar() {
       return selected === "/" || pathname === "/";
     }
     // for non-root links: consider exact match or prefix (so subroutes are active)
-    return selected === link || pathname === link || pathname.startsWith(link + "/") || pathname.startsWith(link);
+    return (
+      selected === link ||
+      pathname === link ||
+      pathname.startsWith(link + "/") ||
+      pathname.startsWith(link)
+    );
   }
 
   return (
@@ -84,7 +89,7 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+            "fixed left-0 top-0 h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm", // Added fixed positioning
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
