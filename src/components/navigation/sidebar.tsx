@@ -89,7 +89,7 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "fixed left-0 top-0 h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm", // Added fixed positioning
+            "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
