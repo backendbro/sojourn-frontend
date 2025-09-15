@@ -4,9 +4,10 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useContext,
   useEffect,
-  useState,
   useMemo,
+  useState,
 } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
@@ -26,27 +27,45 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import { SidebarContext } from "@/app/SidebarProvider"; // keep this path if that's where your provider is
 
 type SidebarProps = {
-  isCollapsed: boolean;
-  setIsCollapsed: Dispatch<SetStateAction<boolean>>;
+  isCollapsed?: boolean;
+  setIsCollapsed?: Dispatch<SetStateAction<boolean>>;
 };
 
-export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
+export default function Sidebar(props: SidebarProps) {
   const pathname = usePathname() || "/";
 
-  // portal mount state
+  // try to get values from context (if provider is used)
+  const ctx = useContext(SidebarContext) as
+    | {
+        isCollapsed: boolean;
+        setIsCollapsed: Dispatch<SetStateAction<boolean>>;
+      }
+    | undefined;
+
+  // final state/setter used by the component (props take precedence, then context, then local fallback)
+  const isCollapsed = props.isCollapsed ?? ctx?.isCollapsed ?? false;
+  const setIsCollapsed =
+    props.setIsCollapsed ??
+    ctx?.setIsCollapsed ??
+    (() => {
+      /* noop fallback to avoid undefined calls if neither supplied */
+    });
+
+  // portal mount helper
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
 
-  // keep selected in sync with route
+  // sync selected route
   const [selected, setSelected] = useState<string>(pathname);
   useEffect(() => setSelected(pathname), [pathname]);
 
-  // visibility rules (unchanged)
+  // preserve your visibility rules
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
   const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
   const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
@@ -81,11 +100,9 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     );
   }
 
-  // Side bar markup (memoized so portal uses stable node)
   const sidebarNode = useMemo(
     () => (
       <div
-        // top-level wrapper (this lives in body to avoid ancestor transforms)
         style={{
           position: "fixed",
           left: 0,
@@ -106,17 +123,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             mass: 0.5,
           }}
           aria-label="Guest sidebar"
-          // ensure no transform/style from app affects this element
           className={clsx(
             "hidden lg:flex overflow-hidden flex-col bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex-shrink-0 transition-all ease-out"
           )}
-          style={{
-            height: "100vh",
-            // prevent accidental transforms
-            transform: "none",
-            willChange: "auto",
-          }}
+          style={{ height: "100vh", transform: "none", willChange: "auto" }}
         >
           {/* header */}
           <div
@@ -135,7 +146,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             </div>
           </div>
 
-          {/* nav: internal scroll */}
+          {/* nav - internal scrolling */}
           <nav
             className="flex-1 px-2 pt-2 pb-4 overflow-y-auto"
             style={{ maxHeight: "calc(100vh - 80px)" }}
@@ -195,7 +206,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
             </ul>
           </nav>
 
-          {/* toggle button sits on the divider */}
+          {/* toggle */}
           <button
             onClick={() => setIsCollapsed((s) => !s)}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -211,7 +222,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           </button>
         </motion.aside>
 
-        {/* mobile bottom nav (still rendered in body to avoid layout issues) */}
+        {/* mobile bottom nav */}
         <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
           <ul className="w-full grid grid-cols-5">
             {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
@@ -251,7 +262,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
     [isCollapsed, pathname, selected]
   );
 
-  // mount into document.body so `position: fixed` is relative to viewport
   if (!mounted) return null;
   return createPortal(sidebarNode, document.body);
 }

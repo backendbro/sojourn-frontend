@@ -12,6 +12,7 @@ import NetworkProvider from "@/components/network/network-provider";
 import NotificationProvider from "@/components/notification/notification-provider";
 import FacebookAdsScript from "@/components/scripts/facebook-ads-script";
 import StructuredData from "@/components/StructuredData/StructuredData";
+import { SetStateAction } from "react";
 
 export default function RootLayout({
   children,
@@ -54,7 +55,11 @@ gtag('config', 'G-E34PC8GDB6');`}
             <NetworkProvider>
               <Menu />
               <SidebarProvider>
-                <Sidebar />
+                <Sidebar
+                  isCollapsed={isCollapsed}
+                  setIsCollapsed={setIsCollapsed}
+                />
+
                 {children}
               </SidebarProvider>
             </NetworkProvider>
