@@ -24,39 +24,21 @@ export default function Sidebar() {
   const pathname = usePathname() || "/";
   const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
 
-  // widths must be defined before any effect that uses them
-  const collapsedWidth = 72;
-  const expandedWidth = 224;
-
   // Track selected link so a clicked item stays active (works while collapsed)
   const [selected, setSelected] = useState<string>(pathname);
-
-  // keep selected in sync with URL when navigation happens externally
   useEffect(() => {
+    // keep selected in sync with URL when navigation happens externally
     setSelected(pathname);
   }, [pathname]);
-
-  // effect to set margin-left on main content when sidebar changes
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const el = document.getElementById("main-content");
-    if (!el) return;
-    el.style.transition = "margin-left 280ms cubic-bezier(.2,.9,.2,1)";
-    el.style.marginLeft = isCollapsed
-      ? `${collapsedWidth}px`
-      : `${expandedWidth}px`;
-
-    return () => {
-      el.style.marginLeft = "";
-      el.style.transition = "";
-    };
-  }, [isCollapsed]);
 
   // Preserve old visibility rules
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
   const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
   const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
+  // keep variable for possible other logic but we will NOT use it to hide the sidebar itself
+  const openSidebar = !pathname.includes("inbox");
 
+  // If the user isn't the expected one or it's checkout, don't render sidebar
   if (!isOnUserAndLoggedin) return null;
   if (isOnCheckoutPage) return null;
 
@@ -73,9 +55,16 @@ export default function Sidebar() {
     return <Home color={IconColor} size={18} />;
   }
 
+  const collapsedWidth = 72;
+  const expandedWidth = 224;
+
+  // helper to determine active state without treating "/" as a prefix for everything
   function isActive(link: string | undefined) {
     if (!link) return false;
-    if (link === "/") return selected === "/" || pathname === "/";
+    if (link === "/") {
+      return selected === "/" || pathname === "/";
+    }
+    // for non-root links: consider exact match or prefix (so subroutes are active)
     return (
       selected === link ||
       pathname === link ||
@@ -86,8 +75,8 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar — kept fixed visually but width still animates */}
-      <div className="hidden lg:block fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40">
+      {/* Desktop sidebar - now with margin adjustment to push/pull content */}
+      <div className="hidden lg:block relative">
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? collapsedWidth : expandedWidth }}
@@ -98,13 +87,13 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "relative h-full flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+            "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
           style={{ overflow: "hidden" }}
         >
-          {/* header */}
+          {/* HEADER */}
           <motion.div
             className="h-4 flex items-center px-4 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
@@ -121,10 +110,10 @@ export default function Sidebar() {
             </div>
           </motion.div>
 
-          {/* nav */}
+          {/* Nav — internal scroll so sidebar never causes whole-page overflow */}
           <nav
             className="flex-1 px-2 pt-2 pb-4 overflow-y-auto"
-            style={{ maxHeight: "100%" }}
+            style={{ maxHeight: "calc(100vh - 80px)" }}
           >
             <ul
               className={clsx(
@@ -133,6 +122,7 @@ export default function Sidebar() {
               )}
             >
               {GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
+                // active: use helper that treats "/" specially
                 const active = isActive(link);
                 return (
                   <li key={idx} className="w-full">
@@ -169,6 +159,7 @@ export default function Sidebar() {
                         </motion.span>
                       )}
 
+                      {/* optional Pro badge for "My plan" item */}
                       {!isCollapsed && text.toLowerCase() === "my plan" && (
                         <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold rounded-full bg-red-600 text-white shadow-sm">
                           Pro
@@ -182,7 +173,7 @@ export default function Sidebar() {
           </nav>
         </motion.aside>
 
-        {/* toggle (positioned on divider between fixed sidebar and content) */}
+        {/* Toggle Button */}
         <motion.button
           onClick={() => setIsCollapsed((s) => !s)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -199,7 +190,7 @@ export default function Sidebar() {
         </motion.button>
       </div>
 
-      {/* mobile bottom nav — unchanged */}
+      {/* Mobile bottom nav — unchanged */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
