@@ -22,8 +22,13 @@ export default function RootLayout({
         <Menu size={24} />
       </button>
 
-      {/* Sidebar */}
-      <div className="fixed left-0 top-0 h-screen z-30">
+      {/* Sidebar wrapper: adjusted to match guest pattern and avoid header overlap.
+          `top-[80px]` and `h-[calc(100vh-80px)]` plus overflow-visible ensure the toggle
+          won't be clipped by header or other elements. */}
+      <div
+        className="fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40"
+        style={{ overflow: "visible" }}
+      >
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       </div>
 

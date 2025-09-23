@@ -83,11 +83,9 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
 
   return (
     <>
-      {/* Wrapper: fixed so toggle can be absolutely positioned relative to this wrapper */}
-      <div
-        className="hidden lg:block fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40"
-        style={{ overflow: "visible" }} // ensure toggle isn't clipped
-      >
+      {/* Desktop wrapper — no fixed here because RootLayout provides the fixed wrapper */}
+      <div className="hidden lg:block">
+        {/* Aside: relative so internal layout works; overflow hidden to keep nav scroll inside */}
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? 72 : 224 }}
@@ -98,10 +96,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             mass: 0.5,
           }}
           className={clsx(
-            "relative h-full flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm"
+            "relative h-screen flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm"
           )}
           aria-label="Host sidebar"
-          style={{ overflow: "hidden" }} // keep inner nav scroll clipped but wrapper allows toggle outside
+          style={{ overflow: "hidden" }}
         >
           {/* Header */}
           <motion.div
@@ -137,7 +135,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
           </nav>
         </motion.aside>
 
-        {/* Toggle Button - placed OUTSIDE the aside (so it sits on the divider and won't be clipped) */}
+        {/* IMPORTANT: Toggle is OUTSIDE the <aside> so it won't be clipped by the aside */}
         <motion.button
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
