@@ -32,8 +32,7 @@ const CITIES_DATA = [
   },
   {
     title: "Delta",
-    imageUrl:
-      "https://i.pinimg.com/736x/2d/4d/e1/2d4de1de66a517457fce3ca036e81125.jpg",
+    imageUrl: "/assets/imgs/discover-delta.jpg",
     description: EXPLORE_CITIES.delta,
   },
   {
