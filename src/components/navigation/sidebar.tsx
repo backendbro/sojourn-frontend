@@ -75,8 +75,8 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar - now with margin adjustment to push/pull content */}
-      <div className="hidden lg:block relative">
+      {/* Desktop sidebar — wrapper made fixed so it stays put while the page scrolls */}
+      <div className="hidden lg:block fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40">
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? collapsedWidth : expandedWidth }}
@@ -87,13 +87,13 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "relative min-h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+            "relative h-full flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
           style={{ overflow: "hidden" }}
         >
-          {/* HEADER */}
+          {/* HEADER (unchanged) */}
           <motion.div
             className="h-4 flex items-center px-4 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
@@ -113,7 +113,7 @@ export default function Sidebar() {
           {/* Nav — internal scroll so sidebar never causes whole-page overflow */}
           <nav
             className="flex-1 px-2 pt-2 pb-4 overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 80px)" }}
+            style={{ maxHeight: "100%" }}
           >
             <ul
               className={clsx(
@@ -142,6 +142,7 @@ export default function Sidebar() {
                         {pickIcon(text, active)}
                       </span>
 
+                      {/* ---------- NOTE: removed openSidebar gating so labels still appear when on /dashboard/inbox ---------- */}
                       {!isCollapsed && (
                         <motion.span
                           initial={{ opacity: 0, x: -6 }}
@@ -173,7 +174,7 @@ export default function Sidebar() {
           </nav>
         </motion.aside>
 
-        {/* Toggle Button */}
+        {/* ====== TOGGLE BUTTON: kept in same place so it stays on the divider between sidebar & content ====== */}
         <motion.button
           onClick={() => setIsCollapsed((s) => !s)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -190,7 +191,7 @@ export default function Sidebar() {
         </motion.button>
       </div>
 
-      {/* Mobile bottom nav — unchanged */}
+      {/* Mobile bottom nav — unchanged from your version; will not render on homepage because the provider hides the whole Sidebar */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {

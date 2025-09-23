@@ -55,6 +55,7 @@ gtag('config', 'G-E34PC8GDB6');`}
               <Menu />
               <SidebarProvider>
                 <Sidebar />
+                {children}
               </SidebarProvider>
             </NetworkProvider>
           </NotificationProvider>
