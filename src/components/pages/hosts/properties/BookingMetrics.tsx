@@ -8,6 +8,7 @@ import {
   CurrencyDollarIcon,
   BuildingOfficeIcon,
   PlusIcon,
+  UsersIcon, // <-- added
 } from "@heroicons/react/24/outline";
 import { me, getProperties, getBookingsByHostId, getReviews } from "@/http/api";
 import { useRouter } from "next/navigation";
@@ -541,6 +542,7 @@ export default function BookingMetrics(): JSX.Element {
 
     const prevTotalBookings = hasBookingData ? aggPrev.totalBookings : null;
     const prevRevenue = hasBookingData ? aggPrev.revenue : null;
+    const prevUniqueGuests = hasBookingData ? aggPrev.uniqueGuests : null; // <-- added
 
     const avgBookingValue =
       totalBookings > 0 ? Math.ceil(revenue / totalBookings) : 0;
@@ -625,6 +627,7 @@ export default function BookingMetrics(): JSX.Element {
 
       prevTotalBookings,
       prevRevenue,
+      prevUniqueGuests, // <-- returned
 
       avgBookingValue,
       occupancyRate,
@@ -674,6 +677,30 @@ export default function BookingMetrics(): JSX.Element {
           : "No previous month data",
       icon: CurrencyDollarIcon,
       color: "green",
+    },
+    {
+      id: "uniqueGuests", // <-- new card
+      title: "Unique Guests",
+      value: formatNumber(computed.uniqueGuests),
+      change: formatPercentChangeSafe(
+        computed.uniqueGuests,
+        // @ts-ignore - prevUniqueGuests exists on computed
+        computed.prevUniqueGuests
+      ),
+      changeType:
+        // @ts-ignore
+        computed.prevUniqueGuests == null
+          ? "neutral"
+          : computed.uniqueGuests >= (computed.prevUniqueGuests ?? 0)
+          ? "increase"
+          : "decrease",
+      comparison:
+        // @ts-ignore
+        computed.prevUniqueGuests != null
+          ? `vs ${formatNumber(computed.prevUniqueGuests)} last month`
+          : "No previous month data",
+      icon: UsersIcon,
+      color: "purple",
     },
     {
       id: "active",
