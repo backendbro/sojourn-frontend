@@ -24,9 +24,33 @@ export default function Sidebar() {
   const pathname = usePathname() || "/";
   const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
 
+  // widths must be defined before any effect that uses them
+  const collapsedWidth = 72;
+  const expandedWidth = 224;
+
   // Track selected link so a clicked item stays active (works while collapsed)
   const [selected, setSelected] = useState<string>(pathname);
-  useEffect(() => setSelected(pathname), [pathname]);
+
+  // keep selected in sync with URL when navigation happens externally
+  useEffect(() => {
+    setSelected(pathname);
+  }, [pathname]);
+
+  // effect to set margin-left on main content when sidebar changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const el = document.getElementById("main-content");
+    if (!el) return;
+    el.style.transition = "margin-left 280ms cubic-bezier(.2,.9,.2,1)";
+    el.style.marginLeft = isCollapsed
+      ? `${collapsedWidth}px`
+      : `${expandedWidth}px`;
+
+    return () => {
+      el.style.marginLeft = "";
+      el.style.transition = "";
+    };
+  }, [isCollapsed]);
 
   // Preserve old visibility rules
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
@@ -48,22 +72,6 @@ export default function Sidebar() {
       return (<Heart color={IconColor} size={18} />) as any;
     return <Home color={IconColor} size={18} />;
   }
-
-  const collapsedWidth = 72;
-  const expandedWidth = 224;
-
-  // set CSS variable to let layout/content shift without un-fixing the sidebar
-  useEffect(() => {
-    // guard for SSR safety (component is client but still safe)
-    if (typeof window === "undefined") return;
-    const widthPx = isCollapsed ? `${collapsedWidth}px` : `${expandedWidth}px`;
-    document.documentElement.style.setProperty("--sidebar-offset", widthPx);
-
-    // cleanup on unmount: remove or reset to 0
-    return () => {
-      document.documentElement.style.removeProperty("--sidebar-offset");
-    };
-  }, [isCollapsed]);
 
   function isActive(link: string | undefined) {
     if (!link) return false;

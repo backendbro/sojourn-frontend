@@ -4,24 +4,6 @@
 
 :root {
   --rdp-background-color: yellow;
-  --sidebar-offset: 224px;
-}
-
-:root {
-  /* sensible default for pages loaded before JS runs */
-}
-
-/* Use on your main content wrapper so it shifts when sidebar changes */
-.content-with-sidebar {
-  margin-left: var(--sidebar-offset);
-  transition: margin-left 280ms cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-
-/* Don't push content on small screens (mobile) */
-@media (max-width: 1023px) {
-  .content-with-sidebar {
-    margin-left: 0 !important;
-  }
 }
 
 body {
