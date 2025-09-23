@@ -83,9 +83,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
 
   return (
     <>
-      {/* Desktop wrapper — no fixed here because RootLayout provides the fixed wrapper */}
       <div className="hidden lg:block">
-        {/* Aside: relative so internal layout works; overflow hidden to keep nav scroll inside */}
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? 72 : 224 }}
@@ -101,7 +99,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
           aria-label="Host sidebar"
           style={{ overflow: "hidden" }}
         >
-          {/* Header */}
           <motion.div
             className="h-24 flex items-center px-3 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
@@ -122,7 +119,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             )}
           </motion.div>
 
-          {/* Navigation */}
           <nav className="flex-1 px-2 pt-4 pb-4 overflow-y-auto">
             <ul
               className={clsx(
@@ -135,12 +131,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
           </nav>
         </motion.aside>
 
-        {/* IMPORTANT: Toggle is OUTSIDE the <aside> so it won't be clipped by the aside */}
+        {/* moved down to top-20 (80px). Try top-16 (64px) or top-24 (96px) if you need more/less */}
         <motion.button
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="absolute -right-3 top-4 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
+          className="absolute -right-3 top-20 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
           whileTap={{ scale: 0.96 }}
           whileHover={{ scale: 1.05 }}
         >
@@ -152,7 +148,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
         </motion.button>
       </div>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav - unchanged */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {HOST_PROPERTIES_MENU.map(({ text, link }, idx) => {
