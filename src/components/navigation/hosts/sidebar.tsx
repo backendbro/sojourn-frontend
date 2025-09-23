@@ -56,7 +56,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             {pickIcon(text, active)}
           </span>
 
-          {/* label animated for smoothness */}
           {!isCollapsed && openSidebar && (
             <motion.span
               initial={{ opacity: 0, x: -6 }}
@@ -72,7 +71,6 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             </motion.span>
           )}
 
-          {/* Pro badge */}
           {!isCollapsed && text.toLowerCase() === "my plan" && (
             <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-semibold rounded-full bg-primary text-white shadow-sm">
               Pro
@@ -85,8 +83,11 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
 
   return (
     <>
-      {/* Desktop sidebar — fixed so it touches the viewport left edge */}
-      <div className="hidden lg:block">
+      {/* Wrapper: fixed so toggle can be absolutely positioned relative to this wrapper */}
+      <div
+        className="hidden lg:block fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40"
+        style={{ overflow: "visible" }} // ensure toggle isn't clipped
+      >
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? 72 : 224 }}
@@ -97,30 +98,14 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             mass: 0.5,
           }}
           className={clsx(
-            "fixed left-0 top-0 h-screen flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm z-40"
+            "relative h-full flex flex-col bg-gray-50 flex-shrink-0 border-r border-gray-200 transition-all ease-out shadow-sm"
           )}
           aria-label="Host sidebar"
-          style={{ left: 0 }}
+          style={{ overflow: "hidden" }} // keep inner nav scroll clipped but wrapper allows toggle outside
         >
-          {/* Collapse toggle - positioned to align with content header */}
-          <motion.button
-            onClick={() => setIsCollapsed((s) => !s)}
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="absolute -right-3 top-24 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
-            whileTap={{ scale: 0.96 }}
-            whileHover={{ scale: 1.05 }}
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4 text-gray-600 hover:text-primary" />
-            ) : (
-              <ChevronLeft className="h-4 w-4 text-gray-600 hover:text-primary" />
-            )}
-          </motion.button>
-
-          {/* Adjusted top spacer to align with content header */}
+          {/* Header */}
           <motion.div
-            className="h-20 flex items-center justify-center px-3 border-b border-gray-200"
+            className="h-24 flex items-center px-3 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
           >
             {!isCollapsed ? (
@@ -139,20 +124,34 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             )}
           </motion.div>
 
-          {/* Navigation with adjusted padding to align with content */}
-          <nav className="flex-1 px-2 pt-2 pb-4 overflow-y-auto">
+          {/* Navigation */}
+          <nav className="flex-1 px-2 pt-4 pb-4 overflow-y-auto">
             <ul
               className={clsx(
-                "flex flex-col gap-1",
+                "flex flex-col gap-2",
                 isCollapsed ? "items-center" : "items-stretch"
               )}
             >
               {Links}
             </ul>
           </nav>
-
-          {/* Bottom collapse control removed as requested */}
         </motion.aside>
+
+        {/* Toggle Button - placed OUTSIDE the aside (so it sits on the divider and won't be clipped) */}
+        <motion.button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="absolute -right-3 top-4 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
+          whileTap={{ scale: 0.96 }}
+          whileHover={{ scale: 1.05 }}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4 text-gray-600" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 text-gray-600" />
+          )}
+        </motion.button>
       </div>
 
       {/* Mobile bottom nav */}
