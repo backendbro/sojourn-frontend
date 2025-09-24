@@ -9,14 +9,12 @@ import { useState, useEffect } from "react";
 const CITIES_DATA = [
   {
     title: "Abuja",
-    imageUrl:
-      "https://i.pinimg.com/736x/7c/ab/8b/7cab8b33b4f922fb95082211370f0a7e.jpg",
+    imageUrl: "/assets/imgs/discover-abuja.png",
     description: EXPLORE_CITIES.abuja,
   },
   {
     title: "Lagos",
-    imageUrl:
-      "https://i.pinimg.com/1200x/c9/21/83/c921830e36139ae5b5f65d2763e2df06.jpg",
+    imageUrl: "/assets/imgs/discover-lagos.png",
     description: EXPLORE_CITIES.lagos,
   },
   {
@@ -26,8 +24,7 @@ const CITIES_DATA = [
   },
   {
     title: "AkwaIbom",
-    imageUrl:
-      "https://i.pinimg.com/736x/73/3b/1b/733b1bc25d3fd4459f4ebd15e8ebf257.jpg",
+    imageUrl: "/assets/imgs/discover-akwaibom.jpg",
     description: EXPLORE_CITIES.akwa_ibom,
   },
   {
