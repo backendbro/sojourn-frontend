@@ -75,8 +75,8 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop sidebar — wrapper made fixed so it stays put while the page scrolls */}
-      <div className="hidden lg:block fixed left-0 top-[80px] h-[calc(100vh-80px)] z-40">
+      {/* Desktop sidebar — part of page flow so it pushes/pulls the right-hand content */}
+      <div className="hidden lg:block relative">
         <motion.aside
           initial={false}
           animate={{ width: isCollapsed ? collapsedWidth : expandedWidth }}
@@ -87,15 +87,15 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "relative h-full flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+            "relative h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
           style={{ overflow: "hidden" }}
         >
-          {/* HEADER (unchanged) */}
+          {/* HEADER (Dashboard text when open, boxed 'S' when collapsed) */}
           <motion.div
-            className="h-4 flex items-center px-4 border-b border-gray-200"
+            className="h-24 flex items-center px-3 border-b border-gray-200"
             animate={{ justifyContent: isCollapsed ? "center" : "flex-start" }}
           >
             <div
@@ -104,8 +104,19 @@ export default function Sidebar() {
                 isCollapsed ? "justify-center" : "justify-start"
               )}
             >
-              {!isCollapsed && (
-                <span className="font-semibold text-lg text-gray-800"> </span>
+              {!isCollapsed ? (
+                <motion.h2
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="font-semibold text-lg text-gray-800 pl-3"
+                >
+                  Dashboard
+                </motion.h2>
+              ) : (
+                <div className="w-8 h-8 rounded-md bg-red-600 flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">S</span>
+                </div>
               )}
             </div>
           </motion.div>
@@ -142,7 +153,6 @@ export default function Sidebar() {
                         {pickIcon(text, active)}
                       </span>
 
-                      {/* ---------- NOTE: removed openSidebar gating so labels still appear when on /dashboard/inbox ---------- */}
                       {!isCollapsed && (
                         <motion.span
                           initial={{ opacity: 0, x: -6 }}
@@ -174,12 +184,12 @@ export default function Sidebar() {
           </nav>
         </motion.aside>
 
-        {/* ====== TOGGLE BUTTON: kept in same place so it stays on the divider between sidebar & content ====== */}
+        {/* TOGGLE BUTTON: positioned relative to the sidebar container so it stays on the divider */}
         <motion.button
           onClick={() => setIsCollapsed((s) => !s)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="absolute -right-3 top-4 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-red-600 z-50"
+          className="absolute -right-3 top-20 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-red-600 z-50"
           whileTap={{ scale: 0.96 }}
           whileHover={{ scale: 1.05 }}
         >
@@ -191,7 +201,7 @@ export default function Sidebar() {
         </motion.button>
       </div>
 
-      {/* Mobile bottom nav — unchanged from your version; will not render on homepage because the provider hides the whole Sidebar */}
+      {/* Mobile bottom nav — unchanged */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
