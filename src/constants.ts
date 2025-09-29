@@ -303,9 +303,10 @@ export const PLANS = [
     },
     desc: "Ideal for starting out",
     list: [
-      "2% commission on bookings",
-      "Up to 3 listings",
+      "0% commission on bookings",
+      "1 listings",
       "24/7 chat and email support",
+      "analytics and insight",
     ],
   },
   {
@@ -316,19 +317,19 @@ export const PLANS = [
     price: {
       monthly: {
         id: "PLN_p2wo7ln2yju2h8y",
-        amount: 1,
+        amount: 10000,
         type: "monthly",
       },
       annually: {
         id: "PLN_h6xpbpqlj0trlxe",
-        amount: 1,
+        amount: 120000,
         type: "annually",
       },
     },
     desc: "Best value for growing business",
     list: [
-      "No commision on bookings",
-      "Up to 10 listings",
+      "0% commision on bookings",
+      "Up to 5 listings",
       "Enhanced visibility option",
       "24/7 chat and email support",
       "Analytics and insights",
