@@ -304,7 +304,7 @@ export const PLANS = [
     desc: "Ideal for starting out",
     list: [
       "0% commission on bookings",
-      "1 listings",
+      "1 listing",
       "24/7 chat and email support",
       "analytics and insight",
     ],
