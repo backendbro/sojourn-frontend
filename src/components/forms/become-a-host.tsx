@@ -324,8 +324,7 @@ const BecomeAHostPage: React.FC = () => {
                     plan.popular ? "border-2 border-primary" : ""
                   }`}
                 >
-                  {/* NOTE: Veil removed for Lite. Only show Coming Soon for Premium */}
-                  {plan.name === "Premium" && (
+                  {["Lite", "Premium"].includes(plan.name) && (
                     <div className="absolute inset-0 bg-white/70 backdrop-blur-sm z-10 flex items-center justify-center">
                       <span className="text-gray-500 font-medium">
                         Coming Soon
@@ -479,7 +478,7 @@ const BecomeAHostPage: React.FC = () => {
             <m.div
               variants={fadeIn}
               transition={{ duration: 0.6 }}
-              className="mt-16 text-center"
+              className="mt-12 text-center"
             >
               {isLoggedInAndNotHost ? (
                 <AddHost className="inline-flex items-center gap-2 bg-white px-8 py-4 rounded-full text-primary font-semibold transition-all hover:bg-white/90 hover:scale-105 shadow-lg" />
@@ -491,13 +490,6 @@ const BecomeAHostPage: React.FC = () => {
                   </div>
                 </BecomeAHost>
               )}
-              <Link
-                href="/about-us"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-primary font-semibold hover:bg-primary/5 transition-all"
-              >
-                Learn more
-                <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </Link>
             </m.div>
           </div>
 
