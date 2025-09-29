@@ -22,7 +22,7 @@ import { SidebarContext } from "@/app/SidebarProvider";
 
 export default function Sidebar() {
   const pathname = usePathname() || "/";
-  const { isCollapsed, setIsCollapsed } = useContext(SidebarContext);
+  const { isCollapsed, setIsCollapsed } = React.useContext(SidebarContext);
 
   // Track selected link so a clicked item stays active (works while collapsed)
   const [selected, setSelected] = useState<string>(pathname);
@@ -31,15 +31,18 @@ export default function Sidebar() {
     setSelected(pathname);
   }, [pathname]);
 
-  // Preserve old visibility rules
+  // preserve login state check
   const isLoggedIn = useSelector((state: RootState) => state.user?.loggedIn);
-  const isOnUserAndLoggedin = isLoggedIn && !pathname.includes("hosts");
-  const isOnCheckoutPage = isLoggedIn && pathname.includes("checkout");
-  // keep variable for possible other logic but we will NOT use it to hide the sidebar itself
-  const openSidebar = !pathname.includes("inbox");
 
-  // If the user isn't the expected one or it's checkout, don't render sidebar
-  if (!isOnUserAndLoggedin) return null;
+  // show sidebar **only** when user is logged in and the URL includes '/dashboard'
+  // also hide on hosts pages and checkout
+  const isOnHosts = pathname.includes("hosts");
+  const isOnCheckoutPage = pathname.includes("checkout");
+  const isOnGuestDashboard = pathname.includes("/dashboard");
+
+  if (!isLoggedIn) return null;
+  if (!isOnGuestDashboard) return null;
+  if (isOnHosts) return null;
   if (isOnCheckoutPage) return null;
 
   function pickIcon(text: string, active: boolean) {
@@ -53,6 +56,14 @@ export default function Sidebar() {
     if (text.toLowerCase().includes("wishlist"))
       return (<Heart color={IconColor} size={18} />) as any;
     return <Home color={IconColor} size={18} />;
+  }
+
+  // Capitalize only the first word of the text
+  function capitalizeFirstWord(s: string) {
+    if (!s) return s;
+    const parts = s.split(" ");
+    parts[0] = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+    return parts.join(" ");
   }
 
   const collapsedWidth = 72;
@@ -139,7 +150,7 @@ export default function Sidebar() {
                   <li key={idx} className="w-full">
                     <Link
                       href={link}
-                      onClick={() => setSelected(link)}
+                      onClick={() => setSelected(link || pathname)}
                       className={clsx(
                         "group flex items-center gap-3 w-full rounded-lg transition-all duration-150 ease-out",
                         isCollapsed ? "justify-center px-3 py-3" : "px-6 py-3",
@@ -147,7 +158,9 @@ export default function Sidebar() {
                           ? "bg-red-50 text-red-600 shadow-sm ring-1 ring-red-100"
                           : "text-gray-700 hover:bg-red-50 hover:text-red-600"
                       )}
-                      title={isCollapsed ? text : undefined}
+                      title={
+                        isCollapsed ? capitalizeFirstWord(text) : undefined
+                      }
                     >
                       <span className="shrink-0 flex items-center justify-center group-hover:text-red-600">
                         {pickIcon(text, active)}
@@ -166,7 +179,7 @@ export default function Sidebar() {
                               : "text-gray-700 group-hover:text-red-600"
                           )}
                         >
-                          {text}
+                          {capitalizeFirstWord(text)}
                         </motion.span>
                       )}
 
@@ -201,11 +214,11 @@ export default function Sidebar() {
         </motion.button>
       </div>
 
-      {/* Mobile bottom nav — unchanged */}
+      {/* Mobile bottom nav — label capitalizes first word and active detection uses isActive */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
-            const active = pathname.slice(0) === link;
+            const active = isActive(link);
             const IconColor = active ? "#DE5353" : "#6B7280";
 
             let Icon = <PropertiesIcon color={IconColor} size={20} />;
@@ -226,7 +239,9 @@ export default function Sidebar() {
                   )}
                 >
                   {Icon}
-                  <span className="text-xs mt-1">{text.split(" ")[0]}</span>
+                  <span className="text-xs mt-1">
+                    {capitalizeFirstWord(text.split(" ")[0])}
+                  </span>
                 </Link>
               </li>
             );
