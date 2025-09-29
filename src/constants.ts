@@ -322,7 +322,7 @@ export const PLANS = [
       },
       annually: {
         id: "PLN_h6xpbpqlj0trlxe",
-        amount: 120000,
+        amount: 100000,
         type: "annually",
       },
     },
