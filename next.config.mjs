@@ -58,8 +58,7 @@ object-src 'none': Block embedding of objects like Flash or PDFs.
       {
         source: "/api/:path*",
         // destination: "http://localhost:3000/api/v1/:path*",
-        destination:
-          "https://sojourn-backend-api-xk5x.onrender.com/api/v1/:path*", // Proxy to Backend/
+        destination: "https://sojourn-backend-h32r.onrender.com/api/v1/:path*", // Proxy to Backend/
         // destination: "http://92.112.192.73/api/v1/:path*",
       },
       {

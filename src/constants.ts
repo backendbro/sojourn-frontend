@@ -334,7 +334,6 @@ export const PLANS = [
       "24/7 chat and email support",
       "Analytics and insights",
       "Basic optimization kit",
-      "Sojourn cover",
     ],
   },
   {
