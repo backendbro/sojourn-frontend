@@ -259,7 +259,7 @@ function Withdraw({ id, hostId }: { id: string; hostId: string }) {
           <span className="text-[14px]">Available Balance:</span>
           <span className="font-inter">₦{walletBalance}</span>
         </div>
-        <p className="text-[14px]">(2% commission applied)</p>
+        <p className="text-[14px]">(₦1500 withdrawal fee applied)</p>
       </div>
       <div className="w-full flex flex-col space-y-2">
         <input
