@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   GLOBAL RESPONSIVENESS FIXES
+   ========================= */
+
+/* Make box sizing predictable so padding doesn't create overflow */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow on root elements and make them available for flex shrinking */
+html,
+body,
+#__next {
+  width: 100%;
+  overscroll-behavior-x: none;
+  overflow-x: hidden; /* hides tiny overflow caused by anti-aliasing or fractional pixels */
+}
+
+/* Allow flex children to shrink properly in tailwind-based flex layouts */
+.flex,
+.flex-1,
+.grid,
+.parent,
+main,
+#__next,
+.content-wrapper {
+  min-width: 0;
+}
+
+/* Constrain media so images/videos/iframes/svg can't push layout */
+img,
+picture,
+video,
+iframe,
+svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Avoid long unbreakable strings from forcing overflow */
+html,
+body {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Optional: helpful utility during dev to visually spot overflow (comment out in prod) */
+/*
+* {
+  outline: 0.5px solid rgba(255,0,0,0.03);
+}
+*/
+
+/* =========================
+   Your existing styles (kept / preserved)
+   ========================= */
+
 :root {
   --rdp-background-color: yellow;
 }
@@ -161,6 +221,9 @@ h3 {
   height: 100%;
   padding-left: 1rem !important;
   padding-right: 1rem !important;
+  /* allow this container to shrink when inside flex parents */
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .earn-parent {
