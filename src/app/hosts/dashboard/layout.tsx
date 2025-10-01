@@ -47,7 +47,7 @@ export default function RootLayout({
           isCollapsed ? "lg:pl-20" : "lg:pl-56"
         )}
       >
-        <div className="2xl:max-w-[1400px] 2xl:mx-auto w-full p-6">
+        <div className="2xl:max-w-[1400px] 2xl:mx-auto w-full p-2">
           {children}
         </div>
       </div>

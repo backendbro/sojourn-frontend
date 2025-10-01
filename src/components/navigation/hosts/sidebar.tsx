@@ -141,12 +141,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
           </nav>
         </motion.aside>
 
-        {/* moved down to top-20 (80px). Try top-16 (64px) or top-24 (96px) if you need more/less */}
+        {/* Collapse/expand toggle - EXPLICITLY hidden on small screens to prevent stray icon */}
         <motion.button
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="absolute -right-3 top-20 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
+          className="hidden lg:flex absolute -right-3 top-20 flex items-center justify-center rounded-full bg-white border border-gray-200 p-1 shadow-sm hover:bg-red-50 hover:text-primary z-50"
           whileTap={{ scale: 0.96 }}
           whileHover={{ scale: 1.05 }}
         >
@@ -173,6 +173,12 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
             else if (text.toLowerCase().includes("inbox"))
               Icon = <Mail color={IconColor} size={20} />;
 
+            // show "Plan" for "My plan" so it doesn't get truncated on small screens
+            const mobileLabel =
+              text.toLowerCase() === "my plan"
+                ? "Plan"
+                : toTitleCase(text.split(" ")[0]);
+
             return (
               <li key={idx} className="flex items-center justify-center">
                 <Link
@@ -183,9 +189,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
                   )}
                 >
                   {Icon}
-                  <span className="text-xs mt-1">
-                    {toTitleCase(text.split(" ")[0])}
-                  </span>
+                  <span className="text-xs mt-1">{mobileLabel}</span>
                 </Link>
               </li>
             );
