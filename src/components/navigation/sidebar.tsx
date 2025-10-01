@@ -1,6 +1,7 @@
+// components/navigation/sidebar.tsx
 "use client";
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import BookingIcon from "@/components/svgs/BookingIcon";
 import PropertiesIcon from "@/components/svgs/PropertiesIcon";
@@ -27,7 +28,6 @@ export default function Sidebar() {
   // Track selected link so a clicked item stays active (works while collapsed)
   const [selected, setSelected] = useState<string>(pathname);
   useEffect(() => {
-    // keep selected in sync with URL when navigation happens externally
     setSelected(pathname);
   }, [pathname]);
 
@@ -50,11 +50,11 @@ export default function Sidebar() {
     if (text.toLowerCase().includes("bookings"))
       return <BookingIcon color={IconColor} size={18} />;
     if (text.toLowerCase().includes("wallet"))
-      return (<Wallet color={IconColor} size={18} />) as any;
+      return <Wallet color={IconColor} size={18} />;
     if (text.toLowerCase().includes("inbox"))
-      return (<Mail color={IconColor} size={18} />) as any;
+      return <Mail color={IconColor} size={18} />;
     if (text.toLowerCase().includes("wishlist"))
-      return (<Heart color={IconColor} size={18} />) as any;
+      return <Heart color={IconColor} size={18} />;
     return <Home color={IconColor} size={18} />;
   }
 
@@ -98,7 +98,7 @@ export default function Sidebar() {
             mass: 0.5,
           }}
           className={clsx(
-            "relative h-screen flex-shrink-0 bg-gray-50 border-r border-gray-200 shadow-sm",
+            "relative flex-shrink-0 min-h-0 bg-gray-50 border-r border-gray-200 shadow-sm",
             "flex flex-col transition-all ease-out"
           )}
           aria-label="Guest sidebar"
@@ -144,7 +144,6 @@ export default function Sidebar() {
               )}
             >
               {GUEST_SIDEBAR_MENU.map(({ text, link }, idx: number) => {
-                // active: use helper that treats "/" specially
                 const active = isActive(link);
                 return (
                   <li key={idx} className="w-full">
@@ -214,7 +213,7 @@ export default function Sidebar() {
         </motion.button>
       </div>
 
-      {/* Mobile bottom nav — label capitalizes first word and active detection uses isActive */}
+      {/* Mobile bottom nav — stays unchanged */}
       <div className="w-full fixed bottom-0 z-[9999] h-[70px] flex items-center bg-white border-t border-gray-300 lg:hidden">
         <ul className="w-full grid grid-cols-5">
           {GUEST_SIDEBAR_MENU.map(({ text, link }, idx) => {
