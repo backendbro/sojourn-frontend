@@ -229,7 +229,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="text-sm opacity-90">
-            Built with care ·{" "}
+            Built with care ·{"backendbro"}
             <span className="hidden sm:inline">All rights reserved.</span>
           </div>
         </div>

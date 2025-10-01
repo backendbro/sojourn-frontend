@@ -197,7 +197,9 @@ export default function Home() {
           <div className="absolute inset-0 bg-grid-pattern opacity-5 mix-blend-overlay" />
 
           {/* Hero Content */}
-          <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10">
+          {/* <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10"> */}
+
+          <div className="max-w-[1200px] px-6 md:px-10 mt-6 md:mt-0 flex flex-col items-center space-y-8 z-10">
             <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
               Experience Luxury
               <span className="block mt-2">Away from Home</span>
