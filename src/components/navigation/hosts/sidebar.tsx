@@ -28,10 +28,6 @@ function toTitleCase(str: string) {
 
 export default function Sidebar({ isCollapsed, setIsCollapsed }: Props) {
   const pathname = usePathname() || "/";
-
-  const onHostDashboard = pathname.startsWith("/hosts/dashboard");
-  if (!onHostDashboard) return null;
-
   const isOnCreateListing = pathname?.includes(
     "/hosts/dashboard/properties/create"
   );
