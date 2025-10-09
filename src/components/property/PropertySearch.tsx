@@ -80,85 +80,100 @@ const PropertySearch = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="relative text-[18px] bg-white min-h-[50px] md:h-[50px] hero-search-shadow border border-slate-200 flex justify-between items-center rounded-full"
-      /* Kill global word-break/overflow-wrap for this entire bar */
+      className="relative bg-white hero-search-shadow border border-slate-200 rounded-full flex items-center justify-between overflow-hidden"
       style={{
+        minHeight: "55px",
+        fontSize: "16px",
         wordBreak: "normal",
         overflowWrap: "normal",
-        WebkitLineClamp: "unset",
       }}
     >
-      {/* Left inputs */}
-      <div className="flex items-center flex-1">
-        <ListingSearch showIcon={false} />
-        <SearchCalendar showIcon={false} />
-      </div>
-
-      {/* Guests */}
-      <button
-        type="button"
-        className="w-1/4 px-4 flex items-center space-x-2 font-[300] cursor-pointer hover:bg-red-50 rounded-full"
-        onClick={(e) => {
-          e.preventDefault();
-          searchValues.setSearchValue((prevState) => ({
-            ...prevState,
-            searchValues: {
-              ...prevState.searchValues,
-              openChildrenCalculator:
-                !prevState.searchValues.openChildrenCalculator,
-            },
-          }));
+      {/* Wrapper for 3 equal input sections */}
+      <div
+        className="grid flex-1"
+        style={{
+          gridTemplateColumns: "1fr 1fr 1fr",
+          alignItems: "center",
+          textAlign: "left",
         }}
-        /* prevent any wrapping in this button */
-        style={{ whiteSpace: "nowrap" }}
       >
+        {/* 1. City Search */}
         <div
-          className="w-full flex items-center justify-between h-full"
+          className="flex items-center justify-center px-4 border-r border-gray-200 h-full"
           style={{ whiteSpace: "nowrap" }}
         >
-          <div
-            className="flex items-center justify-between space-x-2 outline-none border-0"
-            style={{ whiteSpace: "nowrap" }}
-          >
-            <div
-              className="flex items-center space-x-1"
-              style={{
-                whiteSpace: "nowrap",
-                wordBreak: "normal",
-                overflowWrap: "normal",
-              }}
-            >
-              <span className="font-semibold">{numberOfGuests}</span>
-              <span>{guests}</span>
-            </div>
-            <ChevronDownIcon size={10} />
-          </div>
-
-          <ChildrenAndInfantCalculator />
+          <ListingSearch showIcon={false} />
         </div>
-      </button>
 
-      {/* Search button */}
-      <div className="w-auto flex items-center py-2 px-2">
+        {/* 2. Dates */}
+        <div
+          className="flex items-center justify-center px-4 border-r border-gray-200 h-full"
+          style={{ whiteSpace: "nowrap" }}
+        >
+          <SearchCalendar showIcon={false} />
+        </div>
+
+        {/* 3. Guests */}
+        <button
+          type="button"
+          className="flex items-center justify-between w-full px-4 font-[300] hover:bg-red-50 h-full"
+          onClick={(e) => {
+            e.preventDefault();
+            searchValues.setSearchValue((prevState) => ({
+              ...prevState,
+              searchValues: {
+                ...prevState.searchValues,
+                openChildrenCalculator:
+                  !prevState.searchValues.openChildrenCalculator,
+              },
+            }));
+          }}
+          style={{
+            whiteSpace: "nowrap",
+            wordBreak: "normal",
+            overflowWrap: "normal",
+          }}
+        >
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold">{numberOfGuests}</span>
+            <span>{guests}</span>
+          </div>
+          <ChevronDownIcon size={12} />
+          <ChildrenAndInfantCalculator />
+        </button>
+      </div>
+
+      {/* Search Button */}
+      <div
+        className="flex items-center justify-center bg-primary p-3 rounded-full mr-2 cursor-pointer hover:bg-green-500 transition-all duration-200"
+        style={{
+          width: "45px",
+          height: "45px",
+          flexShrink: 0,
+        }}
+      >
         <button
           ref={searchRef}
           type="submit"
-          className="outline-none border-0 p-3 bg-primary ease duration-300 rounded-full w-auto hover:bg-green-500 flex items-center justify-center"
-          /* make sure the button keeps size even if svg acts weird */
-          style={{ lineHeight: 1 }}
-          aria-label="Search"
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: 0,
+            margin: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           <SearchIcon
-            /* inline hard overrides so global.css can't hide/resize it */
             style={{
               display: "inline-block",
-              width: 16,
-              height: 16,
-              color: "#ffffff",
+              width: 18,
+              height: 18,
+              color: "#fff",
               verticalAlign: "middle",
               flexShrink: 0,
             }}
-            strokeWidth={2}
           />
         </button>
       </div>
