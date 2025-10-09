@@ -63,7 +63,7 @@ const PropertySearch = ({
     e.preventDefault();
     if (!checkInDateState || !cityState || !searchValues.value) {
       toast("Search Error.", {
-        description: "You must submit atleast a city and a check in date.",
+        description: "You must submit at least a city and a check-in date.",
         action: {
           label: "Ok",
           onClick: () => null,
@@ -71,12 +71,9 @@ const PropertySearch = ({
       });
     } else {
       router.push(
-        `/properties?city=${cityState}&adults=${adultsState}&children=${childrenState}&infants=${infantsState}&check-in=${checkInDateState}&check-out=${checkOutDateState}
-      &type_of_property=${typesOfProperty}
-  &number_of_rooms=${numberOfRooms}&price=${
+        `/properties?city=${cityState}&adults=${adultsState}&children=${childrenState}&infants=${infantsState}&check-in=${checkInDateState}&check-out=${checkOutDateState}&type_of_property=${typesOfProperty}&number_of_rooms=${numberOfRooms}&price=${
           price ? +price : null
-        }&amenities=${amenities}
-      `
+        }&amenities=${amenities}`
       );
     }
   }
@@ -84,12 +81,14 @@ const PropertySearch = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="relative text-[18px] bg-white min-h-[50px] md:h-[50px] hero-search-shadow  border border-slate-200 flex justify-between rounded-full"
+      className="relative text-[18px] bg-white min-h-[50px] md:h-[50px] hero-search-shadow border border-slate-200 flex justify-between items-center rounded-full"
     >
       <ListingSearch showIcon={false} />
       <SearchCalendar showIcon={false} />
+
+      {/* Guests Button */}
       <button
-        className="w-1/4 px-4 flex items-center space-x-2 font-[300] cursor-pointer hover:bg-red-50"
+        className="w-1/4 px-4 flex items-center space-x-2 font-[300] cursor-pointer hover:bg-red-50 rounded-full"
         onClick={(e) => {
           e.preventDefault();
           searchValues.setSearchValue((prevState) => ({
@@ -102,25 +101,26 @@ const PropertySearch = ({
           }));
         }}
       >
-        <div className="w-full flex py-0 items-center justify-between h-full">
-          <div className="w-full h-full  flex">
-            <div className="flex items-center justify-between space-x-2 outline-none border-0 py-4 lg:px-2 lg:py-2">
-              <div className="space-x-1">
-                <span className="font-semibold">{numberOfGuests}</span>
-                <span>{guests}</span>
-              </div>
-              <ChevronDownIcon size={10} />
+        <div className="w-full flex items-center justify-between h-full">
+          <div className="flex items-center justify-between space-x-2 outline-none border-0">
+            <div className="flex items-center space-x-1">
+              <span className="font-semibold">{numberOfGuests}</span>
+              <span>{guests}</span>
             </div>
-            <ChildrenAndInfantCalculator />
+            <ChevronDownIcon size={10} />
           </div>
+          <ChildrenAndInfantCalculator />
         </div>
       </button>
+
+      {/* Search Button */}
       <div className="w-auto flex items-center py-2 px-2 group">
         <button
           ref={searchRef}
-          className="outline-none border-0 p-3 bg-primary ease duration-300 rounded-full w-auto group-hover:bg-green-500"
+          type="submit"
+          className="outline-none border-0 p-3 bg-primary ease duration-300 rounded-full w-auto group-hover:bg-green-500 flex items-center justify-center"
         >
-          <Search size={16} color="white" />
+          <Search size={16} color="white" className="inline-block" />
         </button>
       </div>
     </form>

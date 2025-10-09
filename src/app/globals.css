@@ -412,3 +412,48 @@ h3 {
     border-color: #f0ae2f;
   }
 }
+
+/* -----------------------------
+   FIX: global display issues
+   ----------------------------- */
+
+/* Only make media display:block — not SVGs */
+img,
+picture,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* SVGs and icons should stay inline */
+svg {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Restore inline-flex/text alignment */
+button,
+span,
+input,
+svg,
+div {
+  line-height: normal;
+}
+
+/* Lucide-react icons */
+.lucide,
+.icon,
+button svg {
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+/* Enforce inline stacking for text */
+.flex,
+.inline-flex {
+  align-items: center;
+}
