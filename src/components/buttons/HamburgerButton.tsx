@@ -182,34 +182,36 @@ const HamburgerButton = () => {
       ) : null}
       <div
         onClick={() => setMenuOpen(!isMenuOpen)}
-        className={` ${hoverHamburgerIcon}`}
+        className={`  ${hoverHamburgerIcon}`}
       >
         {user?.loggedIn ? (
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-red-100">
+          <div className="rounded-[50%] relative overflow-hidden bg-red-100 w-[35px] h-[35px] flex items-center justify-center text-md">
             {user?.me?.photo ? (
-              <Image
-                src={user.me.photo}
-                alt="profile_picture"
-                fill
-                sizes="36px"
-                className="object-cover object-center"
-                priority={false}
-              />
+              <Image src={user.me.photo} alt="profile_picture" fill />
             ) : (
-              <span className="text-primary font-bold capitalize">
-                {(user.me?.firstName?.[0] ?? "") +
-                  (user.me?.lastName?.[0] ?? "")}
-              </span>
+              <>
+                {user?.me?.firstName ? (
+                  <span className="text-primary font-bold capitalize">
+                    {user.me?.firstName[0]}
+                  </span>
+                ) : null}
+
+                {user?.me.lastName ? (
+                  <span className="text-primary font-bold capitalize">
+                    {user.me?.lastName[0]}
+                  </span>
+                ) : null}
+              </>
             )}
           </div>
         ) : null}
-
         <button
           className={`border-0 ml-2 outline-none w-[20px] h-[20px] relative ease duration-300 ${buttonPos}`}
         >
           <div
             className={
-              "w-[20px] ease duration-300 h-[2px] bg-primary my-1 " + animateTwo
+              "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
+              animateTwo
             }
           ></div>
           <div
@@ -219,7 +221,7 @@ const HamburgerButton = () => {
           ></div>
           <div
             className={
-              "w-[20px] ease duration-300 h-[2px] bg-primary my-1 " +
+              "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
               animateThree
             }
           ></div>
