@@ -1,9 +1,21 @@
-# *
 User-agent: *
 Allow: /
 
-# Host
-Host: https://www.sojourn.ng/
+# Block private, account, and sensitive flows
+Disallow: /dashboard/
+Disallow: /hosts/dashboard/
+Disallow: /hosts/signup
+Disallow: /hosts/setup
+Disallow: /account-created
+Disallow: /hosts/account-created
+Disallow: /hosts/checkout/
+Disallow: /checkout/
+Disallow: /reset-password/
+Disallow: /verify-email/
 
-# Sitemaps
-Sitemap: https://www.sojourn.ng/sitemap.xml
+# Bing-specific rules
+User-agent: Bingbot
+Crawl-delay: 10
+
+# Global sitemap
+Sitemap: https://sojourn.ng/sitemap.xml
