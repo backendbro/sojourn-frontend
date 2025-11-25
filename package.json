@@ -7,7 +7,8 @@
     "build": "next build",
     "start:prod": "pm2 start --name frontend npm -- start --port=4000",
     "start": "next start --port=4000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.5.3",
