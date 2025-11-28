@@ -21,34 +21,36 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1"
+        />
       </head>
+
+      {/* Google Analytics */}
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-E34PC8GDB6"
         strategy="afterInteractive"
       />
-      {/* <Script strategy="afterInteractive" id="google-analytics">
-        {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-E34PC8GDB6');`}
-      </Script> */}
 
       <Script strategy="afterInteractive" id="google-analytics">
         {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-E34PC8GDB6', {
-      page_path: window.location.pathname,
-    });
-  `}
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-E34PC8GDB6', {
+            page_path: window.location.pathname,
+          });
+        `}
       </Script>
+
+      {/* Tidio Chat */}
       <Script
         src="https://code.tidio.co/z4gvzirnqym0ttmipzijrxrrhd7um6o1.js"
         async
       />
+
       <body className={`${raleway.variable} ${inter.variable} font-sans`}>
         <StructuredData />
         <AppProvider>
@@ -63,7 +65,15 @@ gtag('config', 'G-E34PC8GDB6');`}
             </NetworkProvider>
           </NotificationProvider>
         </AppProvider>
+
         <FacebookAdsScript />
+
+        {/* ✅ AHREFS ANALYTICS */}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="RIth27qiG3b4pD3ipG2ivg"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
