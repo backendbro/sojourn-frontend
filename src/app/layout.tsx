@@ -68,7 +68,7 @@ export default function RootLayout({
 
         <FacebookAdsScript />
 
-        {/* ✅ AHREFS ANALYTICS */}
+        {/* ✅ AHREFS ANALYTIC */}
         <Script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="RIth27qiG3b4pD3ipG2ivg"
