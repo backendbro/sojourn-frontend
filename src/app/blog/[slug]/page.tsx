@@ -1,15 +1,7 @@
 import { getAllPostSlugs, getPostData, PostData } from "../../../../lib/posts";
-import { MDXRemote } from "next-mdx-remote";
 import Head from "next/head";
+import ClientMDX from "@/components/ui/ClientMDX"; // import the client wrapper
 
-// Typed props for the dynamic route
-interface PostPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-// MDX components
 const components = {
   MyButton: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
     <button
@@ -20,6 +12,10 @@ const components = {
     </button>
   ),
 };
+
+interface PostPageProps {
+  params: { slug: string };
+}
 
 export default async function PostPage({ params }: PostPageProps) {
   const postData: PostData & { mdxSource: any } = await getPostData(
@@ -34,13 +30,12 @@ export default async function PostPage({ params }: PostPageProps) {
       </Head>
       <article style={{ padding: "2rem" }}>
         <h1>{postData.title}</h1>
-        <MDXRemote {...postData.mdxSource} components={components} />
+        <ClientMDX {...postData.mdxSource} components={components} />
       </article>
     </>
   );
 }
 
-// Static generation for dynamic posts
 export async function generateStaticParams() {
   const slugs = getAllPostSlugs();
   return slugs.map(({ slug }) => ({ slug }));
