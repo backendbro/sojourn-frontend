@@ -1,10 +1,20 @@
 "use client";
 
-import { MDXRemote, MDXRemoteProps } from "next-mdx-remote";
+import { MDXRemote } from "next-mdx-remote";
 import React from "react";
 
-interface ClientMDXProps extends MDXRemoteProps {}
+export default function ClientMDX({ mdxSource }: { mdxSource: any }) {
+  const components = {
+    MyButton: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+      <button
+        style={{ padding: "8px", background: "blue", color: "white" }}
+        {...props}
+      >
+        Click me!
+      </button>
+    ),
+    // add more client-side MDX components here
+  };
 
-export default function ClientMDX(props: ClientMDXProps) {
-  return <MDXRemote {...props} />;
+  return <MDXRemote {...mdxSource} components={components} />;
 }

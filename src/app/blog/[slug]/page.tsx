@@ -1,17 +1,6 @@
 import { getAllPostSlugs, getPostData, PostData } from "../../../../lib/posts";
 import Head from "next/head";
-import ClientMDX from "@/components/ui/ClientMDX"; // import the client wrapper
-
-const components = {
-  MyButton: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-    <button
-      style={{ padding: "8px", background: "blue", color: "white" }}
-      {...props}
-    >
-      Click me!
-    </button>
-  ),
-};
+import ClientMDX from "@/components/ui/ClientMDX";
 
 interface PostPageProps {
   params: { slug: string };
@@ -30,7 +19,7 @@ export default async function PostPage({ params }: PostPageProps) {
       </Head>
       <article style={{ padding: "2rem" }}>
         <h1>{postData.title}</h1>
-        <ClientMDX {...postData.mdxSource} components={components} />
+        <ClientMDX mdxSource={postData.mdxSource} />
       </article>
     </>
   );
