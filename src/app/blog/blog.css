@@ -1,0 +1,174 @@
+/* ===== DEV.TO–STYLE ARTICLE BODY ===== */
+
+.crayons-article__main {
+  display: flex;
+  justify-content: center;
+}
+
+.crayons-article__body {
+  max-width: 720px;
+  width: 100%;
+  padding: 2rem 1.25rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  line-height: 1.75;
+  font-size: 1rem;
+  color: #242424;
+}
+
+/* -------------------------
+   Paragraphs
+-------------------------- */
+
+.crayons-article__body p {
+  margin: 0 0 1.25rem;
+}
+
+.crayons-article__body strong {
+  font-weight: 600;
+}
+
+.crayons-article__body em {
+  font-style: italic;
+}
+
+/* -------------------------
+   Headings
+-------------------------- */
+
+.crayons-article__body h2 {
+  margin: 3rem 0 1rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 2rem;
+}
+
+.crayons-article__body h3 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.crayons-article__body h2 a,
+.crayons-article__body h3 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* -------------------------
+   Lists
+-------------------------- */
+
+.crayons-article__body ul,
+.crayons-article__body ol {
+  margin: 0 0 1.5rem 1.25rem;
+  padding: 0;
+}
+
+.crayons-article__body li {
+  margin-bottom: 0.5rem;
+}
+
+.crayons-article__body li p {
+  margin-bottom: 0.5rem;
+}
+
+/* -------------------------
+   Blockquotes
+-------------------------- */
+
+.crayons-article__body blockquote {
+  margin: 2rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid #3b82f6;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.crayons-article__body blockquote p {
+  margin: 0;
+}
+
+/* -------------------------
+   Images
+-------------------------- */
+
+.article-body-image-wrapper {
+  display: block;
+  margin: 2rem 0;
+}
+
+.article-body-image-wrapper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* -------------------------
+   Inline Code
+-------------------------- */
+
+.crayons-article__body code {
+  background: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+/* -------------------------
+   Code Blocks
+-------------------------- */
+
+.highlight {
+  margin: 2rem 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.highlight pre {
+  margin: 0;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #e5e7eb;
+}
+
+.highlight code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* -------------------------
+   Spacing Rhythm Fixes
+-------------------------- */
+
+.crayons-article__body > *:last-child {
+  margin-bottom: 0;
+}
+
+/* -------------------------
+   Responsive
+-------------------------- */
+
+@media (max-width: 640px) {
+  .crayons-article__body {
+    padding: 1.5rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .crayons-article__body h2 {
+    font-size: 1.35rem;
+  }
+
+  .crayons-article__body h3 {
+    font-size: 1.1rem;
+  }
+}
