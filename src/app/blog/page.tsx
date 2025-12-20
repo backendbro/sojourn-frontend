@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "../../../lib/posts";
 import { placeholderImages, getGradient } from "../../../lib/blogData";
-import BlogSlider from "./blogSlider"; // Client component for slider logic
+import BlogSlider from "./BlogSlider"; // Client component for slider logic
 import "./blog.css";
 
 export default function BlogPage() {
