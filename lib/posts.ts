@@ -3,22 +3,23 @@ import path from "path";
 import matter from "gray-matter";
 import { serialize } from "next-mdx-remote/serialize";
 
-// Folder where your MDX posts live
 const postsDirectory = path.join(process.cwd(), "posts");
 
-// TypeScript type for a post
 export type PostData = {
   slug: string;
   title: string;
-  date: string;
   description: string;
+  published: string;
+  updated?: string;
+  coverImage?: string;
+  tags: string[];
+  readTime: number;
 };
 
-// Return all posts sorted by date
 export function getSortedPostsData(): PostData[] {
   const fileNames = fs.readdirSync(postsDirectory);
 
-  const allPostsData: PostData[] = fileNames.map((fileName) => {
+  const allPosts = fileNames.map((fileName) => {
     const slug = fileName.replace(/\.mdx$/, "");
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, "utf8");
@@ -27,37 +28,42 @@ export function getSortedPostsData(): PostData[] {
     return {
       slug,
       title: data.title,
-      date: data.date,
       description: data.description,
+      published: data.published,
+      updated: data.updated,
+      coverImage: data.coverImage,
+      tags: data.tags ?? [],
+      readTime: data.readTime ?? 5,
     };
   });
 
-  // Sort by date descending
-  return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+  return allPosts.sort(
+    (a, b) => new Date(b.published).getTime() - new Date(a.published).getTime()
+  );
 }
 
-// Return an array of all slugs for dynamic routes
 export function getAllPostSlugs() {
-  const fileNames = fs.readdirSync(postsDirectory);
-  return fileNames.map((fileName) => ({
-    slug: fileName.replace(/\.mdx$/, ""),
+  return fs.readdirSync(postsDirectory).map((file) => ({
+    slug: file.replace(/\.mdx$/, ""),
   }));
 }
 
-// Get the content of a single post as MDX
 export async function getPostData(slug: string) {
   const fullPath = path.join(postsDirectory, `${slug}.mdx`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
   const { data, content } = matter(fileContents);
-
   const mdxSource = await serialize(content);
 
   return {
     slug,
     mdxSource,
     title: data.title,
-    date: data.date,
     description: data.description,
+    published: data.published,
+    updated: data.updated,
+    coverImage: data.coverImage,
+    tags: data.tags ?? [],
+    readTime: data.readTime ?? 5,
   };
 }

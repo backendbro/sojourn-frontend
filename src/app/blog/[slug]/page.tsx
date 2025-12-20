@@ -1,31 +1,41 @@
-import { getAllPostSlugs, getPostData, PostData } from "../../../../lib/posts";
-import Head from "next/head";
+import { getPostData, getAllPostSlugs } from "../../../../lib/posts";
 import ClientMDX from "@/components/ui/ClientMDX";
+import type { Metadata } from "next";
 
-interface PostPageProps {
+interface Props {
   params: { slug: string };
 }
 
-export default async function PostPage({ params }: PostPageProps) {
-  const postData: PostData & { mdxSource: any } = await getPostData(
-    params.slug
-  );
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const post = await getPostData(params.slug);
+  return {
+    title: post.title,
+    description: post.description,
+  };
+}
+
+export default async function PostPage({ params }: Props) {
+  const post = await getPostData(params.slug);
 
   return (
-    <>
-      <Head>
-        <title>{postData.title}</title>
-        <meta name="description" content={postData.description} />
-      </Head>
-      <article style={{ padding: "2rem" }}>
-        <h1>{postData.title}</h1>
-        <ClientMDX mdxSource={postData.mdxSource} />
-      </article>
-    </>
+    <article className="single-post">
+      <header className="single-post-header">
+        <h1>{post.title}</h1>
+        <p className="post-description">{post.description}</p>
+        <div className="post-meta">
+          <span>{post.readTime} min read</span>
+          <span>•</span>
+          <span>{post.published}</span>
+        </div>
+      </header>
+
+      <div className="post-content">
+        <ClientMDX mdxSource={post.mdxSource} />
+      </div>
+    </article>
   );
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllPostSlugs();
-  return slugs.map(({ slug }) => ({ slug }));
+  return getAllPostSlugs();
 }
