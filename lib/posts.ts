@@ -1,69 +1,51 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { serialize } from "next-mdx-remote/serialize";
 
-const postsDirectory = path.join(process.cwd(), "posts");
+const postsDir = path.join(process.cwd(), "posts");
 
-export type PostData = {
-  slug: string;
-  title: string;
-  description: string;
-  published: string;
-  updated?: string;
-  coverImage?: string;
-  tags: string[];
-  readTime: number;
-};
+export function getAllPosts() {
+  const files = fs.readdirSync(postsDir);
 
-export function getSortedPostsData(): PostData[] {
-  const fileNames = fs.readdirSync(postsDirectory);
+  return files.map((file) => {
+    const slug = file.replace(/\.mdx$/, "");
+    const filePath = path.join(postsDir, file);
+    const source = fs.readFileSync(filePath, "utf8");
 
-  const allPosts = fileNames.map((fileName) => {
-    const slug = fileName.replace(/\.mdx$/, "");
-    const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { data } = matter(fileContents);
+    const { data, content } = matter(source);
 
     return {
       slug,
-      title: data.title,
-      description: data.description,
-      published: data.published,
-      updated: data.updated,
-      coverImage: data.coverImage,
-      tags: data.tags ?? [],
-      readTime: data.readTime ?? 5,
+      content,
+      ...(data as {
+        title: string;
+        excerpt: string;
+        date: string;
+        category: string;
+        author: string;
+        cover: string;
+        featured?: boolean;
+      }),
     };
   });
-
-  return allPosts.sort(
-    (a, b) => new Date(b.published).getTime() - new Date(a.published).getTime()
-  );
 }
 
-export function getAllPostSlugs() {
-  return fs.readdirSync(postsDirectory).map((file) => ({
-    slug: file.replace(/\.mdx$/, ""),
-  }));
-}
+export function getPostBySlug(slug: string) {
+  const filePath = path.join(postsDir, `${slug}.mdx`);
+  const source = fs.readFileSync(filePath, "utf8");
 
-export async function getPostData(slug: string) {
-  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-
-  const { data, content } = matter(fileContents);
-  const mdxSource = await serialize(content);
+  const { data, content } = matter(source);
 
   return {
     slug,
-    mdxSource,
-    title: data.title,
-    description: data.description,
-    published: data.published,
-    updated: data.updated,
-    coverImage: data.coverImage,
-    tags: data.tags ?? [],
-    readTime: data.readTime ?? 5,
+    content,
+    ...(data as {
+      title: string;
+      excerpt: string;
+      date: string;
+      category: string;
+      author: string;
+      cover: string;
+    }),
   };
 }

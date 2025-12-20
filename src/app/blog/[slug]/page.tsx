@@ -1,41 +1,35 @@
-import { getPostData, getAllPostSlugs } from "../../../../lib/posts";
-import ClientMDX from "@/components/ui/ClientMDX";
-import type { Metadata } from "next";
+import { getAllPosts, getPostBySlug } from "../../../../lib/posts";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import Link from "next/link";
 
-interface Props {
-  params: { slug: string };
+export async function generateStaticParams() {
+  return getAllPosts().map((post) => ({
+    slug: post.slug,
+  }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPostData(params.slug);
-  return {
-    title: post.title,
-    description: post.description,
-  };
-}
-
-export default async function PostPage({ params }: Props) {
-  const post = await getPostData(params.slug);
+export default function BlogPost({ params }: { params: { slug: string } }) {
+  const post = getPostBySlug(params.slug);
 
   return (
     <article className="single-post">
-      <header className="single-post-header">
-        <h1>{post.title}</h1>
-        <p className="post-description">{post.description}</p>
-        <div className="post-meta">
-          <span>{post.readTime} min read</span>
-          <span>•</span>
-          <span>{post.published}</span>
-        </div>
-      </header>
+      <div
+        className="single-post-hero"
+        style={{ backgroundImage: `url(${post.cover})` }}
+      />
 
-      <div className="post-content">
-        <ClientMDX mdxSource={post.mdxSource} />
+      <div className="container">
+        <Link href="/blog">← Back</Link>
+
+        <h1>{post.title}</h1>
+        <p>
+          By {post.author} • {post.date}
+        </p>
+
+        <div className="post-body">
+          <MDXRemote source={post.content} />
+        </div>
       </div>
     </article>
   );
-}
-
-export async function generateStaticParams() {
-  return getAllPostSlugs();
 }
