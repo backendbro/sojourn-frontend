@@ -2,50 +2,62 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 
-const postsDir = path.join(process.cwd(), "posts");
+const postsDirectory = path.join(process.cwd(), "posts");
 
-export function getAllPosts() {
-  const files = fs.readdirSync(postsDir);
+export type PostMeta = {
+  title: string;
+  excerpt: string;
+  date: string;
+  author: string;
+  category: "travel" | "culture" | "lifestyle" | "food";
+  featured?: boolean;
+  slug: string;
+};
 
-  return files.map((file) => {
-    const slug = file.replace(/\.mdx$/, "");
-    const filePath = path.join(postsDir, file);
-    const source = fs.readFileSync(filePath, "utf8");
+export function getAllPosts(): PostMeta[] {
+  const files = fs.readdirSync(postsDirectory);
 
-    const { data, content } = matter(source);
+  return files
+    .map((file) => {
+      const slug = file.replace(/\.mdx$/, "");
+      const filePath = path.join(postsDirectory, file);
+      const fileContent = fs.readFileSync(filePath, "utf8");
+      const { data } = matter(fileContent);
 
-    return {
-      slug,
-      content,
-      ...(data as {
-        title: string;
-        excerpt: string;
-        date: string;
-        category: string;
-        author: string;
-        cover: string;
-        featured?: boolean;
-      }),
-    };
-  });
+      return {
+        ...(data as Omit<PostMeta, "slug">),
+        slug,
+      };
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
 export function getPostBySlug(slug: string) {
-  const filePath = path.join(postsDir, `${slug}.mdx`);
-  const source = fs.readFileSync(filePath, "utf8");
+  const fullPath = path.join(postsDirectory, `${slug}.mdx`);
 
-  const { data, content } = matter(source);
+  if (!fs.existsSync(fullPath)) {
+    return null;
+  }
+
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+  const { content, data } = matter(fileContents);
+
+  if (!data?.title) {
+    throw new Error(`Post "${slug}" is missing a title in frontmatter`);
+  }
 
   return {
-    slug,
     content,
-    ...(data as {
-      title: string;
-      excerpt: string;
-      date: string;
-      category: string;
-      author: string;
-      cover: string;
-    }),
+    meta: {
+      title: data.title ?? "",
+      excerpt: data.excerpt ?? "",
+      date: data.date ?? "",
+      author: data.author ?? "",
+      category: data.category ?? "uncategorized",
+      featured: data.featured ?? false,
+      coverImage: data.coverImage ?? null,
+      images: data.images ?? [],
+      slug,
+    },
   };
 }
