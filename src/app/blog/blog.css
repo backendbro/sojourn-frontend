@@ -1132,20 +1132,72 @@
 }
 
 /* =========================================
-   Featured Story Card (minimal – no layout changes)
-   Matches original .featured-post behavior
+   HERO – stronger presence (additive only)
+========================================= */
+
+.blog-hero-title {
+  font-size: 4.25rem; /* bigger heading */
+  font-weight: 800; /* heavier */
+  color: #ffffff; /* force white */
+}
+
+.blog-hero-subtitle {
+  font-size: 1.35rem; /* slightly larger */
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* Bigger CTA button */
+.blog-cta-button {
+  padding: 1.25rem 3rem; /* bigger button */
+  font-size: 1.1rem; /* bigger text */
+  font-weight: 700;
+}
+
+/* =========================================
+   FEATURED STORY – restore card shadow
 ========================================= */
 
 .blog-featured-post {
-  background: var(--bg-white);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+.blog-featured-post:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-4px);
+}
+
+/* =========================================
+   RESPONSIVE – hero only
+========================================= */
+
+@media (max-width: 768px) {
+  .blog-hero-title {
+    font-size: 3rem;
+  }
+
+  .blog-cta-button {
+    font-size: 1rem;
+    padding: 1.1rem 2.5rem;
+  }
+}
+
+.blog-featured-post {
+  display: block; /* make <Link> take full width */
+  width: 100%; /* full width of container */
+  border-radius: 16px; /* keep rounded corners */
+  overflow: hidden; /* clip children */
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+}
+
+.blog-featured-post {
+  display: block;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow-lg);
   transition: var(--transition);
-  cursor: pointer;
-}
-
-.blog-featured-post:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-xl);
 }
