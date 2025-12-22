@@ -1,13 +1,9 @@
-// app/blog/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
 import { getAllPosts, getPostContent } from "../../../../lib/posts";
 
-import {
-  createGradientStyle,
-  getCategoryImage,
-} from "../../../../lib/blog-utils";
+import { createGradientStyle, getCategoryImage } from "../../../../lib/blog-ui";
 
 import { categoryIcons } from "../../../components/blog/CategoryIcons";
 export async function generateStaticParams() {
