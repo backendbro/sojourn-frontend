@@ -1,4 +1,6 @@
 /* app/blog/blog.css */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&display=swap");
+
 :root {
   --primary-color: #dc2626;
   --primary-dark: #991b1b;
@@ -1051,5 +1053,80 @@
   .post-category-badge {
     font-size: 0.75rem;
     padding: 0.4rem 1rem;
+  }
+}
+
+/* ================================
+   BLOG HERO – TYPOGRAPHY UPGRADE
+   Add to bottom of existing CSS
+================================ */
+
+/* Stronger, more cinematic hero title */
+.blog-hero-title {
+  font-family: "Playfair Display", serif;
+  font-size: 4.25rem;
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  animation: fadeInUp 0.8s ease;
+}
+
+/* Enhanced subtitle for readability and presence */
+.blog-hero-subtitle {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+/* Primary CTA button upgrade */
+.blog-cta-button {
+  display: inline-block;
+  padding: 1.15rem 3.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: #ffffff;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  border-radius: 999px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+/* CTA hover polish */
+.blog-cta-button:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* ================================
+   RESPONSIVE TUNING
+================================ */
+
+@media (max-width: 768px) {
+  .blog-hero-title {
+    font-size: 3rem;
+  }
+
+  .blog-hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .blog-cta-button {
+    padding: 1rem 2.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-hero-title {
+    font-size: 2.4rem;
   }
 }
