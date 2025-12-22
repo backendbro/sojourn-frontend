@@ -1,4 +1,5 @@
-import { getAllPosts, BlogPost } from "../../../lib/posts";
+import { getAllPosts } from "../../../lib/posts";
+import { BlogPost } from "../../../lib/types";
 
 import BlogHomeClient from "./component/BlogHomeClient";
 

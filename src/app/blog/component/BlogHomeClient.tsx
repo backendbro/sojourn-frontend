@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  BlogPost,
-  createGradientStyle,
-  getCategoryImage,
-} from "../../../../lib/posts";
+import { createGradientStyle, getCategoryImage } from "../../../../lib/blog-ui";
 import { categoryIcons } from "../../../components/blog/CategoryIcons";
+import { BlogPost } from "../../../../lib/types";
 
 interface BlogHomeClientProps {
   posts: BlogPost[];
