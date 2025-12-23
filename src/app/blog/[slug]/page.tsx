@@ -1,16 +1,15 @@
-import { notFound } from "next/navigation";
+// app/blog/[slug]/page.tsx
 import Link from "next/link";
-
+import { notFound } from "next/navigation";
 import { getAllPosts, getPostContent } from "../../../../lib/posts";
-
 import { createGradientStyle, getCategoryImage } from "../../../../lib/blog-ui";
-
 import { categoryIcons } from "../../../components/blog/CategoryIcons";
+import ShareButton from "../component/ShareButton";
+import ReadMoreLink from "../component/ReadMoreLink";
+
 export async function generateStaticParams() {
   const posts = getAllPosts();
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export default async function BlogPost({
@@ -19,10 +18,7 @@ export default async function BlogPost({
   params: { slug: string };
 }) {
   const post = await getPostContent(params.slug);
-
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   const allPosts = getAllPosts();
   const relatedPosts = allPosts
@@ -31,7 +27,7 @@ export default async function BlogPost({
 
   return (
     <div className="single-post-main">
-      {/* Single Post Header */}
+      {/* Header */}
       <header className="single-post-header">
         <div
           className="single-post-image"
@@ -67,13 +63,12 @@ export default async function BlogPost({
         </div>
       </header>
 
+      {/* Main Content */}
       <div className="single-post-body">
         <div className="blog-container">
           <div className="post-content-wrapper">
-            {/* Main Content */}
             <div className="post-article">
               <div className="post-content">
-                {/* Render MDX content */}
                 {post.contentHtml ? (
                   <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
                 ) : (
@@ -81,81 +76,58 @@ export default async function BlogPost({
                 )}
               </div>
 
-              {/* Post Actions */}
-              <div className="post-actions">
-                <button
-                  className="blog-post-action-btn share-btn"
-                  onClick={() => {
-                    if (typeof window !== "undefined") {
-                      if (navigator.share) {
-                        navigator.share({
-                          title: post.title,
-                          text: post.excerpt,
-                          url: window.location.href,
-                        });
-                      } else {
-                        navigator.clipboard.writeText(window.location.href);
-                        alert("Link copied to clipboard!");
-                      }
-                    }
-                  }}
-                >
-                  <svg
-                    className="blog-action-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <circle cx="18" cy="5" r="3"></circle>
-                    <circle cx="6" cy="12" r="3"></circle>
-                    <circle cx="18" cy="19" r="3"></circle>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-                  </svg>
-                  Share
-                </button>
+              {/* Actions */}
+              <div
+                className="post-actions"
+                style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}
+              >
+                <ShareButton
+                  url={
+                    typeof window !== "undefined" ? window.location.href : ""
+                  }
+                  title={post.title}
+                  text={post.excerpt}
+                />
+                <ReadMoreLink href={`/blog/${post.slug}`}>
+                  Read More →
+                </ReadMoreLink>
               </div>
             </div>
 
             {/* Sidebar */}
-            <div className="post-sidebar">
+            <aside className="post-sidebar">
               <div className="sidebar-section">
                 <h3>Related Stories</h3>
                 <div className="related-posts">
-                  {relatedPosts.map((relatedPost) => (
+                  {relatedPosts.map((r) => (
                     <Link
-                      key={relatedPost.slug}
-                      href={`/blog/${relatedPost.slug}`}
+                      key={r.slug}
+                      href={`/blog/${r.slug}`}
                       className="related-post-item"
                     >
                       <div
                         className="related-post-image"
                         style={{
                           backgroundImage: `url(${
-                            relatedPost.image ||
-                            getCategoryImage(relatedPost.category as any)
+                            r.image || getCategoryImage(r.category as any)
                           })`,
                         }}
                       />
                       <div className="related-post-content">
-                        <h4>{relatedPost.title}</h4>
+                        <h4>{r.title}</h4>
                         <div className="related-post-date">
-                          {new Date(relatedPost.date).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            }
-                          )}
+                          {new Date(r.date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
                         </div>
                       </div>
                     </Link>
                   ))}
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
         </div>
       </div>
