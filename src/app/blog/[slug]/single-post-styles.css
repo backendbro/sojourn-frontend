@@ -1057,35 +1057,114 @@
   animation-delay: 0.15s;
 }
 
-/* Quick fix for hero image and category button */
+/* ================================
+   SINGLE POST HERO — RESPONSIVE FIX
+================================ */
+
 .single-post-header {
-  overflow: visible !important;
+  position: relative;
+  width: 100%;
+  overflow: visible; /* prevents image clipping */
+  background: #000;
 }
 
+/* HERO IMAGE — fully visible */
 .single-post-image {
-  max-height: 600px !important;
-  height: auto !important;
-  object-fit: cover !important;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: contain; /* prevents content cropping */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #000; /* letterbox background */
 }
 
-/* Fix category button width */
+/* HERO OVERLAY CONTENT */
+.single-post-header-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.65),
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.hero-inner {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  pointer-events: auto;
+}
+
+/* CATEGORY BADGE — FIXED WIDTH */
 .post-category-badge {
-  width: auto !important;
-  max-width: 200px !important;
-  display: inline-block !important;
-  margin: 0 auto !important;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: max-content;
+  padding: 0.35rem 0.9rem;
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
 }
 
-/* Mobile adjustments */
+/* HERO TITLE */
+.single-post-title {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  max-width: 900px;
+}
+
+/* META */
+.single-post-meta {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ================================
+   RESPONSIVE HERO
+================================ */
+
 @media (max-width: 768px) {
   .single-post-image {
-    max-height: 400px !important;
+    aspect-ratio: 4 / 3;
   }
-  
+
+  .hero-inner {
+    padding: 2rem 1.5rem;
+  }
+
+  .single-post-title {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .single-post-image {
+    aspect-ratio: 1 / 1;
+  }
+
+  .single-post-title {
+    font-size: 1.9rem;
+  }
+
   .post-category-badge {
-    max-width: 150px !important;
-    padding: 8px 16px !important;
-    font-size: 14px !important;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.75rem;
   }
 }

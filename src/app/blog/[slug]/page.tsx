@@ -26,6 +26,7 @@ export default async function BlogPost({
 
   return (
     <div className="single-post-main">
+      {/* HERO SECTION — fixed responsiveness */}
       <SinglePostHero post={post} />
 
       <div className="single-post-body">
@@ -72,9 +73,7 @@ export default async function BlogPost({
                       <div
                         className="related-post-image"
                         style={{
-                          backgroundImage: `url(${
-                            p.image || getCategoryImage(p.category as any)
-                          })`,
+                          backgroundImage: `url(${p.image || getCategoryImage(p.category as any)})`,
                         }}
                       />
 
