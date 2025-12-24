@@ -45,7 +45,8 @@ export default function BlogHomeClient({ posts }: BlogHomeClientProps) {
     setFilteredPosts(result);
   }, [filter, featuredPost, posts]);
 
-  const categories = ["all", "travel", "culture", "lifestyle", "food"];
+
+  const categories = ["all", "city-guides", "booking-safety", "decision-guides", "lifestyle"];
 
   const nextImage = (postId: string) => {
     setImageIndexes((prev) => ({
