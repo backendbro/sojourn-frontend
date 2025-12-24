@@ -1056,3 +1056,36 @@
 .related-post-item:nth-child(3) {
   animation-delay: 0.15s;
 }
+
+/* Quick fix for hero image and category button */
+.single-post-header {
+  overflow: visible !important;
+}
+
+.single-post-image {
+  max-height: 600px !important;
+  height: auto !important;
+  object-fit: cover !important;
+}
+
+/* Fix category button width */
+.post-category-badge {
+  width: auto !important;
+  max-width: 200px !important;
+  display: inline-block !important;
+  margin: 0 auto !important;
+  text-align: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .single-post-image {
+    max-height: 400px !important;
+  }
+  
+  .post-category-badge {
+    max-width: 150px !important;
+    padding: 8px 16px !important;
+    font-size: 14px !important;
+  }
+}
