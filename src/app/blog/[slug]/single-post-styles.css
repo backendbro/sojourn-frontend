@@ -1089,3 +1089,80 @@
     font-size: 14px !important;
   }
 }
+
+/* ================================
+   POST CONTENT HEADERS - BOLDER & MORE VISIBLE
+================================ */
+
+/* H2 - Main section headers */
+.post-content h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.8rem;            /* slightly bigger for impact */
+  font-weight: 900;             /* extra bold */
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  color: #111827;               /* darker text for emphasis */
+  line-height: 1.2;
+  border-bottom: 4px solid #dc2626; /* stronger red underline */
+  padding-bottom: 1rem;
+  text-transform: uppercase;    /* optional, gives authority */
+  background: rgba(220, 38, 38, 0.05); /* subtle highlight behind header */
+  border-radius: 4px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* H3 - Subsection headers */
+.post-content h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 2rem;              /* slightly bigger */
+  font-weight: 700;             /* bold */
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  color: #dc2626;               /* red accent for visibility */
+  line-height: 1.3;
+  text-transform: capitalize;   /* optional */
+  background: rgba(220, 38, 38, 0.03); /* lighter background for subheaders */
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+}
+
+/* Add spacing after headers to separate from paragraphs */
+.post-content h2 + p,
+.post-content h3 + p {
+  margin-top: 1.5rem;           /* extra space for readability */
+}
+
+/* Optional hover effect for H2/H3 headers */
+.post-content h2:hover,
+.post-content h3:hover {
+  background: rgba(220, 38, 38, 0.1);
+  transition: background 0.3s ease;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .post-content h2 {
+    font-size: 2.2rem;
+    line-height: 1.25;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
+  .post-content h3 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .post-content h2 {
+    font-size: 2rem;
+  }
+
+  .post-content h3 {
+    font-size: 1.5rem;
+  }
+}
