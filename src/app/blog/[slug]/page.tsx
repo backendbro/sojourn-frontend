@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { getAllPosts, getPostContent } from "../../../../lib/posts";
 import { getCategoryImage } from "../../../../lib/blog-ui";
 import SinglePostHero from "../component/SinglePostHero";
-import AdSlider from "../component/AdSlider";
 import PostActions from "../component/PostActions";
+import AdsSection from "../component/AdsSection"; 
 import "./single-post-styles.css";
+
+
 
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -32,20 +34,7 @@ export default async function BlogPost({
         <div className="container">
           <div className="post-content-wrapper">
             {/* LEFT ADS */}
-            <aside className="ad-section">
-              <div className="ad-header">
-                <h3>Featured Apartments</h3>
-                <a
-                  href="https://www.sojourn.ng"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ad-link"
-                >
-                  View All →
-                </a>
-              </div>
-              <AdSlider />
-            </aside>
+            <AdsSection />
 
             {/* ARTICLE */}
             <article className="post-article">
@@ -100,5 +89,6 @@ export default async function BlogPost({
         </div>
       </div>
     </div>
+
   );
 }

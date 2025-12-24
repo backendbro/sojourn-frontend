@@ -14,7 +14,7 @@
   display: grid;
   grid-template-columns: 280px 1fr 320px;
   gap: 3rem;
-  align-items: start; /* Align all items at the top */
+  align-items: start;
 }
 
 /* ================================
@@ -86,7 +86,7 @@
 /* Ad Items with Red Background */
 .ad-item {
   display: block;
-  background: #dc2626;
+  background: #dc2626; /* Red background */
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -94,12 +94,13 @@
   transition: var(--transition);
   margin: 0.5rem;
   border: 2px solid #dc2626;
+  min-height: 220px; /* Fixed height for consistency */
 }
 
 .ad-item:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
-  background: #991b1b;
+  background: #991b1b; /* Darker red on hover */
 }
 
 .ad-item-image {
@@ -107,11 +108,27 @@
   background-size: cover;
   background-position: center;
   position: relative;
+  overflow: hidden;
+}
+
+/* Image overlay to ensure text readability */
+.ad-item-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
 }
 
 .ad-item-content {
   padding: 1rem;
-  color: white;
+  color: white; /* White text on red background */
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 150px); /* Fill remaining space after image */
 }
 
 .ad-item-content h4 {
@@ -120,19 +137,47 @@
   margin-bottom: 0.5rem;
   color: white;
   line-height: 1.4;
+  /* Ensure text wraps properly */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ad-location {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.95); /* Slightly brighter white */
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+  /* Ensure text wraps properly */
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ad-price {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700; /* Bolder for emphasis */
   color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-top: auto; /* Push price to bottom */
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Subtle separator */
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.ad-price span {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Remove rating/reviews styles completely */
+.ad-rating,
+.ad-reviews {
+  display: none !important;
 }
 
 /* ================================
@@ -684,18 +729,18 @@
 /* ITEM - Image takes full height of container */
 .related-post-item {
   display: grid;
-  grid-template-columns: 80px 1fr; /* Image column fixed, content flexible */
+  grid-template-columns: 80px 1fr;
   gap: 0.9rem;
   padding: 0;
   border-radius: 10px;
   text-decoration: none;
   color: inherit;
-  align-items: stretch; /* Makes children stretch to full height */
+  align-items: stretch;
   transition: all 0.25s ease;
   background: white;
   border: 1px solid transparent;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  min-height: 80px; /* Minimum height for the item */
+  min-height: 80px;
 }
 
 .related-post-item:hover {
@@ -720,7 +765,7 @@
 /* IMAGE — Takes full height of container */
 .related-post-image {
   width: 100%;
-  height: 100%; /* Takes full height of the grid cell */
+  height: 100%;
   border-radius: 10px 0 0 10px;
   background-size: cover;
   background-position: center;
@@ -747,7 +792,7 @@
   gap: 0.35rem;
   min-width: 0;
   flex: 1;
-  padding: 0.85rem 0.85rem 0.85rem 0; /* Padding on right only, left padding from image */
+  padding: 0.85rem 0.85rem 0.85rem 0;
 }
 
 .related-post-content h4 {
@@ -770,7 +815,7 @@
   align-items: center;
   gap: 0.25rem;
   font-weight: 500;
-  margin-top: auto; /* Push to bottom of container */
+  margin-top: auto;
 }
 
 .related-post-date::before {
@@ -939,7 +984,7 @@
 
   .related-post-item {
     grid-template-columns: 1fr;
-    grid-template-rows: 140px auto; /* Image fixed height, content auto */
+    grid-template-rows: 140px auto;
     gap: 0;
     padding: 0;
     border: 1px solid #e2e8f0;
@@ -993,7 +1038,7 @@
 
   .related-post-date {
     font-size: 0.8rem;
-    margin-top: 0; /* Reset on mobile */
+    margin-top: 0;
   }
 
   /* Reset special effects for mobile */
@@ -1097,16 +1142,16 @@
 /* H2 - Main section headers */
 .post-content h2 {
   font-family: "Playfair Display", serif;
-  font-size: 2.8rem;            /* slightly bigger for impact */
-  font-weight: 900;             /* extra bold */
+  font-size: 2.8rem;
+  font-weight: 900;
   margin-top: 4rem;
   margin-bottom: 2rem;
-  color: #111827;               /* darker text for emphasis */
+  color: #111827;
   line-height: 1.2;
-  border-bottom: 4px solid #dc2626; /* stronger red underline */
+  border-bottom: 4px solid #dc2626;
   padding-bottom: 1rem;
-  text-transform: uppercase;    /* optional, gives authority */
-  background: rgba(220, 38, 38, 0.05); /* subtle highlight behind header */
+  text-transform: uppercase;
+  background: rgba(220, 38, 38, 0.05);
   border-radius: 4px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -1115,14 +1160,14 @@
 /* H3 - Subsection headers */
 .post-content h3 {
   font-family: "Playfair Display", serif;
-  font-size: 2rem;              /* slightly bigger */
-  font-weight: 700;             /* bold */
+  font-size: 2rem;
+  font-weight: 700;
   margin-top: 3rem;
   margin-bottom: 1.5rem;
-  color: #dc2626;               /* red accent for visibility */
+  color: #dc2626;
   line-height: 1.3;
-  text-transform: capitalize;   /* optional */
-  background: rgba(220, 38, 38, 0.03); /* lighter background for subheaders */
+  text-transform: capitalize;
+  background: rgba(220, 38, 38, 0.03);
   border-radius: 4px;
   padding: 0.35rem 0.5rem;
 }
@@ -1130,7 +1175,7 @@
 /* Add spacing after headers to separate from paragraphs */
 .post-content h2 + p,
 .post-content h3 + p {
-  margin-top: 1.5rem;           /* extra space for readability */
+  margin-top: 1.5rem;
 }
 
 /* Optional hover effect for H2/H3 headers */
@@ -1165,4 +1210,62 @@
   .post-content h3 {
     font-size: 1.5rem;
   }
+}
+
+.post-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: var(--primary-color);
+  color: white;
+}
+
+.category-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ================================
+   AD ITEM SPECIFIC ENHANCEMENTS FOR READABILITY
+================================ */
+
+/* Ensure all text in ad items is white and properly spaced */
+.ad-item * {
+  color: white !important;
+}
+
+/* Make sure text doesn't get cut off */
+.ad-item-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Ensure proper spacing between elements */
+.ad-item-content > *:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+/* Add a subtle glow to text for better readability on red background */
+.ad-item-content h4 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.ad-price {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading state styles */
+.ad-item.loading .ad-item-image {
+  background: linear-gradient(90deg, #dc2626 25%, #991b1b 50%, #dc2626 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }

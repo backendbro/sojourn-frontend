@@ -52,8 +52,6 @@
 //   };
 //   return gradients[category] || gradients.travel;
 // }
-
-
 import { BlogPost } from "./types";
 
 /**
@@ -73,21 +71,21 @@ export type BlogCategory =
  */
 export const categoryImages: Record<BlogCategory, string[]> = {
   "city-guides": [
-    "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=1200&q=80", // city skyline
-    "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80", // urban streets
-    "https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80", // city life
+    "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=1200&q=80",
+    "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80",
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?w=1200&q=80",
   ],
 
   "booking-safety": [
-    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&q=80", // security
-    "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=1200&q=80", // safe payment
-    "https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?w=1200&q=80", // trust & protection
+    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&q=80",
+    "https://images.unsplash.com/photo-1588702547923-7093a6c3ba33?w=1200&q=80",
+    "https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?w=1200&q=80",
   ],
 
   "decision-guides": [
-    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80", // decision making
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80", // planning
-    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80", // analysis
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80",
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80",
+    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80",
   ],
 
   lifestyle: [
@@ -102,46 +100,56 @@ export const categoryImages: Record<BlogCategory, string[]> = {
  * Used for badges, overlays, and accents
  */
 export const gradientColors: Record<BlogCategory, [string, string]> = {
-  "city-guides": ["#0f172a", "#1e293b"], // deep city blue
-
-  "booking-safety": ["#065f46", "#047857"], // trust green
-
-  "decision-guides": ["#7c2d12", "#9a3412"], // guidance amber
-
-  lifestyle: ["#dc2626", "#991b1b"], // brand red
+  "city-guides": ["#0f172a", "#1e293b"],
+  "booking-safety": ["#065f46", "#047857"],
+  "decision-guides": ["#7c2d12", "#9a3412"],
+  lifestyle: ["#dc2626", "#991b1b"],
 };
 
 /**
- * Creates a gradient background style for a category
+ * Returns a valid category key or fallback to 'lifestyle'
  */
-export function createGradientStyle(category: BlogCategory) {
-  const [c1, c2] = gradientColors[category];
+function safeCategory(category: string): BlogCategory {
+  const validCategories: BlogCategory[] = [
+    "city-guides",
+    "booking-safety",
+    "decision-guides",
+    "lifestyle",
+  ];
+  const lower = category.toLowerCase();
+  return validCategories.includes(lower as BlogCategory)
+    ? (lower as BlogCategory)
+    : "lifestyle";
+}
+
+/**
+ * Creates a gradient background style for a category safely
+ */
+export function createGradientStyle(category: string) {
+  const cat = safeCategory(category);
+  const [c1, c2] = gradientColors[cat];
   return `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
 }
 
 /**
- * Returns a deterministic image for a category
- * Used to avoid layout shifts and random flicker
+ * Returns a deterministic image for a category safely
  */
-export function getCategoryImage(
-  category: BlogCategory,
-  index = 0
-) {
-  const images = categoryImages[category];
+export function getCategoryImage(category: string, index = 0) {
+  const cat = safeCategory(category);
+  const images = categoryImages[cat];
   return images[index % images.length];
 }
 
 /**
  * BACKWARD-COMPATIBLE GRADIENT HELPER
- * Allows existing string-based calls to continue working safely
  */
 export function getGradient(category: string) {
+  const cat = safeCategory(category);
   const gradients: Record<BlogCategory, string> = {
     "city-guides": "linear-gradient(135deg, #0f172a, #1e293b)",
     "booking-safety": "linear-gradient(135deg, #065f46, #047857)",
     "decision-guides": "linear-gradient(135deg, #7c2d12, #9a3412)",
     lifestyle: "linear-gradient(135deg, #dc2626, #991b1b)",
   };
-
-  return gradients[category as BlogCategory] || gradients["city-guides"];
+  return gradients[cat];
 }

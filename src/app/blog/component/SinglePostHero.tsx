@@ -73,7 +73,7 @@ export default function SinglePostHero({ post }: SinglePostHeroProps) {
       <div className="single-post-header-content">
         <div className="container">
           <div className="top-row">
-            <Link href="/blog" className="back-link mr-2">
+            <Link href="/blog"  className="back-link mr-2">
               ← Back to Stories
             </Link>
 
