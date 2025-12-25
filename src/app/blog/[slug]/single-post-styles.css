@@ -1289,10 +1289,3 @@
 .post-sidebar {
   align-self: start !important;
 }
-
-.post-content-wrapper {
-  display: grid;
-  grid-template-columns: 280px 1fr 320px;
-  gap: 3rem;
-  align-items: start;
-}
