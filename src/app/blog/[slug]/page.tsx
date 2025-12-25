@@ -6,7 +6,7 @@ import SinglePostHero from "../component/SinglePostHero";
 import PostActions from "../component/PostActions";
 import AdsSection from "../component/AdsSection";
 import "./single-post-styles.css";
-import { Footer } from "../../../components/ui/footer";
+import Footer from "../../../components/ui/footer";
 
 export async function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));

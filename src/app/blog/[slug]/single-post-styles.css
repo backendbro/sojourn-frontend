@@ -113,7 +113,7 @@
 
 /* Image overlay to ensure text readability */
 .ad-item-image::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -1127,7 +1127,7 @@
   .single-post-image {
     max-height: 400px !important;
   }
-  
+
   .post-category-badge {
     max-width: 150px !important;
     padding: 8px 16px !important;
@@ -1266,6 +1266,33 @@
 }
 
 @keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Ensure all three columns start at the same top position */
+.post-content-wrapper > * {
+  align-self: start;
+}
+
+/* Make sure AdsSection has proper vertical alignment */
+.ad-section {
+  align-self: start !important;
+}
+
+/* Ensure the article and sidebar also align at the top */
+.post-article,
+.post-sidebar {
+  align-self: start !important;
+}
+
+.post-content-wrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 3rem;
+  align-items: start;
 }
