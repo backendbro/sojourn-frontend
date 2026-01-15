@@ -176,6 +176,11 @@ const ProfileMenu = () => {
           Safety
         </Link>
       </li>
+      <li className="w-full  ease duration-300 hover:bg-red-50 cursor-pointer  list-none">
+        <Link className="w-full h-full px-5 py-3 block" href="/blog">
+          Blog
+        </Link>
+      </li>
       <li className="w-full  ease duration-300 hover:bg-red-50 cursor-pointer lg:hidden list-none">
         <Link className="w-full h-full px-5 py-3 block" href="/login">
           Login
