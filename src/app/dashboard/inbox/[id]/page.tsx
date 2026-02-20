@@ -1,333 +1,206 @@
 "use client";
 
-import Spinner from "@/components/svgs/Spinner";
-import { getTicketMessages, sendMessage } from "@/http/api";
-import { RootState } from "@/store";
-import { MessageType } from "@/types/messages";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, SendHorizonal, X } from "lucide-react";
-import { ChangeEvent, FormEvent, KeyboardEvent, useState } from "react";
+import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { toast } from "sonner";
+import { RootState } from "@/store";
+import { getTicketMessages, sendMessage } from "@/http/api";
+import { MessageType } from "@/types/messages";
 import Image from "next/image";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import hdate from "human-date";
+import Spinner from "@/components/svgs/Spinner";
+import { toast } from "sonner";
+import { format } from "date-fns";
 import Link from "next/link";
-import { numberOfNights } from "@/lib/utils";
 
-export default ({ params: { id } }: { params: { id: string } }) => {
+export default function InboxConversation({
+  params: { id },
+}: {
+  params: { id: string };
+}) {
   const userId = useSelector((state: RootState) => state.user.me?.user?.id);
 
-  const client = useQueryClient();
+  const queryClient = useQueryClient();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState("");
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["ticket-messages-user"],
+  const { data, isLoading } = useQuery({
+    queryKey: ["ticket-messages-user", id],
     queryFn: () => getTicketMessages(id),
-    refetchIntervalInBackground: true,
-    refetchInterval: 400,
+    refetchInterval: 2000,
   });
 
   const mutation = useMutation({
-    mutationKey: ["send-message-user"],
     mutationFn: sendMessage,
     async onSuccess() {
-      await client.invalidateQueries({
-        queryKey: ["ticket-messages-user"],
+      await queryClient.invalidateQueries({
+        queryKey: ["ticket-messages-user", id],
       });
     },
     onError() {
-      toast("Failed to send message", {
-        description: message,
-        action: {
-          label: "Ok",
-          onClick: () => console.log("Ok"),
-        },
-      });
+      toast.error("Failed to send message");
     },
   });
 
-  const [message, setMessage] = useState<string>("");
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  const hostPhotoUrl = data ? data.hostPhoto : "";
-  const hostPhoto = hostPhotoUrl;
+  useEffect(() => {
+    scrollToBottom();
+  }, [data]);
 
-  const bookingOrListing =
-    data && data.bookingCheckInDate ? "Reservation" : "Listing";
-
-  const photoUrl = data && data.propertyPhoto ? data.propertyPhoto : "";
-  const propertyPhoto = photoUrl;
-
-  function onSubmit(e: FormEvent) {
+  function handleSend(e: FormEvent) {
     e.preventDefault();
+    if (!message.trim()) return;
+
     mutation.mutate({
       ticketId: id,
       hostId: data.hostId,
       message,
       senderId: userId,
-      userId: userId,
+      userId,
     } as MessageType);
+
     setMessage("");
   }
 
-  const handleEnterKeySubmit = (e: KeyboardEvent) => {
+  const handleEnter = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      mutation.mutate({
-        ticketId: id,
-        hostId: data.hostId,
-        message,
-        senderId: userId,
-        userId: userId,
-      } as MessageType);
-      setMessage("");
+      handleSend(e as any);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="w-full flex items-center justify-center py-10 bg-white px-5 md:px-5 lg:px-20">
-        <Spinner size={17} color="red" />
+      <div className="w-full flex justify-center py-10">
+        <Spinner size={20} color="red" />
       </div>
     );
   }
 
+  if (!data) return null;
+
+  const isReservation = !!data.bookingCheckInDate;
+
   return (
-    <div className="w-full lg:py-10 bg-white lg:px-5 lg:px-20 h-[88vh]">
-      <div className="w-full flex-col h-full relative">
-        <div className="w-full flex flex-col items-center">
-          <div className="w-full shadow-md py-2 px-3 font-semibold capitalize flex items-center space-x-3 md:space-x-0 justify-between">
-            <div className="w-1/2 md:w-1/2 flex items-center space-x-2">
-              <div className="cursor-pointer flex w-[30px] h-[30px] items-center bg-gray-200 rounded-full overflow-hidden relative flex items-center justify-center">
-                {hostPhoto ? (
-                  <Image
-                    src={hostPhoto}
-                    alt="person_placeholder"
-                    fill
-                    priority
-                  />
-                ) : (
-                  <Image
-                    src="/assets/icons/person-placeholder.png"
-                    alt="person_placeholder"
-                    width={23}
-                    height={23}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col">
-                <span className="font-semibold">{data.hostFullName}</span>
-                <div className=" md:block hidden text-[10px] lowercase font-normal">
-                  {hdate.relativeTime(data.date)}
-                </div>
-              </div>
-            </div>
-            <Dialog>
-              <DialogTrigger>
-                <div className="bg-primary text-white font-semibold py-2 px-4 rounded-full text-xs">
-                  Show {bookingOrListing}
-                </div>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogClose className="w-full flex justify-end">
-                  <X size={20} />
-                </DialogClose>
-                <div className="w-full flex items-center justify-between  p-2 border-b border-b-gray-200">
-                  <h5 className="font-semibold text-lg">{bookingOrListing}</h5>
-                </div>
-                <Link
-                  href={`/properties/${data.propertyId}`}
-                  target="_blank"
-                  className="font-semibold text-md block"
-                >
-                  {propertyPhoto ? (
-                    <div className="w-full rounded-md oveflow-hidden relative h-[200px]">
-                      <div className="absolute bg-black opacity-40 w-full h-full top-0 left-0 z-10"></div>
-                      <div className="absolute px-3 py-2  top-4 left-4 z-50  isolate rounded-full bg-gray-200 shadow-md font-bold  text-xs">
-                        View Listing
-                      </div>
-                      <Image
-                        src={propertyPhoto}
-                        alt="property_photo"
-                        fill
-                        priority
-                      />
-                    </div>
-                  ) : null}
-                </Link>
-                {!data.bookingCheckInDate ? (
-                  <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
-                    <h5 className="font-semibold text-md"> Staying at</h5>
-                    <div className="capitalize">{data.propertyTitle}</div>
-                  </div>
-                ) : null}
-                <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
-                  <h5 className="font-semibold text-md">Location</h5>
-                  <div>{data.location}</div>
-                </div>
-                {!data.bookingCheckInDate ? (
-                  <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
-                    <h5 className="font-semibold text-md">Price per night</h5>
-                    <div>₦{new Number(data.price).toLocaleString()}</div>
-                  </div>
-                ) : null}
-
-                {data.amountPaid ? (
-                  <div className="w-full flex flex-col  p-2  border-b border-b-gray-200 space-y-2">
-                    <h5 className="font-semibold text-md">Payment details</h5>
-                    <div className="w-full flex justify-between">
-                      <h5>Total</h5>
-                      <div className="font-inter">
-                        ₦{new Number(data.amountPaid).toLocaleString()}
-                      </div>
-                    </div>
-                    <div className="w-full flex justify-between">
-                      <h5>Price</h5>
-                      <div className="font-inter">
-                        ₦{new Number(data.price).toLocaleString()}
-                        <span className="text-[11px]">/night</span>
-                      </div>
-                    </div>
-                    <div className="w-full flex justify-between">
-                      <h5>Caution fee</h5>
-                      <div className="font-inter">
-                        ₦{new Number(data.cautionFee).toLocaleString()}
-                      </div>
-                    </div>
-                    <div className="w-full flex justify-between">
-                      <h5>Duration</h5>
-                      <div>
-                        {numberOfNights(
-                          new Date(data.bookingCheckInDate),
-                          new Date(data.bookingCheckOutDate)
-                        )}{" "}
-                        nights
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-
-                {data.bookingCheckInDate ? (
-                  <div className="w-full flex justify-between p-2  border-b border-b-gray-200">
-                    <div>
-                      <h5 className="font-semibold text-md">Check in</h5>
-                      <div>{data.bookingCheckInDate}</div>
-                    </div>
-                    <div>
-                      <h5 className="font-semibold text-md">Check out</h5>
-                      <div>{data.bookingCheckOutDate}</div>
-                    </div>
-                  </div>
-                ) : null}
-
-                <div className="w-full flex flex-col  border-b border-b-gray-200">
-                  <Link
-                    href="/terms-of-use#refund-policy"
-                    target="_blank"
-                    className="font-semibold text-md block p-2"
-                  >
-                    <div className="w-full flex items-center justify-between h-full">
-                      <span>Cancellation policy</span>
-                      <ChevronRight size={16} />
-                    </div>
-                  </Link>
-                </div>
-              </DialogContent>
-            </Dialog>
+    <div className="flex h-[88vh] bg-gray-50">
+      {/* ================= CHAT SECTION ================= */}
+      <div className="flex-1 flex flex-col bg-white">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-gray-200 shadow-sm flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-200">
+            {data.hostPhoto ? (
+              <Image src={data.hostPhoto} alt="host" fill />
+            ) : (
+              <Image
+                src="/assets/icons/person-placeholder.png"
+                alt="host"
+                fill
+              />
+            )}
           </div>
-          <div className="w-5/6 p-2 bg-paper rounded-md mt-1">
-            <p className="text-xs font-semibold text-black text-center">
-              {data.title}
-            </p>
+
+          <div>
+            <h2 className="font-semibold">{data.hostFullName}</h2>
+            <p className="text-sm text-gray-500">{data.propertyTitle}</p>
           </div>
         </div>
-        <div className="w-full flex flex-col space-y-2 overflow-y-scroll h-[calc(100%-125px)] md:h-[calc(88vh-70px)] lg:h-[calc(100%-70px)] px-5 py-20">
-          {data.messages.map(
-            (
-              m: {
-                host: boolean;
-                message: string;
-                date: string;
-                time: string;
-              },
-              idx: number
-            ) => {
-              return (
-                <div key={idx}>
-                  {!m.host && (
-                    <div className="w-full flex items-center justify-end">
-                      <div className="min-w-[100px] max-w-[300px] md:max-w-[500px]  py-2 px-4 flex-col bg-[#3F3F3F] space-y-1 rounded-md">
-                        <span className="text-[#F7F7F7] font-bold">You</span>
-                        <p className="text-[14px] text-[#F7F7F7] font-semibold">
-                          {m.message}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <span className="font-inter text-[#F7F7F7] text-[10px]">
-                            {m.date}
-                          </span>
-                          <span className="font-inter  text-[#F7F7F7] text-[10px]">
-                            {m.time}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {m.host && (
-                    <div className="w-full flex items-center justify-start">
-                      <div className="min-w-[100px] max-w-[300px] md:max-w-[500px]  py-2 px-4 flex-col bg-[#F7F7F7] space-y-1 rounded-md">
-                        <span className="text-[#3F3F3F] font-bold">
-                          {data.guestFullName}
-                        </span>
-                        <p className="text-[14px] font-semibold text-[#3F3F3F]">
-                          {m.message}
-                        </p>
-                        <div className="w-full flex items-center space-x-2">
-                          <span className="font-inter text-[10px] text-[#3F3F3F]">
-                            {m.date}
-                          </span>
-                          <span className="font-inter text-[10px] text-[#3F3F3F]">
-                            {m.time}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-white">
+          {data.messages.map((msg: any) => {
+            const isMe = msg.senderId === userId;
+
+            return (
+              <div
+                key={msg.id}
+                className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm ${
+                    isMe
+                      ? "bg-red-600 text-white rounded-br-sm"
+                      : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                  }`}
+                >
+                  {msg.message}
+                  <div className="text-xs mt-2 opacity-70">
+                    {format(new Date(msg.date), "MMM d, yyyy h:mm a")}
+                  </div>
                 </div>
-              );
-            }
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="px-6 py-4 border-t border-gray-200 bg-white">
+          <form onSubmit={handleSend} className="flex gap-3">
+            <input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleEnter}
+              placeholder="Type your message..."
+              className="flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
+            />
+            <button
+              type="submit"
+              disabled={!message.trim()}
+              className="bg-red-600 text-white px-5 rounded-lg disabled:opacity-50"
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* ================= LISTING SIDEBAR ================= */}
+      <div className="w-80 border-l border-gray-200 bg-white flex flex-col">
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="font-semibold text-lg">
+            {isReservation ? "Reservation" : "Listing"}
+          </h3>
+        </div>
+
+        <div className="p-4 space-y-4 overflow-y-auto">
+          {data.propertyPhoto && (
+            <Link href={`/properties/${data.propertyId}`} target="_blank">
+              <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                <Image
+                  src={data.propertyPhoto}
+                  alt="property"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </Link>
+          )}
+
+          <div>
+            <h4 className="font-semibold">{data.propertyTitle}</h4>
+            <p className="text-sm text-gray-500">{data.location}</p>
+          </div>
+
+          {!isReservation && (
+            <div>
+              <p className="text-xs text-gray-500">Price per night</p>
+              <p className="font-semibold">
+                ₦{Number(data.price).toLocaleString()}
+              </p>
+            </div>
+          )}
+
+          {data.bookingCheckInDate && (
+            <div>
+              <p className="text-xs text-gray-500">Check-in</p>
+              <p className="font-medium">
+                {format(new Date(data.bookingCheckInDate), "MMM d, yyyy")}
+              </p>
+            </div>
           )}
         </div>
-        <form
-          onSubmit={onSubmit}
-          className="w-full flex items-center bottom-[71px] p-2 fixed md:bottom-[-40px] md:absolute border border-gray-400 rounded-md bg-white"
-        >
-          <textarea
-            onKeyUp={handleEnterKeySubmit}
-            value={message}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
-              setMessage((e as ChangeEvent<HTMLTextAreaElement>).target.value);
-            }}
-            className="w-[85%] md:w-[92%] p-3 h-[45px] rounded-l-full font-semibold resize-none border-0 bg-transparent outline-none text-[16px]"
-            placeholder="type your message here..."
-          />
-          <button className="w-[15%] md:w-[8%] p-3 h-[45px] outline-none rounded-r-full  flex items-center justify-center">
-            {mutation.isPending ? (
-              <Spinner color="white" size={28} />
-            ) : (
-              <span>
-                <SendHorizonal
-                  size={28}
-                  className="stroke-primary"
-                  strokeWidth={3}
-                />
-              </span>
-            )}
-          </button>
-        </form>
       </div>
     </div>
   );
-};
+}
