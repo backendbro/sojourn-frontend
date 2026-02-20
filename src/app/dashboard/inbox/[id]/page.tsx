@@ -84,9 +84,7 @@ export default function InboxConversation({
 
   return (
     <div className="flex h-[88vh] bg-gray-50">
-      {/* ================= CHAT SECTION ================= */}
       <div className="flex-1 flex flex-col bg-white">
-        {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200 shadow-sm flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden relative bg-gray-200">
             {data.hostPhoto ? (
@@ -155,7 +153,7 @@ export default function InboxConversation({
         </div>
       </div>
 
-      {/* ================= LISTING SIDEBAR ================= */}
+      {/* ================= LISTING SIDEBARs ================= */}
       <div className="w-80 border-l border-gray-200 bg-white flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <h3 className="font-semibold text-lg">
