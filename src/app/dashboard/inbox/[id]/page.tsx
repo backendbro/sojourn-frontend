@@ -20,232 +20,314 @@ import hdate from "human-date";
 import Link from "next/link";
 import { numberOfNights } from "@/lib/utils";
 
-export default function InboxTicket({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default ({ params: { id } }: { params: { id: string } }) => {
   const userId = useSelector((state: RootState) => state.user.me?.user?.id);
-  const client = useQueryClient();
-  const [message, setMessage] = useState("");
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["ticket-messages-user", id],
+  const client = useQueryClient();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["ticket-messages-user"],
     queryFn: () => getTicketMessages(id),
+    refetchIntervalInBackground: true,
     refetchInterval: 400,
   });
 
   const mutation = useMutation({
+    mutationKey: ["send-message-user"],
     mutationFn: sendMessage,
     async onSuccess() {
       await client.invalidateQueries({
-        queryKey: ["ticket-messages-user", id],
+        queryKey: ["ticket-messages-user"],
       });
-      setMessage("");
     },
     onError() {
-      toast("Failed to send message");
+      toast("Failed to send message", {
+        description: message,
+        action: {
+          label: "Ok",
+          onClick: () => console.log("Ok"),
+        },
+      });
     },
   });
 
-  function send() {
-    if (!message.trim()) return;
+  const [message, setMessage] = useState<string>("");
 
+  const hostPhotoUrl = data ? data.hostPhoto : "";
+  const hostPhoto = hostPhotoUrl;
+
+  const bookingOrListing =
+    data && data.bookingCheckInDate ? "Reservation" : "Listing";
+
+  const photoUrl = data && data.propertyPhoto ? data.propertyPhoto : "";
+  const propertyPhoto = photoUrl;
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
     mutation.mutate({
       ticketId: id,
       hostId: data.hostId,
       message,
       senderId: userId,
-      userId,
+      userId: userId,
     } as MessageType);
+    setMessage("");
   }
 
-  function handleEnter(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      send();
+  const handleEnterKeySubmit = (e: KeyboardEvent) => {
+    if (e.key === "Enter") {
+      mutation.mutate({
+        ticketId: id,
+        hostId: data.hostId,
+        message,
+        senderId: userId,
+        userId: userId,
+      } as MessageType);
+      setMessage("");
     }
-  }
+  };
 
   if (isLoading) {
     return (
-      <div className="w-full h-[80vh] flex items-center justify-center">
-        <Spinner size={18} color="red" />
+      <div className="w-full flex items-center justify-center py-10 bg-white px-5 md:px-5 lg:px-20">
+        <Spinner size={17} color="red" />
       </div>
     );
   }
 
   return (
-    <div className="w-full h-[88vh] flex flex-col bg-white">
-      {/* HEADER */}
-      <ChatHeader data={data} />
-
-      {/* MESSAGES */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
-        {data.messages.map((m: any, idx: number) => (
-          <MessageBubble
-            key={idx}
-            isHost={m.host}
-            message={m.message}
-            date={m.date}
-            time={m.time}
-            guestName={data.guestFullName}
-          />
-        ))}
-      </div>
-
-      {/* INPUT */}
-      <ChatInput
-        value={message}
-        onChange={setMessage}
-        onSend={send}
-        onKeyDown={handleEnter}
-        loading={mutation.isPending}
-      />
-    </div>
-  );
-}
-
-/* ===========================
-   COMPONENTS
-=========================== */
-
-function ChatHeader({ data }: any) {
-  const bookingOrListing = data.bookingCheckInDate ? "Reservation" : "Listing";
-
-  return (
-    <div className="w-full border-b bg-white px-6 py-4 flex justify-between items-center">
-      <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 relative rounded-full overflow-hidden bg-gray-200">
-          {data.hostPhoto ? (
-            <Image src={data.hostPhoto} alt="host" fill />
-          ) : null}
-        </div>
-        <div>
-          <div className="font-semibold">{data.hostFullName}</div>
-          <div className="text-xs text-gray-500">
-            {hdate.relativeTime(data.date)}
-          </div>
-        </div>
-      </div>
-
-      <ListingDetailsDialog data={data} label={bookingOrListing} />
-    </div>
-  );
-}
-
-function MessageBubble({ isHost, message, date, time, guestName }: any) {
-  const isUser = !isHost;
-
-  return (
-    <div className={`w-full flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${
-          isUser
-            ? "bg-primary text-white rounded-br-none"
-            : "bg-gray-100 text-gray-800 rounded-bl-none"
-        }`}
-      >
-        <div className="text-sm font-semibold mb-1">
-          {isUser ? "You" : guestName}
-        </div>
-
-        <div className="text-sm whitespace-pre-wrap">{message}</div>
-
-        <div className="text-[10px] mt-2 opacity-70">
-          {date} • {time}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ChatInput({ value, onChange, onSend, onKeyDown, loading }: any) {
-  return (
-    <div className="border-t bg-white px-6 py-4">
-      <div className="flex items-center space-x-2">
-        <textarea
-          value={value}
-          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-            onChange(e.target.value)
-          }
-          onKeyDown={onKeyDown}
-          placeholder="Type your message..."
-          className="flex-1 resize-none rounded-full px-5 py-3 bg-gray-100 focus:outline-none text-sm"
-        />
-
-        <button
-          onClick={onSend}
-          className="w-12 h-12 rounded-full bg-primary flex items-center justify-center"
-        >
-          {loading ? (
-            <Spinner size={18} color="white" />
-          ) : (
-            <SendHorizonal className="text-white" size={20} />
-          )}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ListingDetailsDialog({ data, label }: any) {
-  return (
-    <Dialog>
-      <DialogTrigger>
-        <div className="bg-primary text-white px-4 py-2 rounded-full text-xs font-semibold cursor-pointer">
-          Show {label}
-        </div>
-      </DialogTrigger>
-
-      <DialogContent className="max-w-md">
-        <DialogClose className="w-full flex justify-end">
-          <X size={20} />
-        </DialogClose>
-
-        <div className="space-y-4">
-          {data.propertyPhoto && (
-            <Link href={`/properties/${data.propertyId}`} target="_blank">
-              <div className="relative h-[200px] rounded-xl overflow-hidden">
-                <Image src={data.propertyPhoto} alt="property" fill />
+    <div className="w-full lg:py-10 bg-white lg:px-5 lg:px-20 h-[88vh]">
+      <div className="w-full flex-col h-full relative">
+        <div className="w-full flex flex-col items-center">
+          <div className="w-full shadow-md py-2 px-3 font-semibold capitalize flex items-center space-x-3 md:space-x-0 justify-between">
+            <div className="w-1/2 md:w-1/2 flex items-center space-x-2">
+              <div className="cursor-pointer flex w-[30px] h-[30px] items-center bg-gray-200 rounded-full overflow-hidden relative flex items-center justify-center">
+                {hostPhoto ? (
+                  <Image
+                    src={hostPhoto}
+                    alt="person_placeholder"
+                    fill
+                    priority
+                  />
+                ) : (
+                  <Image
+                    src="/assets/icons/person-placeholder.png"
+                    alt="person_placeholder"
+                    width={23}
+                    height={23}
+                  />
+                )}
               </div>
-            </Link>
-          )}
-
-          <div>
-            <div className="font-semibold">{data.propertyTitle}</div>
-            <div className="text-sm text-gray-500">{data.location}</div>
-          </div>
-
-          {data.amountPaid && (
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span>Total</span>
-                <span>₦{Number(data.amountPaid).toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Duration</span>
-                <span>
-                  {numberOfNights(
-                    new Date(data.bookingCheckInDate),
-                    new Date(data.bookingCheckOutDate),
-                  )}{" "}
-                  nights
-                </span>
+              <div className="flex flex-col">
+                <span className="font-semibold">{data.hostFullName}</span>
+                <div className=" md:block hidden text-[10px] lowercase font-normal">
+                  {hdate.relativeTime(data.date)}
+                </div>
               </div>
             </div>
-          )}
+            <Dialog>
+              <DialogTrigger>
+                <div className="bg-primary text-white font-semibold py-2 px-4 rounded-full text-xs">
+                  Show {bookingOrListing}
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogClose className="w-full flex justify-end">
+                  <X size={20} />
+                </DialogClose>
+                <div className="w-full flex items-center justify-between  p-2 border-b border-b-gray-200">
+                  <h5 className="font-semibold text-lg">{bookingOrListing}</h5>
+                </div>
+                <Link
+                  href={`/properties/${data.propertyId}`}
+                  target="_blank"
+                  className="font-semibold text-md block"
+                >
+                  {propertyPhoto ? (
+                    <div className="w-full rounded-md oveflow-hidden relative h-[200px]">
+                      <div className="absolute bg-black opacity-40 w-full h-full top-0 left-0 z-10"></div>
+                      <div className="absolute px-3 py-2  top-4 left-4 z-50  isolate rounded-full bg-gray-200 shadow-md font-bold  text-xs">
+                        View Listin
+                      </div>
+                      <Image
+                        src={propertyPhoto}
+                        alt="property_photo"
+                        fill
+                        priority
+                      />
+                    </div>
+                  ) : null}
+                </Link>
+                {!data.bookingCheckInDate ? (
+                  <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
+                    <h5 className="font-semibold text-md"> Staying at</h5>
+                    <div className="capitalize">{data.propertyTitle}</div>
+                  </div>
+                ) : null}
+                <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
+                  <h5 className="font-semibold text-md">Location</h5>
+                  <div>{data.location}</div>
+                </div>
+                {!data.bookingCheckInDate ? (
+                  <div className="w-full flex flex-col  p-2 border-b border-b-gray-200 space-y-2">
+                    <h5 className="font-semibold text-md">Price per night</h5>
+                    <div>₦{new Number(data.price).toLocaleString()}</div>
+                  </div>
+                ) : null}
 
-          <Link
-            href="/terms-of-use#refund-policy"
-            target="_blank"
-            className="flex justify-between items-center text-sm font-medium"
-          >
-            Cancellation policy
-            <ChevronRight size={16} />
-          </Link>
+                {data.amountPaid ? (
+                  <div className="w-full flex flex-col  p-2  border-b border-b-gray-200 space-y-2">
+                    <h5 className="font-semibold text-md">Payment details</h5>
+                    <div className="w-full flex justify-between">
+                      <h5>Total</h5>
+                      <div className="font-inter">
+                        ₦{new Number(data.amountPaid).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-between">
+                      <h5>Price</h5>
+                      <div className="font-inter">
+                        ₦{new Number(data.price).toLocaleString()}
+                        <span className="text-[11px]">/night</span>
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-between">
+                      <h5>Caution fee</h5>
+                      <div className="font-inter">
+                        ₦{new Number(data.cautionFee).toLocaleString()}
+                      </div>
+                    </div>
+                    <div className="w-full flex justify-between">
+                      <h5>Duration</h5>
+                      <div>
+                        {numberOfNights(
+                          new Date(data.bookingCheckInDate),
+                          new Date(data.bookingCheckOutDate),
+                        )}{" "}
+                        nights
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {data.bookingCheckInDate ? (
+                  <div className="w-full flex justify-between p-2  border-b border-b-gray-200">
+                    <div>
+                      <h5 className="font-semibold text-md">Check in</h5>
+                      <div>{data.bookingCheckInDate}</div>
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-md">Check out</h5>
+                      <div>{data.bookingCheckOutDate}</div>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="w-full flex flex-col  border-b border-b-gray-200">
+                  <Link
+                    href="/terms-of-use#refund-policy"
+                    target="_blank"
+                    className="font-semibold text-md block p-2"
+                  >
+                    <div className="w-full flex items-center justify-between h-full">
+                      <span>Cancellation policy</span>
+                      <ChevronRight size={16} />
+                    </div>
+                  </Link>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="w-5/6 p-2 bg-paper rounded-md mt-1">
+            <p className="text-xs font-semibold text-black text-center">
+              {data.title}
+            </p>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+        <div className="w-full flex flex-col space-y-2 overflow-y-scroll h-[calc(100%-125px)] md:h-[calc(88vh-70px)] lg:h-[calc(100%-70px)] px-5 py-20">
+          {data.messages.map(
+            (
+              m: {
+                host: boolean;
+                message: string;
+                date: string;
+                time: string;
+              },
+              idx: number,
+            ) => {
+              return (
+                <div key={idx}>
+                  {!m.host && (
+                    <div className="w-full flex items-center justify-end">
+                      <div className="min-w-[100px] max-w-[300px] md:max-w-[500px]  py-2 px-4 flex-col bg-[#3F3F3F] space-y-1 rounded-md">
+                        <span className="text-[#F7F7F7] font-bold">You</span>
+                        <p className="text-[14px] text-[#F7F7F7] font-semibold">
+                          {m.message}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-inter text-[#F7F7F7] text-[10px]">
+                            {m.date}
+                          </span>
+                          <span className="font-inter  text-[#F7F7F7] text-[10px]">
+                            {m.time}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {m.host && (
+                    <div className="w-full flex items-center justify-start">
+                      <div className="min-w-[100px] max-w-[300px] md:max-w-[500px]  py-2 px-4 flex-col bg-[#F7F7F7] space-y-1 rounded-md">
+                        <span className="text-[#3F3F3F] font-bold">
+                          {data.guestFullName}
+                        </span>
+                        <p className="text-[14px] font-semibold text-[#3F3F3F]">
+                          {m.message}
+                        </p>
+                        <div className="w-full flex items-center space-x-2">
+                          <span className="font-inter text-[10px] text-[#3F3F3F]">
+                            {m.date}
+                          </span>
+                          <span className="font-inter text-[10px] text-[#3F3F3F]">
+                            {m.time}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            },
+          )}
+        </div>
+        <form
+          onSubmit={onSubmit}
+          className="w-full flex items-center bottom-[71px] p-2 fixed md:bottom-[-40px] md:absolute border border-gray-400 rounded-md bg-white"
+        >
+          <textarea
+            onKeyUp={handleEnterKeySubmit}
+            value={message}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+              setMessage((e as ChangeEvent<HTMLTextAreaElement>).target.value);
+            }}
+            className="w-[85%] md:w-[92%] p-3 h-[45px] rounded-l-full font-semibold resize-none border-0 bg-transparent outline-none text-[16px]"
+            placeholder="type your message heres..."
+          />
+          <button className="w-[15%] md:w-[8%] p-3 h-[45px] outline-none rounded-r-full  flex items-center justify-center">
+            {mutation.isPending ? (
+              <Spinner color="white" size={28} />
+            ) : (
+              <span>
+                <SendHorizonal
+                  size={28}
+                  className="stroke-primary"
+                  strokeWidth={3}
+                />
+              </span>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
   );
-}
+};
