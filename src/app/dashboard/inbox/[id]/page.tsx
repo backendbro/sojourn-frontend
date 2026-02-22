@@ -5,78 +5,50 @@ import { getTicketMessages, sendMessage } from "@/http/api";
 import { RootState } from "@/store";
 import { MessageType } from "@/types/messages";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useMemo, useState, useRef, useEffect } from "react";
+import { ChevronRight, SendHorizonal, X } from "lucide-react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import hdate from "human-date";
+import Link from "next/link";
+import { numberOfNights } from "@/lib/utils";
 
-export default function InboxDetails({
+export default function InboxTicket({
   params: { id },
 }: {
   params: { id: string };
 }) {
   const userId = useSelector((state: RootState) => state.user.me?.user?.id);
-
   const client = useQueryClient();
-  const bottomRef = useRef<HTMLDivElement | null>(null);
   const [message, setMessage] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["ticket-messages-user", id],
     queryFn: () => getTicketMessages(id),
-    refetchIntervalInBackground: true,
     refetchInterval: 400,
   });
 
   const mutation = useMutation({
-    mutationKey: ["send-message-user"],
     mutationFn: sendMessage,
     async onSuccess() {
-      setMessage("");
       await client.invalidateQueries({
         queryKey: ["ticket-messages-user", id],
       });
+      setMessage("");
     },
     onError() {
-      toast.error("Failed to send message");
+      toast("Failed to send message");
     },
   });
 
-  const conversation = useMemo(() => {
-    if (!data) return null;
-
-    return {
-      guestName: data.hostFullName,
-      guestAvatar: data.hostPhoto,
-      propertyName: data.propertyTitle,
-      propertyImage: data.propertyPhoto,
-      propertyLocation: data.location,
-      pricePerNight: data.price,
-      bedrooms: data.bedrooms,
-      bathrooms: data.bathrooms,
-      maxGuests: data.maxGuests,
-      amenities: data.amenities,
-      messages: data.messages.map(
-        (m: {
-          host: boolean;
-          message: string;
-          date: string;
-          time: string;
-        }) => ({
-          id: `${m.date}-${m.time}`,
-          text: m.message,
-          isMe: !m.host,
-          timestamp: `${m.date} ${m.time}`,
-        }),
-      ),
-    };
-  }, [data]);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation?.messages]);
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  function send() {
     if (!message.trim()) return;
 
     mutation.mutate({
@@ -86,115 +58,194 @@ export default function InboxDetails({
       senderId: userId,
       userId,
     } as MessageType);
-  };
+  }
 
-  if (isLoading || !conversation) {
+  function handleEnter(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send();
+    }
+  }
+
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Spinner size={20} color="red" />
+      <div className="w-full h-[80vh] flex items-center justify-center">
+        <Spinner size={18} color="red" />
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* ================= CHAT SECTION ================= */}
-      <div className="flex-1 flex flex-col bg-white">
-        {/* Header */}
-        <div className="flex items-center gap-3 border-b p-4">
-          <img
-            src={conversation.guestAvatar}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <div>
-            <p className="font-semibold">{conversation.guestName}</p>
-            <p className="text-sm text-gray-500">{conversation.propertyName}</p>
-          </div>
-        </div>
+    <div className="w-full h-[88vh] flex flex-col bg-white">
+      {/* HEADER */}
+      <ChatHeader data={data} />
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {conversation.messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-md px-4 py-3 rounded-2xl text-sm ${
-                  msg.isMe
-                    ? "bg-black text-white rounded-br-sm"
-                    : "bg-gray-100 text-gray-900 rounded-bl-sm"
-                }`}
-              >
-                {msg.text}
-                <div className="text-[10px] opacity-60 mt-1">
-                  {msg.timestamp}
-                </div>
-              </div>
-            </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
-
-        {/* Input */}
-        <form
-          onSubmit={handleSubmit}
-          className="border-t p-4 flex items-center gap-3"
-        >
-          <input
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 border rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-black"
+      {/* MESSAGES */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+        {data.messages.map((m: any, idx: number) => (
+          <MessageBubble
+            key={idx}
+            isHost={m.host}
+            message={m.message}
+            date={m.date}
+            time={m.time}
+            guestName={data.guestFullName}
           />
-          <button
-            type="submit"
-            className="bg-black text-white px-5 py-2 rounded-full"
-          >
-            Send
-          </button>
-        </form>
+        ))}
       </div>
 
-      {/* ================= LISTING DETAILS SIDEBAR ================= */}
-      <div className="w-[380px] border-l bg-white p-6 overflow-y-auto hidden lg:block">
-        <img
-          src={conversation.propertyImage}
-          className="w-full h-48 object-cover rounded-xl mb-4"
-        />
+      {/* INPUT */}
+      <ChatInput
+        value={message}
+        onChange={setMessage}
+        onSend={send}
+        onKeyDown={handleEnter}
+        loading={mutation.isPending}
+      />
+    </div>
+  );
+}
 
-        <h2 className="text-xl font-semibold mb-1">
-          {conversation.propertyName}
-        </h2>
+/* ===========================
+   COMPONENTS
+=========================== */
 
-        <p className="text-gray-500 text-sm mb-4">
-          {conversation.propertyLocation}
-        </p>
+function ChatHeader({ data }: any) {
+  const bookingOrListing = data.bookingCheckInDate ? "Reservation" : "Listing";
 
-        <div className="text-lg font-semibold mb-4">
-          ${conversation.pricePerNight} / night
+  return (
+    <div className="w-full border-b bg-white px-6 py-4 flex justify-between items-center">
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 relative rounded-full overflow-hidden bg-gray-200">
+          {data.hostPhoto ? (
+            <Image src={data.hostPhoto} alt="host" fill />
+          ) : null}
         </div>
-
-        <div className="space-y-2 text-sm mb-6">
-          <p>🛏 {conversation.bedrooms} Bedrooms</p>
-          <p>🛁 {conversation.bathrooms} Bathrooms</p>
-          <p>👥 {conversation.maxGuests} Guests</p>
-        </div>
-
         <div>
-          <h3 className="font-semibold mb-2">Amenities</h3>
-          <div className="flex flex-wrap gap-2">
-            {conversation.amenities?.map((amenity: string, index: number) => (
-              <span
-                key={index}
-                className="text-xs bg-gray-100 px-3 py-1 rounded-full"
-              >
-                {amenity}
-              </span>
-            ))}
+          <div className="font-semibold">{data.hostFullName}</div>
+          <div className="text-xs text-gray-500">
+            {hdate.relativeTime(data.date)}
           </div>
+        </div>
+      </div>
+
+      <ListingDetailsDialog data={data} label={bookingOrListing} />
+    </div>
+  );
+}
+
+function MessageBubble({ isHost, message, date, time, guestName }: any) {
+  const isUser = !isHost;
+
+  return (
+    <div className={`w-full flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${
+          isUser
+            ? "bg-primary text-white rounded-br-none"
+            : "bg-gray-100 text-gray-800 rounded-bl-none"
+        }`}
+      >
+        <div className="text-sm font-semibold mb-1">
+          {isUser ? "You" : guestName}
+        </div>
+
+        <div className="text-sm whitespace-pre-wrap">{message}</div>
+
+        <div className="text-[10px] mt-2 opacity-70">
+          {date} • {time}
         </div>
       </div>
     </div>
+  );
+}
+
+function ChatInput({ value, onChange, onSend, onKeyDown, loading }: any) {
+  return (
+    <div className="border-t bg-white px-6 py-4">
+      <div className="flex items-center space-x-2">
+        <textarea
+          value={value}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+            onChange(e.target.value)
+          }
+          onKeyDown={onKeyDown}
+          placeholder="Type your message..."
+          className="flex-1 resize-none rounded-full px-5 py-3 bg-gray-100 focus:outline-none text-sm"
+        />
+
+        <button
+          onClick={onSend}
+          className="w-12 h-12 rounded-full bg-primary flex items-center justify-center"
+        >
+          {loading ? (
+            <Spinner size={18} color="white" />
+          ) : (
+            <SendHorizonal className="text-white" size={20} />
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ListingDetailsDialog({ data, label }: any) {
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <div className="bg-primary text-white px-4 py-2 rounded-full text-xs font-semibold cursor-pointer">
+          Show {label}
+        </div>
+      </DialogTrigger>
+
+      <DialogContent className="max-w-md">
+        <DialogClose className="w-full flex justify-end">
+          <X size={20} />
+        </DialogClose>
+
+        <div className="space-y-4">
+          {data.propertyPhoto && (
+            <Link href={`/properties/${data.propertyId}`} target="_blank">
+              <div className="relative h-[200px] rounded-xl overflow-hidden">
+                <Image src={data.propertyPhoto} alt="property" fill />
+              </div>
+            </Link>
+          )}
+
+          <div>
+            <div className="font-semibold">{data.propertyTitle}</div>
+            <div className="text-sm text-gray-500">{data.location}</div>
+          </div>
+
+          {data.amountPaid && (
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Total</span>
+                <span>₦{Number(data.amountPaid).toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Duration</span>
+                <span>
+                  {numberOfNights(
+                    new Date(data.bookingCheckInDate),
+                    new Date(data.bookingCheckOutDate),
+                  )}{" "}
+                  nights
+                </span>
+              </div>
+            </div>
+          )}
+
+          <Link
+            href="/terms-of-use#refund-policy"
+            target="_blank"
+            className="flex justify-between items-center text-sm font-medium"
+          >
+            Cancellation policy
+            <ChevronRight size={16} />
+          </Link>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
