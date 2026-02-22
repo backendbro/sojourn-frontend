@@ -13,6 +13,7 @@ export default function ListingDetails({
   conversation,
   onClose,
 }: ListingDetailsProps) {
+  console.log("Rendering ListingDetails for conversation:", conversation);
   return (
     <div className="w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg animate-slide-in">
       <div className="flex-1 overflow-y-auto">

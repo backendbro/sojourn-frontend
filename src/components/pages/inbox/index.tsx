@@ -94,6 +94,7 @@ export default function InboxPage() {
     setShowListingDetails(true);
   };
 
+  console.log(ListingDetails);
   const handleNewChatChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
