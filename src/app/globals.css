@@ -129,7 +129,8 @@ body {
 }
 
 .hero-banner-backup {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url(https://assets-global.website-files.com/663cc5b081e30522b7cd88ac/6642b37dc66c0b39ea8c9d96_pexels-pixabay-271816.jpg);
   background-position: 0 20%;
   background-size: auto cover;
@@ -411,4 +412,10 @@ h3 {
     width: 100%;
     border-color: #f0ae2f;
   }
+}
+
+.chat-background {
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e5e7eb' fill-opacity='0.3'%3E%3Cpath d='M20 50h8v-8h4v8h8v-12l-10-8-10 8v12zm2-10v6h4v-6h4v6h4v-8l-6-4.8-6 4.8v8h4v-6h4v6z'/%3E%3Cpath d='M50 50h8v-8h4v8h8v-12l-10-8-10 8v12zm2-10v6h4v-6h4v6h4v-8l-6-4.8-6 4.8v8h4v-6h4v6z'/%3E%3Cpath d='M20 20h8v-8h4v8h8v-12l-10-8-10 8v12zm2-10v6h4v-6h4v6h4v-8l-6-4.8-6 4.8v8h4v-6h4v6z'/%3E%3Cpath d='M50 20h8v-8h4v8h8v-12l-10-8-10 8v12zm2-10v6h4v-6h4v6h4v-8l-6-4.8-6 4.8v8h4v-6h4v6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
 }

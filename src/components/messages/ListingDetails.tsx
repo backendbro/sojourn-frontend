@@ -1,10 +1,8 @@
 "use client";
 
 import { Conversation } from "@/types/messages";
-import Image from "next/image";
 import Link from "next/link";
-import { X, ChevronRight } from "lucide-react";
-import { numberOfNights } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface ListingDetailsProps {
   conversation: Conversation;
@@ -15,59 +13,51 @@ export default function ListingDetails({
   conversation,
   onClose,
 }: ListingDetailsProps) {
-  const {
-    propertyImage,
-    propertyName,
-    propertyLocation,
-    pricePerNight,
-    checkInDate,
-    checkOutDate,
-    totalPrice,
-    nights,
-    bedrooms,
-    bathrooms,
-    maxGuests,
-    amenities,
-    cancellationPolicy,
-    guestName,
-    guestAvatar,
-  } = conversation;
-
-  const hasBooking = !!(checkInDate && checkOutDate);
-  const nightsCount =
-    nights ||
-    (checkInDate && checkOutDate
-      ? numberOfNights(new Date(checkInDate), new Date(checkOutDate))
-      : undefined);
-
   return (
     <div className="w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg animate-slide-in">
       <div className="flex-1 overflow-y-auto">
         {/* Property Image */}
         <div className="p-4">
           <div className="relative w-full h-64 bg-gray-200 rounded-lg border-4 border-white shadow-xl overflow-hidden group">
-            {propertyImage ? (
-              <Image
-                src={propertyImage}
-                alt={propertyName}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+            {conversation.propertyImage ? (
+              <img
+                src={conversation.propertyImage}
+                alt={conversation.propertyName}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <svg
-                  className="w-16 h-16 text-white opacity-80"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <svg
+                      className="w-16 h-16 mx-auto mb-2 opacity-80"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
+                    </svg>
+                    <p className="text-sm font-medium opacity-90">
+                      Property Image
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
@@ -78,6 +68,7 @@ export default function ListingDetails({
             >
               View Listing
             </Link>
+            {/* Close Button */}
             <button
               onClick={onClose}
               className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200 active:scale-95 z-20 shadow-md hover:shadow-lg"
@@ -88,33 +79,33 @@ export default function ListingDetails({
           </div>
         </div>
 
-        {/* Property Title & Location */}
-        <div className="px-4 pb-2 border-b border-gray-200">
+        {/* Property Title */}
+        <div className="p-4 border-b border-gray-200">
           <h2 className="font-bold text-lg text-gray-900 mb-1">
-            {propertyName}
+            {conversation.propertyName}
           </h2>
-          {propertyLocation && (
+          {conversation.propertyLocation && (
             <p className="text-sm text-gray-600 capitalize">
-              {propertyLocation}
+              {conversation.propertyLocation}
             </p>
           )}
         </div>
 
-        {/* Property Details */}
-        {(bedrooms ||
-          bathrooms ||
-          maxGuests ||
-          (amenities && amenities.length > 0)) && (
+        {/* Property Details Card */}
+        {(conversation.bedrooms ||
+          conversation.bathrooms ||
+          conversation.maxGuests ||
+          (conversation.amenities && conversation.amenities.length > 0)) && (
           <div className="p-4 border-b border-gray-200">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
               Property Details
             </h4>
             <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                {bedrooms !== undefined && (
+                {conversation.bedrooms !== undefined && (
                   <div className="flex items-center gap-2.5">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-blue-600 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -129,15 +120,15 @@ export default function ListingDetails({
                     <div>
                       <p className="text-xs text-gray-500">Bedrooms</p>
                       <p className="text-sm font-semibold text-gray-900">
-                        {bedrooms}
+                        {conversation.bedrooms}
                       </p>
                     </div>
                   </div>
                 )}
-                {bathrooms !== undefined && (
+                {conversation.bathrooms !== undefined && (
                   <div className="flex items-center gap-2.5">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-blue-600 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -152,15 +143,15 @@ export default function ListingDetails({
                     <div>
                       <p className="text-xs text-gray-500">Bathrooms</p>
                       <p className="text-sm font-semibold text-gray-900">
-                        {bathrooms}
+                        {conversation.bathrooms}
                       </p>
                     </div>
                   </div>
                 )}
-                {maxGuests !== undefined && (
+                {conversation.maxGuests !== undefined && (
                   <div className="flex items-center gap-2.5">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-blue-600 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -175,22 +166,47 @@ export default function ListingDetails({
                     <div>
                       <p className="text-xs text-gray-500">Max Guests</p>
                       <p className="text-sm font-semibold text-gray-900">
-                        {maxGuests}
+                        {conversation.maxGuests}
                       </p>
                     </div>
                   </div>
                 )}
+                {conversation.amenities &&
+                  conversation.amenities.length > 0 && (
+                    <div className="flex items-center gap-2.5">
+                      <svg
+                        className="w-5 h-5 text-blue-600 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                        />
+                      </svg>
+                      <div>
+                        <p className="text-xs text-gray-500">Amenities</p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {conversation.amenities.length}
+                        </p>
+                      </div>
+                    </div>
+                  )}
               </div>
 
-              {amenities && amenities.length > 0 && (
+              {/* Amenities List */}
+              {conversation.amenities && conversation.amenities.length > 0 && (
                 <div className="pt-3 border-t border-gray-200">
                   <p className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
                     Amenities
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {amenities.map((amenity, idx) => (
+                    {conversation.amenities.map((amenity, index) => (
                       <div
-                        key={idx}
+                        key={index}
                         className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 rounded-lg border border-gray-200"
                       >
                         <svg
@@ -219,18 +235,19 @@ export default function ListingDetails({
         )}
 
         {/* Pricing */}
-        {pricePerNight !== undefined && (
+        {conversation.pricePerNight !== undefined && (
           <div className="p-4 border-b border-gray-200">
             <div className="flex justify-between items-baseline">
               <div>
                 <p className="text-xs text-gray-500 mb-1">Price per night</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₦{pricePerNight.toLocaleString()}
+                  ₦{conversation.pricePerNight.toLocaleString()}
                 </p>
               </div>
-              {nightsCount && (
+              {conversation.nights && (
                 <p className="text-sm text-gray-500">
-                  × {nightsCount} {nightsCount === 1 ? "night" : "nights"}
+                  × {conversation.nights}{" "}
+                  {conversation.nights === 1 ? "night" : "nights"}
                 </p>
               )}
             </div>
@@ -243,18 +260,23 @@ export default function ListingDetails({
             Guest
           </p>
           <div className="flex items-center gap-3">
-            {guestAvatar ? (
+            {conversation.guestAvatar ? (
               <div className="relative">
-                <div className="w-12 h-12 rounded-full overflow-hidden shadow-sm ring-2 ring-offset-2 ring-gray-100">
-                  <Image
-                    src={guestAvatar}
-                    alt={guestName}
-                    width={48}
-                    height={48}
-                    className="object-cover"
-                  />
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                <img
+                  src={conversation.guestAvatar}
+                  alt={conversation.guestName}
+                  className="w-12 h-12 rounded-full object-cover shadow-sm ring-2 ring-offset-2 ring-gray-100"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = "flex";
+                  }}
+                />
+                <div
+                  className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm"
+                  style={{ display: "none" }} // fallback hidden initially
+                >
                   <svg
                     className="w-3 h-3 text-white"
                     fill="none"
@@ -273,7 +295,7 @@ export default function ListingDetails({
             ) : (
               <div className="relative">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold shadow-sm ring-2 ring-offset-2 ring-gray-100">
-                  {guestName.charAt(0)}
+                  {conversation.guestName.charAt(0)}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                   <svg
@@ -295,7 +317,7 @@ export default function ListingDetails({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <p className="font-semibold text-sm text-gray-900">
-                  {guestName}
+                  {conversation.guestName}
                 </p>
                 <div className="flex items-center gap-1 px-1.5 py-0.5 bg-black rounded-full">
                   <svg
@@ -322,7 +344,7 @@ export default function ListingDetails({
         </div>
 
         {/* Cancellation Policy */}
-        {cancellationPolicy && (
+        {conversation.cancellationPolicy && (
           <div className="p-4">
             <Link
               href="/terms-of-use#refund-policy"
@@ -335,10 +357,22 @@ export default function ListingDetails({
                     Cancellation policy
                   </p>
                   <p className="text-sm text-gray-700 font-medium">
-                    {cancellationPolicy}
+                    {conversation.cancellationPolicy}
                   </p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform group-hover:translate-x-1" />
+                <svg
+                  className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
               </button>
             </Link>
           </div>
