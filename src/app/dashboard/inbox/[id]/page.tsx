@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -8,6 +8,7 @@ import {
   getMessagesByGuestId,
   getBookingsByUserId,
   createTicket,
+  getTicketMessages, // <-- import this
 } from "@/http/api";
 import { Conversation } from "@/types/messages";
 import MessageList from "@/components/messages/MessageList";
@@ -43,6 +44,13 @@ export default function InboxContent() {
     enabled: !!userId,
   });
 
+  // Fetch full ticket details when a conversation is selected
+  const { data: ticketData, isLoading: ticketLoading } = useQuery({
+    queryKey: ["ticket-details", selectedConversation?.id],
+    queryFn: () => getTicketMessages(selectedConversation!.id),
+    enabled: !!selectedConversation,
+  });
+
   // Fetch bookings for new chat dialog
   const { data: bookingsData } = useQuery({
     queryKey: ["get-bookings"],
@@ -63,7 +71,7 @@ export default function InboxContent() {
     },
   });
 
-  // Transform API data to Conversation format
+  // Transform API data to Conversation format (for the list)
   const conversations: Conversation[] = (conversationsData || []).map(
     (item: any) => ({
       id: item.id,
@@ -79,7 +87,6 @@ export default function InboxContent() {
       propertyImage: item.propertyPhoto,
       propertyLocation: item.location,
       pricePerNight: item.price,
-      // other fields may be fetched later in ChatWindow
     }),
   );
 
@@ -308,10 +315,18 @@ export default function InboxContent() {
 
         {/* Listing Details Sidebar */}
         {selectedConversation && showListingDetails && (
-          <ListingDetails
-            conversation={selectedConversation}
-            onClose={() => setShowListingDetails(false)}
-          />
+          <>
+            {ticketLoading ? (
+              <div className="w-80 border-l border-gray-200 bg-white flex items-center justify-center">
+                <Spinner color="red" size={30} />
+              </div>
+            ) : (
+              <ListingDetails
+                ticketData={ticketData}
+                onClose={() => setShowListingDetails(false)}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
