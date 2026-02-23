@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { X, ChevronRight } from "lucide-react";
 import { numberOfNights } from "@/lib/utils";
+import { useEffect } from "react";
 
 interface ListingDetailsProps {
   ticketData: any; // Replace with proper type from your API if available
@@ -15,17 +15,12 @@ export default function ListingDetails({
   ticketData,
   onClose,
 }: ListingDetailsProps) {
-  // Debug: log the ticket data
   useEffect(() => {
     console.log("📦 ListingDetails ticketData:", ticketData);
-    if (ticketData) {
-      console.log("🔑 propertyId:", ticketData.propertyId);
-    }
   }, [ticketData]);
 
   if (!ticketData) return null;
 
-  // Destructure exactly as in message-viewer
   const {
     propertyId,
     propertyPhoto,
@@ -48,159 +43,264 @@ export default function ListingDetails({
         )
       : undefined;
 
-  const bookingOrListing = bookingCheckInDate ? "Reservation" : "Listing";
-
   return (
     <div className="w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg animate-slide-in">
       <div className="flex-1 overflow-y-auto">
-        {/* Header with title and close button (exactly as in message-viewer) */}
-        <div className="w-full flex items-center justify-between px-2 py-3 border-b border-b-gray-300">
-          <h3 className="text-xl pl-3">{bookingOrListing}</h3>
-          <button
-            className="outline-none border-0 rounded-md bg-gray-100 p-1"
-            onClick={onClose}
-          >
-            <X size={15} color="black" />
-          </button>
-        </div>
-
-        {/* Property Image with View Listing link (same as message-viewer) */}
-        <Link
-          href={`/properties/${propertyId}`}
-          target="_blank"
-          className="font-semibold text-md block"
-        >
-          {propertyPhoto ? (
-            <div className="w-full rounded-md overflow-hidden relative h-[150px] group">
-              <div className="absolute bg-black opacity-40 w-full h-full top-0 left-0 z-10 ease duration-300 hover:opacity-20"></div>
-              <div className="absolute px-3 py-2 top-4 left-4 z-50 isolate rounded-full bg-gray-200 shadow-md font-bold text-xs">
-                View Listing
-              </div>
+        {/* Property Image */}
+        <div className="p-4">
+          <div className="relative w-full h-64 bg-gray-200 rounded-lg border-4 border-white shadow-xl overflow-hidden group">
+            {propertyPhoto ? (
               <Image
                 src={propertyPhoto}
-                alt="property_photo"
+                alt={propertyTitle}
                 fill
-                priority
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
-            </div>
-          ) : (
-            <div className="w-full h-[150px] bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center rounded-md">
-              <svg
-                className="w-16 h-16 text-white opacity-80"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            ) : (
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-            </div>
-          )}
-        </Link>
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <svg
+                      className="w-16 h-16 mx-auto mb-2 opacity-80"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
+                    </svg>
+                    <p className="text-sm font-medium opacity-90">
+                      Property Image
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+            <Link
+              href={`/properties/${propertyId}`}
+              target="_blank"
+              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 z-10"
+            >
+              View Listing
+            </Link>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200 active:scale-95 z-20 shadow-md hover:shadow-lg"
+              aria-label="Close listing details"
+            >
+              <X className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
+        </div>
 
-        {/* Staying at (if no booking) */}
-        {!bookingCheckInDate && (
-          <div className="w-full flex flex-col p-3 pl-6 border-b border-b-gray-200 space-y-2">
-            <h5 className="font-semibold text-md">Staying at</h5>
-            <div className="capitalize">{propertyTitle}</div>
+        {/* Property Title */}
+        <div className="p-4 border-b border-gray-200">
+          <h2 className="font-bold text-lg text-gray-900 mb-1">
+            {propertyTitle}
+          </h2>
+          {location && (
+            <p className="text-sm text-gray-600 capitalize">{location}</p>
+          )}
+        </div>
+
+        {/* Property Details Card - optional, only if additional fields exist */}
+        {/* This section is kept for future use; currently no data */}
+        {false && (
+          <div className="p-4 border-b border-gray-200">
+            <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+              Property Details
+            </h4>
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Add details here if available */}
+              </div>
+              {/* Amenities List */}
+            </div>
           </div>
         )}
 
-        {/* Location */}
-        <div className="w-full flex flex-col p-3 pl-6 border-b border-b-gray-200 space-y-2">
-          <h5 className="font-semibold text-md">Location</h5>
-          <div>{location}</div>
-        </div>
-
-        {/* Price per night (if no booking) */}
-        {!bookingCheckInDate && price !== undefined && (
-          <div className="w-full flex flex-col p-3 pl-6 border-b border-b-gray-200 space-y-2">
-            <h5 className="font-semibold text-md">Price per night</h5>
-            <div>₦{new Number(price).toLocaleString()}</div>
+        {/* Pricing */}
+        {price !== undefined && (
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex justify-between items-baseline">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Price per night</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ₦{new Number(price).toLocaleString()}
+                </p>
+              </div>
+              {nights && (
+                <p className="text-sm text-gray-500">
+                  × {nights} {nights === 1 ? "night" : "nights"}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
         {/* Payment details (if booking) */}
         {amountPaid && (
-          <div className="w-full flex flex-col p-3 pl-6 border-b border-b-gray-200 space-y-3">
-            <h5 className="font-semibold text-md">Payment details</h5>
-            <div className="w-full flex justify-between">
-              <div className="font-inter">
-                ₦{new Number(price).toLocaleString()}
-              </div>
-              <div className="flex items-center w-[108px] text-left">
-                <X size={15} />
-                {nights} nights
-              </div>
-            </div>
-            <div className="w-full flex justify-between">
-              <h5>Caution fee</h5>
-              <div className="font-inter text-left w-[108px]">
-                ₦{new Number(cautionFee).toLocaleString()}
-              </div>
-            </div>
-            <div className="w-full flex justify-between">
-              <h5 className="font-[700]">Total</h5>
-              <div className="font-inter font-[700] text-left w-[108px]">
+          <div className="p-4 border-b border-gray-200 space-y-3">
+            <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+              Payment details
+            </h4>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Total</span>
+              <span className="font-semibold">
                 ₦{new Number(amountPaid).toLocaleString()}
-              </div>
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Price</span>
+              <span className="font-semibold">
+                ₦{new Number(price).toLocaleString()}{" "}
+                <span className="text-xs">/night</span>
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Caution fee</span>
+              <span className="font-semibold">
+                ₦{new Number(cautionFee).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">Duration</span>
+              <span className="font-semibold">{nights} nights</span>
             </div>
           </div>
         )}
 
         {/* Check-in/out (if booking) */}
         {bookingCheckInDate && bookingCheckOutDate && (
-          <div className="w-full flex justify-between p-3 pl-6 border-b border-b-gray-200">
-            <div>
-              <h5 className="font-semibold text-md">Check in</h5>
-              <div>{bookingCheckInDate}</div>
-            </div>
-            <div className="w-[108px] flex flex-col">
-              <h5 className="font-semibold text-md">Check out</h5>
-              <div>{bookingCheckOutDate}</div>
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex justify-between">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Check in</p>
+                <p className="text-sm font-medium">{bookingCheckInDate}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Check out</p>
+                <p className="text-sm font-medium">{bookingCheckOutDate}</p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Host / Guest Info (same as message-viewer) */}
-        <div className="w-full flex items-center p-3 pl-6 border-b border-b-gray-200">
-          <div className="cursor-pointer flex w-[45px] h-[45px] items-center bg-gray-200 rounded-full overflow-hidden relative mr-3">
+        {/* Guest Information */}
+        <div className="p-4 border-b border-gray-200">
+          <p className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+            Guest
+          </p>
+          <div className="flex items-center gap-3">
             {hostPhoto ? (
-              <Image
-                src={hostPhoto}
-                alt="host"
-                fill
-                priority
-                className="object-cover"
-              />
+              <div className="relative">
+                <Image
+                  src={hostPhoto}
+                  alt={hostFullName}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover shadow-sm ring-2 ring-offset-2 ring-gray-100"
+                />
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </div>
             ) : (
-              <Image
-                src="/assets/icons/person-placeholder.png"
-                alt="person_placeholder"
-                width={23}
-                height={23}
-              />
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold shadow-sm ring-2 ring-offset-2 ring-gray-100">
+                  {hostFullName?.charAt(0) || "?"}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </div>
             )}
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-sm text-gray-900">
+                  {hostFullName}
+                </p>
+                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-black rounded-full">
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
+                  <span className="text-xs font-medium text-white">
+                    Verified
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">Guest</p>
+            </div>
           </div>
-          <span className="font-semibold text-lg">{hostFullName}</span>
         </div>
 
-        {/* Cancellation policy */}
-        <Link
-          href="/terms-of-use#refund-policy"
-          target="_blank"
-          className="font-semibold text-md p-0 m-0 block border-b border-b-gray-200"
-        >
-          <div className="w-full flex items-center p-3 pl-6 justify-between h-full">
-            <span>Cancellation policy</span>
-            <ChevronRight size={16} />
-          </div>
-        </Link>
+        {/* Cancellation Policy */}
+        <div className="p-4">
+          <Link
+            href="/terms-of-use#refund-policy"
+            target="_blank"
+            className="block"
+          >
+            <button className="flex items-center justify-between w-full text-left group p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">
+                  Cancellation policy
+                </p>
+                <p className="text-sm text-gray-700 font-medium">
+                  {bookingCheckInDate ? "Flexible" : "Standard"}
+                </p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform group-hover:translate-x-1" />
+            </button>
+          </Link>
+        </div>
       </div>
     </div>
   );
