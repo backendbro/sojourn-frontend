@@ -33,6 +33,7 @@ export default function ListingDetails({
         console.log("✅ getPropertyById RESPONSE:", response);
 
         // 🔥 Amenities debug paths
+        console.log("🧩 response.ammenities:", response?.ammenities);
         console.log("🧩 response.amenities:", response?.amenities);
         console.log("🧩 response.data?.amenities:", response?.data?.amenities);
 
@@ -61,8 +62,12 @@ export default function ListingDetails({
     hostPhoto,
   } = ticketData;
 
-  // Try both possible shapes
-  const amenities = property?.amenities || property?.data?.amenities || [];
+  // 🔹 Fix for amenities (API returns "ammenities")
+  const amenities =
+    property?.ammenities ||
+    property?.amenities ||
+    property?.data?.amenities ||
+    [];
 
   const nights =
     bookingCheckInDate && bookingCheckOutDate
