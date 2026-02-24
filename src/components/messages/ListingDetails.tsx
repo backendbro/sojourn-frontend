@@ -122,46 +122,42 @@ export default function ListingDetails({
             <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 {property.numberOfRooms !== undefined && (
-                  <div className="flex items-center gap-2.5">
-                    <div>
-                      <p className="text-xs text-gray-500">Rooms</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {property.numberOfRooms}
-                      </p>
-                    </div>
+                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
+                    <p className="text-xs text-blue-600 font-medium">Rooms</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {property.numberOfRooms}
+                    </p>
                   </div>
                 )}
 
                 {property.maxNumberOfPeople !== undefined && (
-                  <div className="flex items-center gap-2.5">
-                    <div>
-                      <p className="text-xs text-gray-500">Max Guests</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {property.maxNumberOfPeople}
-                      </p>
-                    </div>
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                    <p className="text-xs text-emerald-600 font-medium">
+                      Max Guests
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {property.maxNumberOfPeople}
+                    </p>
                   </div>
                 )}
 
                 {property.typeOfProperty && (
-                  <div className="flex items-center gap-2.5">
-                    <div>
-                      <p className="text-xs text-gray-500">Type</p>
-                      <p className="text-sm font-semibold text-gray-900 capitalize">
-                        {property.typeOfProperty}
-                      </p>
-                    </div>
+                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-100">
+                    <p className="text-xs text-purple-600 font-medium">Type</p>
+                    <p className="text-sm font-semibold text-gray-900 capitalize">
+                      {property.typeOfProperty}
+                    </p>
                   </div>
                 )}
 
                 {amenities.length > 0 && (
-                  <div className="flex items-center gap-2.5">
-                    <div>
-                      <p className="text-xs text-gray-500">Amenities</p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {amenities.length}
-                      </p>
-                    </div>
+                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-100">
+                    <p className="text-xs text-amber-600 font-medium">
+                      Amenities
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {amenities.length}
+                    </p>
                   </div>
                 )}
               </div>
@@ -177,7 +173,7 @@ export default function ListingDetails({
                     {amenities.map((amenity: string, index: number) => (
                       <div
                         key={index}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-gray-50 rounded-lg border border-gray-200"
+                        className="px-2.5 py-1.5 bg-gray-100 rounded-full border border-gray-200"
                       >
                         <span className="text-xs text-gray-700 font-medium capitalize">
                           {amenity}
