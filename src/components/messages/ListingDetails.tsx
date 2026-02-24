@@ -4,10 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { X, ChevronRight } from "lucide-react";
 import { numberOfNights } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getPropertyById } from "@/http/api"; // ✅ adjust if needed
 
 interface ListingDetailsProps {
-  ticketData: any; // Replace with proper type from your API if available
+  ticketData: any;
   onClose: () => void;
 }
 
@@ -15,9 +16,33 @@ export default function ListingDetails({
   ticketData,
   onClose,
 }: ListingDetailsProps) {
+  const [property, setProperty] = useState<any>(null);
+
   useEffect(() => {
     console.log("📦 ListingDetails ticketData:", ticketData);
-    console.log("🏡 Amenities:", ticketData?.amenities);
+
+    if (!ticketData?.propertyId) return;
+
+    const fetchProperty = async () => {
+      try {
+        console.log("🔎 Fetching property with ID:", ticketData.propertyId);
+
+        const response = await getPropertyById(ticketData.propertyId);
+
+        // 🔥 FULL RESPONSE
+        console.log("✅ getPropertyById RESPONSE:", response);
+
+        // 🔥 Amenities debug paths
+        console.log("🧩 response.amenities:", response?.amenities);
+        console.log("🧩 response.data?.amenities:", response?.data?.amenities);
+
+        setProperty(response);
+      } catch (error) {
+        console.error("❌ Failed to fetch property:", error);
+      }
+    };
+
+    fetchProperty();
   }, [ticketData]);
 
   if (!ticketData) return null;
@@ -34,8 +59,10 @@ export default function ListingDetails({
     bookingCheckOutDate,
     hostFullName,
     hostPhoto,
-    amenities, // ✅ added
   } = ticketData;
+
+  // Try both possible shapes
+  const amenities = property?.amenities || property?.data?.amenities || [];
 
   const nights =
     bookingCheckInDate && bookingCheckOutDate
@@ -59,8 +86,21 @@ export default function ListingDetails({
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-                <p className="text-sm font-medium">Property Image</p>
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <p className="text-sm font-medium opacity-90">
+                      Property Image
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -69,14 +109,14 @@ export default function ListingDetails({
             <Link
               href={`/properties/${propertyId}`}
               target="_blank"
-              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition shadow-md"
+              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 z-10"
             >
               View Listing
             </Link>
 
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md"
+              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200 active:scale-95 z-20 shadow-md hover:shadow-lg"
               aria-label="Close listing details"
             >
               <X className="w-5 h-5 text-gray-700" />
@@ -94,7 +134,7 @@ export default function ListingDetails({
           )}
         </div>
 
-        {/* ✅ Property Details + Amenities */}
+        {/* ✅ Amenities Section */}
         {Array.isArray(amenities) && amenities.length > 0 && (
           <div className="p-4 border-b border-gray-200">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
@@ -102,12 +142,14 @@ export default function ListingDetails({
             </h4>
 
             <div className="grid grid-cols-2 gap-2">
-              {amenities.map((amenity: string, index: number) => (
+              {amenities.map((amenity: any, index: number) => (
                 <div
                   key={index}
                   className="text-xs bg-gray-100 px-2 py-1 rounded-md text-gray-700"
                 >
-                  {amenity}
+                  {typeof amenity === "string"
+                    ? amenity
+                    : amenity?.name || JSON.stringify(amenity)}
                 </div>
               ))}
             </div>
@@ -185,84 +227,31 @@ export default function ListingDetails({
           </div>
         )}
 
-        {/* Guest section remains unchanged */}
         {/* Guest Information */}
         <div className="p-4 border-b border-gray-200">
           <p className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
             Guest
           </p>
+
           <div className="flex items-center gap-3">
             {hostPhoto ? (
-              <div className="relative">
-                <Image
-                  src={hostPhoto}
-                  alt={hostFullName}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover shadow-sm ring-2 ring-offset-2 ring-gray-100"
-                />
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </div>
+              <Image
+                src={hostPhoto}
+                alt={hostFullName}
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover"
+              />
             ) : (
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold shadow-sm ring-2 ring-offset-2 ring-gray-100">
-                  {hostFullName?.charAt(0) || "?"}
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                {hostFullName?.charAt(0) || "?"}
               </div>
             )}
+
             <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-sm text-gray-900">
-                  {hostFullName}
-                </p>
-                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-black rounded-full">
-                  <svg
-                    className="w-3 h-3 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
-                  </svg>
-                  <span className="text-xs font-medium text-white">
-                    Verified
-                  </span>
-                </div>
-              </div>
+              <p className="font-semibold text-sm text-gray-900">
+                {hostFullName}
+              </p>
               <p className="text-xs text-gray-500 mt-0.5">Guest</p>
             </div>
           </div>
