@@ -17,6 +17,7 @@ export default function ListingDetails({
 }: ListingDetailsProps) {
   useEffect(() => {
     console.log("📦 ListingDetails ticketData:", ticketData);
+    console.log("🏡 Amenities:", ticketData?.amenities);
   }, [ticketData]);
 
   if (!ticketData) return null;
@@ -33,6 +34,7 @@ export default function ListingDetails({
     bookingCheckOutDate,
     hostFullName,
     hostPhoto,
+    amenities, // ✅ added
   } = ticketData;
 
   const nights =
@@ -57,48 +59,24 @@ export default function ListingDetails({
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div
-                className="w-full h-full bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                }}
-              >
-                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <svg
-                      className="w-16 h-16 mx-auto mb-2 opacity-80"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.5}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                      />
-                    </svg>
-                    <p className="text-sm font-medium opacity-90">
-                      Property Image
-                    </p>
-                  </div>
-                </div>
+              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
+                <p className="text-sm font-medium">Property Image</p>
               </div>
             )}
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
+
             <Link
               href={`/properties/${propertyId}`}
               target="_blank"
-              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 z-10"
+              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition shadow-md"
             >
               View Listing
             </Link>
-            {/* Close Button */}
+
             <button
               onClick={onClose}
-              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200 active:scale-95 z-20 shadow-md hover:shadow-lg"
+              className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md"
               aria-label="Close listing details"
             >
               <X className="w-5 h-5 text-gray-700" />
@@ -116,18 +94,22 @@ export default function ListingDetails({
           )}
         </div>
 
-        {/* Property Details Card - optional, only if additional fields exist */}
-        {/* This section is kept for future use; currently no data */}
-        {false && (
+        {/* ✅ Property Details + Amenities */}
+        {Array.isArray(amenities) && amenities.length > 0 && (
           <div className="p-4 border-b border-gray-200">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-              Property Details
+              Amenities
             </h4>
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Add details here if available */}
-              </div>
-              {/* Amenities List */}
+
+            <div className="grid grid-cols-2 gap-2">
+              {amenities.map((amenity: string, index: number) => (
+                <div
+                  key={index}
+                  className="text-xs bg-gray-100 px-2 py-1 rounded-md text-gray-700"
+                >
+                  {amenity}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -151,18 +133,20 @@ export default function ListingDetails({
           </div>
         )}
 
-        {/* Payment details (if booking) */}
+        {/* Payment details */}
         {amountPaid && (
           <div className="p-4 border-b border-gray-200 space-y-3">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
               Payment details
             </h4>
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Total</span>
               <span className="font-semibold">
                 ₦{new Number(amountPaid).toLocaleString()}
               </span>
             </div>
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Price</span>
               <span className="font-semibold">
@@ -170,12 +154,14 @@ export default function ListingDetails({
                 <span className="text-xs">/night</span>
               </span>
             </div>
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Caution fee</span>
               <span className="font-semibold">
                 ₦{new Number(cautionFee).toLocaleString()}
               </span>
             </div>
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Duration</span>
               <span className="font-semibold">{nights} nights</span>
@@ -183,7 +169,7 @@ export default function ListingDetails({
           </div>
         )}
 
-        {/* Check-in/out (if booking) */}
+        {/* Check-in/out */}
         {bookingCheckInDate && bookingCheckOutDate && (
           <div className="p-4 border-b border-gray-200">
             <div className="flex justify-between">
@@ -199,6 +185,7 @@ export default function ListingDetails({
           </div>
         )}
 
+        {/* Guest section remains unchanged */}
         {/* Guest Information */}
         <div className="p-4 border-b border-gray-200">
           <p className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
