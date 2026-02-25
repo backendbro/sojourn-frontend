@@ -139,7 +139,7 @@ export default function InboxContent() {
         {/* Inbox and Chat Section */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Inbox Header */}
-          <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+          <div className="bg-white border-b border-gray-200 px-6 py-1 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-2xl font-bold text-gray-900">Inbox</h1>
             </div>
