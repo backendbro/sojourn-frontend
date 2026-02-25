@@ -566,7 +566,9 @@ export default function InboxPage() {
             ) : (
               <ListingDetails
                 ticketData={ticketDetails}
-                onClose={handleCloseDetails}
+                onClose={() => {
+                  setShowListingDetails(false);
+                }}
               />
             )}
           </div>
