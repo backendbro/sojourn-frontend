@@ -644,7 +644,6 @@
 //     </div>
 //   );
 // }
-
 "use client";
 
 import { useState, ChangeEvent, FormEvent } from "react";
@@ -664,7 +663,7 @@ import ListingDetails from "@/components/messages/ListingDetails";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, X, Pencil, ArrowRight, ChevronLeft, Info, Eye, EyeOff } from "lucide-react";
+import { Search, X, Pencil, ArrowRight, ChevronLeft, Eye, EyeOff } from "lucide-react";
 import Spinner from "@/components/svgs/Spinner";
 import { toast } from "sonner";
 
@@ -766,10 +765,6 @@ export default function InboxPage() {
   const handleBackToList = () => {
     setSelectedConversation(null);
     setMobileView("list");
-  };
-
-  const handleOpenDetails = () => {
-    setMobileView("details");
   };
 
   const handleCloseDetails = () => {
@@ -1000,9 +995,9 @@ export default function InboxPage() {
                 <button 
                   onClick={handleToggleDetails} 
                   className="p-2 hover:bg-gray-100 rounded-full transition"
-                  title={showListingDetails ? "Hide details" : "Show details"}
+                  title={mobileView === "details" ? "Hide details" : "Show details"}
                 >
-                  {showListingDetails ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {mobileView === "details" ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
 
