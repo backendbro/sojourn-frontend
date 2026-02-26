@@ -323,9 +323,7 @@ export default function InboxContent() {
             ) : (
               <ListingDetails
                 ticketData={ticketData}
-                onClose={() => {
-                  setShowListingDetails(false);
-                }}
+                onClose={() => setShowListingDetails(false)}
               />
             )}
           </>
