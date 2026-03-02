@@ -9,7 +9,7 @@ const HomeIcon: FC<{ size?: number }> = ({ size = 24 }) => {
       height={size}
     >
       <g
-        fill="currentColor"
+        fill="#FFFFFF"
         fillRule="nonzero"
         stroke="none"
         strokeWidth="1"
