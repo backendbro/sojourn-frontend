@@ -1,4 +1,5 @@
 import { ContactUsType } from "@/types/emails";
+import type { NotificationsResponse } from "@/types/notifications";
 import { CreateTicketType, MessageType } from "@/types/messages";
 import { PaymentDataType, SubscriptionPaymentDataType } from "@/types/payments";
 import {
@@ -624,5 +625,14 @@ export async function downloadGuestBookingInvoice(id: string) {
       Accept: "application/pdf",
     },
   });
+  return response.data;
+}
+
+export async function getNotifications(
+  userId: string,
+  role?: "guest" | "host"
+): Promise<NotificationsResponse> {
+  const params = role ? { role } : {};
+  const response = await api.get<NotificationsResponse>(`/notifications/${userId}`, { params });
   return response.data;
 }
