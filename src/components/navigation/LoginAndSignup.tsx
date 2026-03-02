@@ -139,7 +139,7 @@ export default () => {
         <DialogTrigger>
           <div
             role="button"
-            className="py-3 px-4 font-[700] rounded-full text-white whitespace-nowrap transition duration-300 hover:bg-transparent"
+            className="py-3 px-4 font-[700] rounded-full text-white transition duration-300 hover:bg-transparent"
           >
             Login 
           </div>
@@ -345,7 +345,7 @@ function SingupModal() {
       <DialogTrigger>
         <div
           role="button"
-          className="py-3 px-4 font-[700] rounded-full whitespace-nowrap text-white transition duration-300 hover:bg-transparent"
+          className="py-3 px-4 font-[700] rounded-full text-white transition duration-300 hover:bg-transparent"
         >
           Signup
         </div>
