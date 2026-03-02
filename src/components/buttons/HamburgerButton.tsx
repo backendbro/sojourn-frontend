@@ -145,90 +145,164 @@ const HamburgerButton = () => {
       </div>
     );
 
-  return (
-    <div className="flex items-center space-x-2">
-      <MenuList loggedIn={user?.loggedIn} />
-      {isUserLoggedInAndHost ? (
-        <>
-          {!isOnHosts ? (
-            <Link
-              href="/hosts/dashboard/properties"
-              className="hidden md:flex cursor-pointer"
-            >
-              <div className="text-black text-center flex w-[100px] font-bold px-2 h-[37px] font-[450] items-center bg-paper border border-black rounded-3xl text-[13px] justify-center bg-paper ease-in duration-200 hover:bg-red-50 lg:px-4 lg:space-x-2">
-                <span className="inline-block  font-sans w-full text-[13px]">
-                  Go to Host
-                </span>
-              </div>
-            </Link>
-          ) : (
-            <Link href="/" className="hidden md:flex cursor-pointer">
-              <div className="text-black text-center flex w-[120px] font-bold px-2 h-[37px] font-[450] items-center bg-paper border border-black rounded-3xl text-[13px] justify-center bg-paper ease-in duration-200 hover:bg-red-50 lg:px-4 lg:space-x-2">
-                <span className="inline-block font-sans w-full text-[13px]">
-                  Go to Guest
-                </span>
-              </div>
-            </Link>
-          )}
-        </>
-      ) : null}
-      {isHostUserLoggedIn ? (
-        <Link href="/become-a-host" className="hidden lg:flex cursor-pointer">
-          <div className="text-white flex w-[150px] px-2 h-[37px] font-[450] items-center bg-primary rounded-md text-[13px] justify-center lg:px-4 lg:space-x-2">
-            <span className="font-sans w-full text-[13px]">Become a host</span>
-            <HomeIcon size={16} />
-          </div>
-        </Link>
-      ) : null}
-      <div
-        onClick={() => setMenuOpen(!isMenuOpen)}
-        className={`  ${hoverHamburgerIcon}`}
-      >
-        {user?.loggedIn ? (
-          <div className="rounded-[50%] relative overflow-hidden bg-red-100 w-[35px] h-[35px] flex items-center justify-center text-md">
-            {user?.me?.photo ? (
-              <Image src={user.me.photo} alt="profile_picture" fill />
-            ) : (
-              <>
-                {user?.me?.firstName ? (
-                  <span className="text-primary font-bold capitalize">
-                    {user.me?.firstName[0]}
-                  </span>
-                ) : null}
+  // return (
+  //   <div className="flex items-center space-x-2">
+  //     <MenuList loggedIn={user?.loggedIn} />
+  //     {isUserLoggedInAndHost ? (
+  //       <>
+  //         {!isOnHosts ? (
+  //           <Link
+  //             href="/hosts/dashboard/properties"
+  //             className="hidden md:flex cursor-pointer"
+  //           >
+  //             <div className="text-black text-center flex w-[100px] font-bold px-2 h-[37px] font-[450] items-center bg-paper border border-black rounded-3xl text-[13px] justify-center bg-paper ease-in duration-200 hover:bg-red-50 lg:px-4 lg:space-x-2">
+  //               <span className="inline-block  font-sans w-full text-[13px]">
+  //                 Go to Host
+  //               </span>
+  //             </div>
+  //           </Link>
+  //         ) : (
+  //           <Link href="/" className="hidden md:flex cursor-pointer">
+  //             <div className="text-black text-center flex w-[120px] font-bold px-2 h-[37px] font-[450] items-center bg-paper border border-black rounded-3xl text-[13px] justify-center bg-paper ease-in duration-200 hover:bg-red-50 lg:px-4 lg:space-x-2">
+  //               <span className="inline-block font-sans w-full text-[13px]">
+  //                 Go to Guest
+  //               </span>
+  //             </div>
+  //           </Link>
+  //         )}
+  //       </>
+  //     ) : null}
+  //     {isHostUserLoggedIn ? (
+  //       <Link href="/become-a-host" className="hidden lg:flex cursor-pointer">
+  //         <div className="text-white flex w-[150px] px-2 h-[37px] font-[450] items-center bg-primary rounded-md text-[13px] justify-center lg:px-4 lg:space-x-2">
+  //           <span className="font-sans w-full text-[13px]">Become a host</span>
+  //           <HomeIcon size={16} />
+  //         </div>
+  //       </Link>
+  //     ) : null}
+  //     <div
+  //       onClick={() => setMenuOpen(!isMenuOpen)}
+  //       className={`  ${hoverHamburgerIcon}`}
+  //     >
+  //       {user?.loggedIn ? (
+  //         <div className="rounded-[50%] relative overflow-hidden bg-red-100 w-[35px] h-[35px] flex items-center justify-center text-md">
+  //           {user?.me?.photo ? (
+  //             <Image src={user.me.photo} alt="profile_picture" fill />
+  //           ) : (
+  //             <>
+  //               {user?.me?.firstName ? (
+  //                 <span className="text-primary font-bold capitalize">
+  //                   {user.me?.firstName[0]}
+  //                 </span>
+  //               ) : null}
 
-                {user?.me.lastName ? (
-                  <span className="text-primary font-bold capitalize">
-                    {user.me?.lastName[0]}
-                  </span>
-                ) : null}
-              </>
-            )}
-          </div>
-        ) : null}
-        <button
-          className={`border-0 ml-2 outline-none w-[20px] h-[20px] relative ease duration-300 ${buttonPos}`}
-        >
-          <div
-            className={
-              "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
-              animateTwo
-            }
-          ></div>
-          <div
-            className={
-              "ease duration-300 h-[2px] bg-primary my-1 " + animateOne
-            }
-          ></div>
-          <div
-            className={
-              "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
-              animateThree
-            }
-          ></div>
-        </button>
-      </div>
+  //               {user?.me.lastName ? (
+  //                 <span className="text-primary font-bold capitalize">
+  //                   {user.me?.lastName[0]}
+  //                 </span>
+  //               ) : null}
+  //             </>
+  //           )}
+  //         </div>
+  //       ) : null}
+  //       <button
+  //         className={`border-0 ml-2 outline-none w-[20px] h-[20px] relative ease duration-300 ${buttonPos}`}
+  //       >
+  //         <div
+  //           className={
+  //             "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
+  //             animateTwo
+  //           }
+  //         ></div>
+  //         <div
+  //           className={
+  //             "ease duration-300 h-[2px] bg-primary my-1 " + animateOne
+  //           }
+  //         ></div>
+  //         <div
+  //           className={
+  //             "w-[20px] ease duration-300  h-[2px] bg-primary my-1 " +
+  //             animateThree
+  //           }
+  //         ></div>
+  //       </button>
+  //     </div>
+  //   </div>
+  // );
+return (
+  <div className="flex items-center h-full">
+    {/* Left group */}
+    <MenuList loggedIn={user?.loggedIn} />
+
+    {/* Host / Guest Toggle */}
+    {isUserLoggedInAndHost && (
+      <Link
+        href={isOnHosts ? "/" : "/hosts/dashboard/properties"}
+        className="hidden md:flex items-center shrink-0 ml-4"
+      >
+        <span className="text-[14px] font-semibold text-white whitespace-nowrap px-4 min-h-[46px] flex items-center border border-white/30 rounded-full hover:bg-white/10 transition-colors">
+          {isOnHosts ? "Go to Guest" : "Go to Host"}
+        </span>
+      </Link>
+    )}
+
+    {/* Become a host */}
+    {isHostUserLoggedIn && (
+      <Link
+        href="/become-a-host"
+        className="hidden lg:flex items-center shrink-0 ml-4"
+      >
+        <span className="text-[14px] font-semibold text-red-700 whitespace-nowrap px-5 min-h-[46px] flex items-center bg-white rounded-md hover:bg-white/90 transition-colors gap-1.5">
+          Become a host
+          <HomeIcon size={16} />
+        </span>
+      </Link>
+    )}
+
+    {/* Avatar + Hamburger */}
+    <div
+      onClick={() => setMenuOpen(!isMenuOpen)}
+      className="flex items-center ml-4 cursor-pointer px-2.5 py-2.5 rounded-md hover:bg-white/10 transition-colors shrink-0"
+    >
+      {user?.loggedIn && (
+        <div className="rounded-full relative overflow-hidden bg-white/20 w-[40px] h-[40px] flex items-center justify-center text-md mr-2.5">
+          {user?.me?.photo ? (
+            <Image src={user.me.photo} alt="profile_picture" fill />
+          ) : (
+            <span className="text-white font-bold capitalize text-sm">
+              {user.me?.firstName?.[0] ?? ""}
+              {user.me?.lastName?.[0] ?? ""}
+            </span>
+          )}
+        </div>
+      )}
+
+      <button
+        className={`border-0 outline-none w-[22px] h-[22px] relative ease duration-300 ${buttonPos}`}
+        aria-label="Toggle menu"
+      >
+        <div
+          className={
+            "w-[22px] ease duration-300 h-[2.5px] bg-white my-1 " +
+            animateTwo
+          }
+        />
+        <div
+          className={
+            "ease duration-300 h-[2.5px] bg-white my-1 " +
+            animateOne
+          }
+        />
+        <div
+          className={
+            "w-[22px] ease duration-300 h-[2.5px] bg-white my-1 " +
+            animateThree
+          }
+        />
+      </button>
     </div>
-  );
+  </div>
+);
 };
 
 export default HamburgerButton;
