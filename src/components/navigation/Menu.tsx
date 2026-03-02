@@ -53,7 +53,7 @@ const Menu = () => {
   );
 
   return isHostCreationPage ? (
-    <div className="w-full fixed bg-primary top-0 left-0 z-[9999] font-sans">
+    <div className="w-full fixed top-0 left-0 z-[9999] font-sans" style={{"backgroundColor":"#C40A0D"}}>
       {isOnline === "not-connected" ? <NetworkBanner /> : null}
       {!isUserProfileComplete && isNotProiflePage && isLoggedIn ? (
         <Notification message={message} />
