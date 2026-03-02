@@ -1,5 +1,6 @@
 import HamburgerButton from "../buttons/HamburgerButton";
 import MobileSearch from "./mobile-search";
+import MenuSearch from "../ui/menu-search";
 
 const MenuSSR = () => {
   return (
@@ -8,6 +9,9 @@ const MenuSSR = () => {
     <div className="w-full px-3 sm:px-5 md:px-10 lg:px-[80px] min-h-[64px] sm:min-h-[72px] md:min-h-[80px] max-w-[1400px] 2xl:mx-auto bg-primary flex items-center justify-between gap-3 sm:gap-4"> 
     <MobileSearch />
       <div className="flex items-center">
+         <div className="flex-1 flex items-center justify-center min-w-0">
+        <MenuSearch />
+      </div>
         <HamburgerButton />
       </div>
     </div>
