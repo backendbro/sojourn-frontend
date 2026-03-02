@@ -139,9 +139,9 @@ export default () => {
         <DialogTrigger>
           <div
             role="button"
-            className="py-3 outline-none font-[700] border-0 ease duration-300 rounded-full px-4 hover:bg-red-50"
+            className="py-3 px-4 font-[700] rounded-full text-white transition duration-300 hover:bg-transparent"
           >
-            Login
+            Login 
           </div>
         </DialogTrigger>
         <DialogContent className="w-auto min-h-[50px]">
