@@ -3,8 +3,10 @@ import MobileSearch from "./mobile-search";
 
 const MenuSSR = () => {
   return (
-    <div className="w-full px-5 h-[67px] max-w-[1400px] 2xl:mx-auto bg-paper flex items-center justify-between sm:px-[80px]">
-      <MobileSearch />
+     
+    //<div className="w-full px-5 h-[67px] max-w-[1400px] 2xl:mx-auto bg-paper flex items-center justify-between sm:px-[80px]">
+    <div className="w-full px-3 sm:px-5 md:px-10 lg:px-[80px] min-h-[64px] sm:min-h-[72px] md:min-h-[80px] max-w-[1400px] 2xl:mx-auto bg-primary flex items-center justify-between gap-3 sm:gap-4"> 
+    <MobileSearch />
       <div className="flex items-center">
         <HamburgerButton />
       </div>
