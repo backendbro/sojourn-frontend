@@ -6,6 +6,7 @@ import { RootState } from "@/store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import NotificationBell from "../navigation/NotificationBell";
 import { setLoggedInStatus, setMe } from "@/store/features/current-user-slice";
 import HomeIcon from "../svgs/HomeIcon";
 import MenuList from "../navigation/MenuList";
@@ -258,6 +259,14 @@ return (
         </span>
       </Link>
     )}
+
+{/* Notification Bell */}
+      {user?.loggedIn && user?.me?.user?.id && (
+        <NotificationBell
+          userId={user.me.user.id}
+          role={isOnHosts ? "host" : "guest"}
+        />
+      )}
 
     {/* Avatar + Hamburger */}
     <div
