@@ -5,7 +5,22 @@ import Footer from "@/components/ui/footer";
 import { Switch } from "@/components/ui/switch";
 import { PLANS, WHY_HOST_WITH_SOJOURN } from "@/constants";
 import { RootState } from "@/store";
-import { CircleChevronRight, Rocket, ArrowRight } from "lucide-react";
+import {
+  CircleChevronRight,
+  Rocket,
+  ArrowRight,
+  BadgePercent,
+  BarChart3,
+  ShieldCheck,
+  CreditCard,
+  Bitcoin,
+  Building2,
+  ChevronDown,
+  Search,
+  Camera,
+  ClipboardCheck,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -87,8 +102,10 @@ const BecomeAHostPage: React.FC = () => {
     }
     return (
       <BecomeAHost>
-        <button
-          className={`w-full py-3 px-6 rounded-full font-semibold transition-all flex items-center justify-center gap-2 ${
+        <div
+          role="button"
+          tabIndex={0}
+          className={`w-full py-3 px-6 rounded-full font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
             plan.popular
               ? "bg-primary text-white"
               : "bg-[#FFF1D7] text-primary hover:bg-primary hover:text-white"
@@ -96,7 +113,7 @@ const BecomeAHostPage: React.FC = () => {
         >
           Get Started
           <ArrowRight className="w-4 h-4" />
-        </button>
+        </div>
       </BecomeAHost>
     );
   };
@@ -109,61 +126,97 @@ const BecomeAHostPage: React.FC = () => {
           initial="initial"
           animate="animate"
           variants={staggerContainer}
-          className="w-full px-4 md:px-10 relative"
+          className="w-full relative"
         >
-          <header className="w-full flex flex-col md:flex-row pb-5 overflow-hidden md:pb-0 min-h-[600px] md:h-[700px] relative rounded-[40px] bg-gradient-to-br from-[#FFF1D7] to-[#FFE4B5]">
-            <m.div
-              initial="initial"
-              animate="animate"
-              variants={fadeIn}
-              transition={{ duration: 0.6 }}
-              className="w-full h-[500px] md:w-2/3 md:h-full relative z-10"
-            >
-              <div className="w-full h-full flex flex-col justify-center px-8 md:px-16 space-y-8 py-14 md:py-0">
+          <header
+            className="w-full relative min-h-[600px] sm:min-h-[650px] md:min-h-[90vh] overflow-hidden bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: "url('/assets/imgs/discover-bg.png')" }}
+          >
+            <div className="absolute inset-0 bg-black/20" />
+
+            {/* Content */}
+            <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 sm:px-6 md:px-12 lg:px-24 h-full flex flex-col justify-end pb-16 sm:pb-20 md:pb-28 pt-32 sm:pt-40 md:pt-48">
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="max-w-[720px]"
+              >
+                <span className="text-[10px] sm:text-xs font-extrabold tracking-[0.3em] uppercase text-white/60 mb-4 sm:mb-5 block">
+                  Become a host
+                </span>
                 <m.h1
                   variants={slideIn}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="text-[#810B0B] font-extrabold text-4xl md:text-6xl lg:text-7xl w-full md:w-4/5 leading-tight"
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  className="text-[32px] sm:text-[48px] md:text-[64px] lg:text-[80px] font-black text-white tracking-tight leading-[1.05]"
                 >
-                  Become a Host with Sojourn
+                  Your Property.
+                  <span className="block">Your Revenue.</span>
                 </m.h1>
                 <m.p
                   variants={fadeIn}
-                  className="text-xl md:text-2xl font-medium text-[#810B0B]/80 w-full md:w-4/5"
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="mt-5 sm:mt-6 text-base sm:text-lg md:text-xl text-white/70 max-w-[520px] leading-relaxed"
                 >
-                  Host with us for a well refined experience
+                  Keep 100% of your earnings. No commissions. Just a flat
+                  ₦20,000/month subscription and a full suite of professional
+                  hosting tools.
                 </m.p>
-                <m.div variants={fadeIn}>
+
+                <m.div
+                  variants={fadeIn}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+                >
                   {isLoggedInAndNotHost ? (
-                    <AddHost />
+                    <AddHost className="px-8 sm:px-10 py-3.5 sm:py-4 bg-white text-[#810B0B] font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-white/90 transition-colors rounded-md min-h-[44px] inline-flex items-center gap-2" />
                   ) : isLoggedInAndHostAndGuest ? null : (
                     <BecomeAHost>
-                      <div className="group inline-flex items-center gap-2 bg-primary px-6 py-3 rounded-full text-white font-semibold transition-all hover:bg-primary/90 hover:scale-105 cursor-pointer">
-                        Sign Up as a Host
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      <div className="px-8 sm:px-10 py-3.5 sm:py-4 bg-white text-[#810B0B] font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-white/90 transition-colors rounded-md min-h-[44px] cursor-pointer">
+                        Start hosting
                       </div>
                     </BecomeAHost>
                   )}
+                  <Link
+                    href="#plans"
+                    className="text-sm font-semibold tracking-wide text-white/50 hover:text-white transition-colors"
+                  >
+                    View plans & pricing →
+                  </Link>
                 </m.div>
-              </div>
-            </m.div>
+              </m.div>
 
-            <m.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="w-full h-[500px] md:w-1/3 bg-primary/90 md:h-full relative overflow-hidden rounded-l-[40px]"
-            >
-              <div className="absolute inset-0 bg-[url(/assets/imgs/blurred-circles.png)] bg-cover opacity-30 mix-blend-overlay" />
-              <Image
-                src="/assets/imgs/woman-smiling.png"
-                alt="woman_smiling"
-                width={600}
-                height={600}
-                priority
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-125 md:scale-150"
-              />
-            </m.div>
+              {/* Stats bar */}
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="mt-12 sm:mt-16 grid grid-cols-3 gap-4 sm:gap-8 max-w-[600px]"
+              >
+                <div className="border-l-2 border-white/30 pl-4">
+                  <span className="text-[24px] sm:text-[32px] md:text-[40px] font-black text-white leading-none">
+                    0%
+                  </span>
+                  <p className="mt-1 text-[10px] sm:text-xs text-white/40 font-medium uppercase tracking-wider">
+                    Commission
+                  </p>
+                </div>
+                <div className="border-l-2 border-white/30 pl-4">
+                  <span className="text-[24px] sm:text-[32px] md:text-[40px] font-black text-white leading-none">
+                    100%
+                  </span>
+                  <p className="mt-1 text-[10px] sm:text-xs text-white/40 font-medium uppercase tracking-wider">
+                    Your Revenue
+                  </p>
+                </div>
+                <div className="border-l-2 border-white/30 pl-4">
+                  <span className="text-[24px] sm:text-[32px] md:text-[40px] font-black text-white leading-none">
+                    24/7
+                  </span>
+                  <p className="mt-1 text-[10px] sm:text-xs text-white/40 font-medium uppercase tracking-wider">
+                    Support
+                  </p>
+                </div>
+              </m.div>
+            </div>
           </header>
         </m.div>
 
@@ -253,6 +306,399 @@ const BecomeAHostPage: React.FC = () => {
           </div>
         </m.div>
 
+        {/* What You Get as a Host Section */}
+        <m.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="w-full py-20 px-4 md:px-10 bg-white"
+        >
+          <div className="max-w-7xl mx-auto">
+            <m.div
+              variants={fadeIn}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <span className="text-primary font-medium mb-4 block">
+                Your Hosting Toolkit
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#310000] mb-6">
+                What You Get as a Sojourn Host
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Sojourn equips you with the infrastructure to run your
+                short-let business like a professional operation, not just a
+                listing.
+              </p>
+            </m.div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="bg-gradient-to-br from-[#FFF1D7]/40 to-white rounded-3xl p-8 border border-[#FFF1D7]"
+              >
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <BarChart3 className="w-7 h-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Revenue & Booking Analytics
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Access real-time data on your earnings, occupancy rates,
+                      seasonal demand patterns, and booking conversion rates.
+                      Make pricing decisions backed by actual performance data,
+                      not guesswork.
+                    </p>
+                  </div>
+                </div>
+              </m.div>
+
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="bg-gradient-to-br from-[#FFF1D7]/40 to-white rounded-3xl p-8 border border-[#FFF1D7]"
+              >
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <BadgePercent className="w-7 h-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Zero Commission Model
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Unlike platforms that take 15-20% of every booking,
+                      Sojourn charges a flat monthly subscription. If you earn
+                      ₦500,000 in a month, you keep ₦500,000. Your revenue
+                      is yours.
+                    </p>
+                  </div>
+                </div>
+              </m.div>
+
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="bg-gradient-to-br from-[#FFF1D7]/40 to-white rounded-3xl p-8 border border-[#FFF1D7]"
+              >
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <Users className="w-7 h-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Guest Satisfaction Tracking
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Monitor reviews, response times, and guest feedback
+                      through your dashboard. Identify what guests love and
+                      where to improve, so you can maintain high occupancy
+                      and repeat bookings.
+                    </p>
+                  </div>
+                </div>
+              </m.div>
+
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="bg-gradient-to-br from-[#FFF1D7]/40 to-white rounded-3xl p-8 border border-[#FFF1D7]"
+              >
+                <div className="flex items-start gap-5 mb-6">
+                  <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <Building2 className="w-7 h-7 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">
+                      Property Inspection & Quality Assurance
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed">
+                      Every property goes through a verification process before
+                      going live. This protects your brand as a host and gives
+                      guests the confidence that your listing delivers what it
+                      promises.
+                    </p>
+                  </div>
+                </div>
+              </m.div>
+            </div>
+          </div>
+        </m.div>
+
+        {/* How Sojourn Works for Hosts Section */}
+        <m.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="w-full py-20 px-4 md:px-10 bg-[#FFF9EE]"
+        >
+          <div className="max-w-7xl mx-auto">
+            <m.div
+              variants={fadeIn}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <span className="text-primary font-medium mb-4 block">
+                How It Works
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#310000] mb-6">
+                From Signup to First Booking
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                A clear, structured process to get your property listed and
+                earning on Sojourn.
+              </p>
+            </m.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  step: "01",
+                  icon: Users,
+                  title: "Create Your Host Account",
+                  desc: "Sign up with your details, verify your identity, and set up your host profile in under 5 minutes.",
+                },
+                {
+                  step: "02",
+                  icon: Camera,
+                  title: "Add Your Property",
+                  desc: "Upload photos, write a description, set your nightly rate, and define house rules and availability.",
+                },
+                {
+                  step: "03",
+                  icon: ClipboardCheck,
+                  title: "Pass Inspection",
+                  desc: "Our team reviews your listing to ensure it meets Sojourn's quality and safety standards before it goes live.",
+                },
+                {
+                  step: "04",
+                  icon: CreditCard,
+                  title: "Receive Bookings & Payments",
+                  desc: "Guests find and book your property. Payments are processed securely and transferred directly to your account.",
+                },
+              ].map((item) => (
+                <m.div
+                  key={item.step}
+                  variants={fadeIn}
+                  transition={{ duration: 0.6 }}
+                  className="relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all group"
+                >
+                  <span className="text-5xl font-black text-primary/10 absolute top-4 right-6">
+                    {item.step}
+                  </span>
+                  <div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+                    <item.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-bold mb-3">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {item.desc}
+                  </p>
+                </m.div>
+              ))}
+            </div>
+          </div>
+        </m.div>
+
+        {/* Trust & Security Section */}
+        <m.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="w-full py-20 px-4 md:px-10 bg-white"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 md:gap-20 items-center">
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+              >
+                <span className="text-primary font-medium mb-4 block">
+                  Built for Trust
+                </span>
+                <h2 className="text-4xl md:text-5xl font-bold text-[#310000] mb-6">
+                  Your Guests Book with Confidence
+                </h2>
+                <p className="text-lg text-gray-600 leading-relaxed mb-8">
+                  When guests trust the platform, they book more frequently and
+                  leave better reviews. Sojourn invests in payment security,
+                  property verification, and transparent policies so that your
+                  listing benefits from platform-level trust.
+                </p>
+                <div className="space-y-5">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-emerald-50 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Secure Payments via Paystack</h4>
+                      <p className="text-gray-600 text-sm">
+                        All transactions are processed through Paystack, Nigeria's
+                        leading payment gateway. Guests pay securely, and hosts
+                        receive direct bank transfers.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-amber-50 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Bitcoin className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Cryptocurrency Payments</h4>
+                      <p className="text-gray-600 text-sm">
+                        Sojourn supports crypto payments for diaspora and
+                        international guests, expanding your potential market
+                        beyond traditional card payments.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="bg-blue-50 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Search className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold mb-1">Transparent Listing Standards</h4>
+                      <p className="text-gray-600 text-sm">
+                        Every property is inspected before it goes live. No
+                        misleading photos, no hidden fees. This protects both
+                        hosts and guests.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </m.div>
+
+              <m.div
+                variants={fadeIn}
+                transition={{ duration: 0.6 }}
+                className="relative"
+              >
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
+                <div className="relative bg-gradient-to-br from-[#FFF1D7] to-[#FFE4B5] rounded-3xl p-10 shadow-xl">
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        </div>
+                        <span className="font-semibold text-sm">
+                          Payment Protected
+                        </span>
+                      </div>
+                      <div className="h-2 bg-emerald-100 rounded-full overflow-hidden">
+                        <div className="h-full w-full bg-emerald-500 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <ClipboardCheck className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <span className="font-semibold text-sm">
+                          Property Verified
+                        </span>
+                      </div>
+                      <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
+                        <div className="h-full w-full bg-blue-500 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                          <BarChart3 className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <span className="font-semibold text-sm">
+                          Analytics Dashboard
+                        </span>
+                      </div>
+                      <div className="h-2 bg-amber-100 rounded-full overflow-hidden">
+                        <div className="h-full w-3/4 bg-amber-500 rounded-full" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </m.div>
+            </div>
+          </div>
+        </m.div>
+
+        {/* FAQ Section */}
+        <m.div
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="w-full py-20 px-4 md:px-10 bg-[#FFF9EE]"
+        >
+          <div className="max-w-4xl mx-auto">
+            <m.div
+              variants={fadeIn}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-[#310000] mb-6">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-gray-600">
+                Common questions from prospective hosts.
+              </p>
+            </m.div>
+
+            <m.div
+              variants={staggerContainer}
+              className="space-y-4"
+            >
+              {[
+                {
+                  q: "How much does it cost to list on Sojourn?",
+                  a: "Sojourn charges a flat monthly subscription starting at ₦20,000/month. There are no per-booking commissions. You keep 100% of what your guests pay.",
+                },
+                {
+                  q: "How do I get paid when a guest books my property?",
+                  a: "Payments are processed through Paystack and transferred directly to your bank account after the guest checks in. We also support cryptocurrency payments for international bookings.",
+                },
+                {
+                  q: "What is the property inspection process?",
+                  a: "After you submit your listing, our team reviews the property details and photos. For properties that meet our standards, we schedule a brief verification. Once approved, your listing goes live immediately.",
+                },
+                {
+                  q: "Can I list multiple properties?",
+                  a: "Yes. Your subscription covers your host account, and you can list multiple properties under it. Each property goes through its own inspection process.",
+                },
+                {
+                  q: "What types of properties can I list?",
+                  a: "We accept apartments, houses, villas, studio flats, and unique accommodations across Nigeria. Your property should be well-maintained, accurately photographed, and meet basic safety standards.",
+                },
+                {
+                  q: "Do I set my own prices?",
+                  a: "Absolutely. You have full control over your nightly rate, minimum stay requirements, and availability calendar. Your dashboard also shows market data to help you price competitively.",
+                },
+              ].map((item, idx) => (
+                <m.details
+                  key={idx}
+                  variants={fadeIn}
+                  transition={{ duration: 0.4 }}
+                  className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+                >
+                  <summary className="flex items-center justify-between cursor-pointer px-6 py-5 font-semibold text-lg list-none">
+                    {item.q}
+                    <ChevronDown className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180 flex-shrink-0 ml-4" />
+                  </summary>
+                  <div className="px-6 pb-5 text-gray-600 leading-relaxed">
+                    {item.a}
+                  </div>
+                </m.details>
+              ))}
+            </m.div>
+          </div>
+        </m.div>
+
         {/* Plans Section */}
         <m.div
           initial="initial"
@@ -281,17 +727,17 @@ const BecomeAHostPage: React.FC = () => {
             <m.div
               variants={fadeIn}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-4 bg-[#FFF1D7] rounded-full p-2 mb-16"
+              className="inline-flex items-center gap-2 sm:gap-3 bg-[#FFF1D7] rounded-full p-1.5 sm:p-2 mb-10 sm:mb-16"
             >
               <button
                 onClick={() => setChecked(false)}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-4 sm:px-6 py-2 rounded-full transition-all text-sm sm:text-base ${
                   !checked ? "bg-primary text-white" : "hover:bg-white/50"
                 }`}
               >
                 Monthly
               </button>
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <span className={monthlyActiveCss}>Monthly</span>
                 <Switch
                   checked={checked}
@@ -302,17 +748,17 @@ const BecomeAHostPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setChecked(true)}
-                className={`px-6 py-2 rounded-full transition-all ${
+                className={`px-4 sm:px-6 py-2 rounded-full transition-all text-sm sm:text-base ${
                   checked ? "bg-primary text-white" : "hover:bg-white/50"
                 }`}
               >
-                Yearly <span className="text-sm">(Save 20%)</span>
+                Yearly <span className="text-xs sm:text-sm">(Save 10%)</span>
               </button>
             </m.div>
 
             <m.div
               variants={staggerContainer}
-              className="grid md:grid-cols-3 gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8"
             >
               {PLANS.map((plan, idx) => (
                 <m.div
@@ -320,7 +766,7 @@ const BecomeAHostPage: React.FC = () => {
                   variants={fadeIn}
                   transition={{ duration: 0.6 }}
                   whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                  className={`bg-white rounded-3xl shadow-xl p-8 relative overflow-hidden ${
+                  className={`bg-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 relative overflow-hidden ${
                     plan.popular ? "border-2 border-primary" : ""
                   }`}
                 >
@@ -543,212 +989,101 @@ const BecomeAHostPage: React.FC = () => {
         </m.div>
 
         {/* How to Become a Host Section */}
-        <m.div
+        <m.section
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
-          className="w-full py-20 px-4 md:px-10 bg-gradient-to-br from-white to-[#FFF1D7]/50"
+          variants={staggerContainer}
+          className="w-full py-16 sm:py-20 md:py-28 lg:py-36 px-4 sm:px-6 md:px-12 lg:px-24 bg-white relative overflow-hidden"
         >
-          <div className="max-w-7xl mx-auto">
-            <m.div
-              variants={fadeIn}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
-              <span className="text-primary font-medium mb-4 block">
-                Simple Steps
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23810B0B' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#FFF1D7]/40 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/[0.04] rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4" />
+
+          <div className="w-full max-w-[1200px] mx-auto relative z-10">
+            <m.header variants={fadeIn} transition={{ duration: 0.6 }} className="mb-12 sm:mb-16 md:mb-20">
+              <span className="text-[10px] sm:text-xs font-extrabold tracking-[0.3em] uppercase text-primary mb-4 sm:mb-5 block">
+                Your path to hosting
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                How to <span className="text-primary">Become</span> a Host
+              <h2 className="text-[28px] sm:text-[40px] md:text-[56px] lg:text-[72px] font-black text-[#1a0a0a] tracking-tight leading-[1.05]">
+                Sign Up.
+                <span className="block">List. Earn.</span>
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Join our community of exceptional hosts who are redefining
-                hospitality in Nigeria. Follow these simple steps to start your
-                hosting journey.
+              <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-xl text-gray-500 font-normal max-w-[540px]">
+                Four steps between you and your first booking on Sojourn.
               </p>
-            </m.div>
+            </m.header>
 
             <m.div
               variants={staggerContainer}
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 relative"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8"
             >
-              {/* Connecting Lines - Desktop Only */}
-              <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20 -translate-y-1/2 z-0" />
-
-              {/* Step 1 */}
-              <m.div
-                variants={fadeIn}
-                transition={{ duration: 0.6 }}
-                className="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all group z-10"
-              >
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl transform rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                  <span className="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                    1
-                  </span>
-                </div>
-                <div className="text-center mt-6">
-                  <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                    <svg
-                      className="w-8 h-8 text-primary"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M15 16L20 21M20 16L15 21M4 21C4 17.134 7.13401 14 11 14C12.0736 14 13.0907 14.2417 14 14.6736M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+              {[
+                {
+                  num: "01",
+                  title: "Sign Up",
+                  desc: "Create your host account. Verify your identity. Takes under 5 minutes.",
+                },
+                {
+                  num: "02",
+                  title: "List",
+                  desc: "Add photos, set your nightly price, define house rules and availability.",
+                },
+                {
+                  num: "03",
+                  title: "Verify",
+                  desc: "Our team inspects your listing to meet Sojourn's quality standards.",
+                },
+                {
+                  num: "04",
+                  title: "Earn",
+                  desc: "Go live. Receive bookings. Get paid directly to your bank account.",
+                },
+              ].map((step) => (
+                <m.div
+                  key={step.num}
+                  variants={fadeIn}
+                  transition={{ duration: 0.6 }}
+                  className="group flex flex-col bg-gray-50/80 border border-gray-100 rounded-xl p-6 sm:p-8 md:p-10 min-h-[200px] sm:min-h-[260px] md:min-h-[300px] justify-between transition-all duration-500 ease-out hover:bg-[#1a0a0a] hover:border-[#1a0a0a] hover:scale-[1.02] md:hover:scale-[1.03] hover:-translate-y-1 md:hover:-translate-y-2 hover:shadow-2xl hover:shadow-black/15"
+                >
+                  <div>
+                    <span className="text-xs sm:text-sm font-semibold tracking-widest text-gray-300 uppercase transition-colors duration-500 group-hover:text-primary/70">
+                      {step.num}
+                    </span>
+                    <h3 className="mt-3 sm:mt-4 text-[28px] sm:text-[36px] md:text-[44px] lg:text-[52px] font-black text-[#1a0a0a] tracking-tight leading-[1.05] transition-colors duration-500 group-hover:text-white">
+                      {step.title}
+                    </h3>
+                    <p className="mt-4 sm:mt-5 text-sm sm:text-base text-gray-500 font-normal leading-relaxed transition-colors duration-500 group-hover:text-white/60">
+                      {step.desc}
+                    </p>
                   </div>
-                  <h3 className="text-xl font-bold mb-4">
-                    Create Your Account
-                  </h3>
-                  <p className="text-gray-600">
-                    Sign up and complete your profile with all necessary
-                    information to get started.
-                  </p>
-                </div>
-              </m.div>
-
-              {/* Step 2 */}
-              <m.div
-                variants={fadeIn}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all group z-10"
-              >
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl transform rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                  <span className="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                    2
-                  </span>
-                </div>
-                <div className="text-center mt-6">
-                  <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                    <svg
-                      className="w-8 h-8 text-primary"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M3 21H21M3 21V11L12 2L21 11V21M3 21H9V15H15V21H21"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold mb-4">List Your Property</h3>
-                  <p className="text-gray-600">
-                    Add your property details, high-quality photos, and set your
-                    pricing strategy.
-                  </p>
-                </div>
-              </m.div>
-
-              {/* Step 3 */}
-              <m.div
-                variants={fadeIn}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all group z-10"
-              >
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl transform rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                  <span className="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                    3
-                  </span>
-                </div>
-                <div className="text-center mt-6">
-                  <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                    <svg
-                      className="w-8 h-8 text-primary"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold mb-4">Get Verified</h3>
-                  <p className="text-gray-600">
-                    Complete our verification process to ensure trust and safety
-                    in our community.
-                  </p>
-                </div>
-              </m.div>
-
-              {/* Step 4 */}
-              <m.div
-                variants={fadeIn}
-                transition={{ duration: 0.6, delay: 0.6 }}
-                className="relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all group z-10"
-              >
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl transform rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                  <span className="transform -rotate-45 group-hover:rotate-0 transition-transform duration-500">
-                    4
-                  </span>
-                </div>
-                <div className="text-center mt-6">
-                  <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                    <svg
-                      className="w-8 h-8 text-primary"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 4V20M12 4L8 8M12 4L16 8M4 12H20M4 12L8 8M4 12L8 16M20 12L16 8M20 12L16 16"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold mb-4">Start Hosting</h3>
-                  <p className="text-gray-600">
-                    Welcome guests and start earning by providing exceptional
-                    hospitality experiences.
-                  </p>
-                </div>
-              </m.div>
+                </m.div>
+              ))}
             </m.div>
 
             <m.div
               variants={fadeIn}
               transition={{ duration: 0.6 }}
-              className="mt-16 text-center"
+              className="mt-10 sm:mt-14 md:mt-20 flex flex-col sm:flex-row items-center gap-3 sm:gap-5"
             >
-              <div className="inline-flex items-center gap-6 bg-white p-2 rounded-full shadow-lg">
-                {isLoggedInAndNotHost ? (
-                  <AddHost className="px-8 py-4" />
-                ) : isLoggedInAndHostAndGuest ? null : (
-                  <BecomeAHost>
-                    <div className="inline-flex items-center gap-2 bg-primary px-8 py-4 rounded-full text-white font-semibold transition-all hover:bg-primary/90 hover:scale-105 cursor-pointer">
-                      Start your hosting journey
-                      <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                    </div>
-                  </BecomeAHost>
-                )}
-                <Link
-                  href="/about-us"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-primary font-semibold hover:bg-primary/5 transition-all"
-                >
-                  Learn more
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
+              {isLoggedInAndNotHost ? (
+                <AddHost className="w-full sm:w-auto text-center px-8 sm:px-10 py-3.5 sm:py-4 bg-primary text-white font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors rounded-md min-h-[44px] inline-flex items-center justify-center gap-2" />
+              ) : isLoggedInAndHostAndGuest ? null : (
+                <BecomeAHost>
+                  <div className="w-full sm:w-auto text-center px-8 sm:px-10 py-3.5 sm:py-4 bg-primary text-white font-bold text-xs sm:text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors rounded-md min-h-[44px] cursor-pointer">
+                    Start hosting now
+                  </div>
+                </BecomeAHost>
+              )}
+              <Link
+                href="/about-us"
+                className="text-sm font-semibold tracking-wide text-gray-400 hover:text-[#1a0a0a] transition-colors"
+              >
+                Learn more about Sojourn →
+              </Link>
             </m.div>
           </div>
-        </m.div>
+        </m.section>
 
         {/* ESG Section */}
         <m.div

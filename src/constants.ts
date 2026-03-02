@@ -284,11 +284,18 @@ interface Plan {
   list: string[];
 }
 
+export const PLAN_LISTING_LIMITS: Record<string, number> = {
+  Basic: 1,
+  Lite: 4,
+  Premium: 999,
+};
+
 export const PLANS = [
   {
     icon: "/assets/icons/paper-plane.png",
     iconWhite: "/assets/icons/paper-plane-white.svg",
     name: "Basic",
+    yearlySavings: "₦0",
     price: {
       monthly: {
         id: "",
@@ -303,7 +310,7 @@ export const PLANS = [
     },
     desc: "Ideal for starting out",
     list: [
-      "0% commission on bookings",
+      "You keep 100% of booking earnings",
       "1 listing",
       "24/7 chat and email support",
       "analytics and insight",
@@ -314,22 +321,23 @@ export const PLANS = [
     iconWhite: "/assets/icons/paper-plane-white.svg",
     name: "Lite",
     popular: true,
+    yearlySavings: "₦24,000",
     price: {
       monthly: {
         id: "PLN_p2wo7ln2yju2h8y",
-        amount: 10000,
+        amount: 20000,
         type: "monthly",
       },
       annually: {
         id: "PLN_h6xpbpqlj0trlxe",
-        amount: 100000,
+        amount: 216000,
         type: "annually",
       },
     },
     desc: "Best value for growing business",
     list: [
-      "0% commision on bookings",
-      "Up to 5 listings",
+      "You keep 100% of booking earnings",
+      "Up to 4 listings",
       "Enhanced visibility option",
       "24/7 chat and email support",
       "Analytics and insights",
@@ -340,6 +348,7 @@ export const PLANS = [
     icon: "/assets/icons/Rocket.svg",
     iconWhite: "/assets/icons/paper-plane-white.svg",
     name: "Premium",
+    yearlySavings: "₦0",
     price: {
       monthly: {
         id: "PLN_36mz1l3oj2rg4vl",
@@ -354,7 +363,7 @@ export const PLANS = [
     },
     desc: "Bespoke solution for luxury",
     list: [
-      "No commision on bookings",
+      "You keep 100% of booking earnings",
       "Unlimited listings",
       "Advanced visibility option",
       "24/7 chat and email support",
@@ -364,6 +373,87 @@ export const PLANS = [
     ],
   },
 ];
+
+// export const PLANS = [
+//   {
+//     icon: "/assets/icons/paper-plane.png",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Basic",
+//     price: {
+//       monthly: {
+//         id: "",
+//         amount: 0,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "",
+//         amount: 0,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Ideal for starting out",
+//     list: [
+//       "0% commission on bookings",
+//       "1 listing",
+//       "24/7 chat and email support",
+//       "analytics and insight",
+//     ],
+//   },
+//   {
+//     icon: "/assets/icons/aeroplane.png",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Lite",
+//     popular: true,
+//     price: {
+//       monthly: {
+//         id: "PLN_p2wo7ln2yju2h8y",
+//         amount: 10000,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "PLN_h6xpbpqlj0trlxe",
+//         amount: 100000,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Best value for growing business",
+//     list: [
+//       "0% commision on bookings",
+//       "Up to 5 listings",
+//       "Enhanced visibility option",
+//       "24/7 chat and email support",
+//       "Analytics and insights",
+//       "Basic optimization kit",
+//     ],
+//   },
+//   {
+//     icon: "/assets/icons/Rocket.svg",
+//     iconWhite: "/assets/icons/paper-plane-white.svg",
+//     name: "Premium",
+//     price: {
+//       monthly: {
+//         id: "PLN_36mz1l3oj2rg4vl",
+//         amount: 0,
+//         type: "monthly",
+//       },
+//       annually: {
+//         id: "PLN_uqcwn2pugyzn19j",
+//         amount: 0,
+//         type: "annually",
+//       },
+//     },
+//     desc: "Bespoke solution for luxury",
+//     list: [
+//       "No commision on bookings",
+//       "Unlimited listings",
+//       "Advanced visibility option",
+//       "24/7 chat and email support",
+//       "Analytics and support insights",
+//       "Premium optimization kit",
+//       "Sojourn cover",
+//     ],
+//   },
+// ];
 
 // interface Plan {
 //   name: string;

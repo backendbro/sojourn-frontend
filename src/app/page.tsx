@@ -3,6 +3,7 @@ import CustomSearch from "@/components/ui/custom-search";
 import HowItWorksSection from "@/components/ui/how-it-works-section";
 import RecommendedProperties from "@/components/property/recommended-properties";
 import ReferAndEarn from "@/components/property/refer-and-earn";
+import ChooseSojourn from "@/components/property/choose-sojourn";
 import Explore from "@/components/property/explore";
 import Reviews from "@/components/property/reviews";
 import DiscoverProperties from "@/components/property/discover-properties";
@@ -231,7 +232,17 @@ export default function Home() {
       </div>
 
       {/* How It Works Section */}
-      <div
+      {/* <div
+        id="how-it-works"
+        className="w-full bg-white relative scroll-mt-24 md:scroll-mt-32 pt-12 md:pt-20"
+      >
+        <div className="absolute inset-0 bg-wave-pattern opacity-5" />
+        <div className="relative z-10">
+          <HowItWorksSection />
+        </div>
+      </div> */}
+
+       <div
         id="how-it-works"
         className="w-full bg-white relative scroll-mt-24 md:scroll-mt-32 pt-12 md:pt-20"
       >
@@ -242,19 +253,21 @@ export default function Home() {
       </div>
 
       {/* Properties Showcase */}
-      <section className="w-full py-20 bg-white">
+      <section className="w-full py-10 md:py-20 bg-white">
         <RecommendedProperties />
       </section>
 
       {/* Discovery Section with Parallax */}
-      <section className="w-full py-20 bg-[#FFF1D7]">
+      <section className="w-full bg-white">
         <DiscoverProperties />
       </section>
 
       {/* Referral Program */}
-      <section className="w-full py-20 bg-white">
-        <ReferAndEarn />
-      </section>
+       <section className="w-full py-20 bg-[#0a1a14]">
+        {/* <ReferAndEarn /> */}
+        <ChooseSojourn />
+      </section> 
+
 
       {/* Explore Cities */}
       <section className="w-full py-15 bg-gradient-to-b from-white to-[#FFF1D7]">
@@ -262,8 +275,39 @@ export default function Home() {
       </section>
 
       {/* Reviews Section   */}
-      <section className="w-full py-20 bg-white">
-        <Reviews />
+      {/* Reviews */}
+      <Reviews />
+
+      {/* CTA Banner */}
+      <section className="w-full bg-[#0a0a0a]">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-14 sm:py-20 md:py-28 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left max-w-[600px]">
+            <span className="text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase text-primary mb-3 sm:mb-4">
+              Ready to get started?
+            </span>
+            <h2 className="text-[24px] sm:text-[32px] md:text-[44px] font-black text-white leading-[1.1] tracking-tight">
+              Find your perfect stay{" "}
+              <span className="text-primary">today</span>
+            </h2>
+            <p className="mt-3 sm:mt-4 text-white/50 text-sm sm:text-base md:text-lg leading-relaxed max-w-[480px]">
+              Whether you're a guest looking for comfort or a host ready to earn — Sojourn has you covered across Nigeria.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <Link
+              href="/properties"
+              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full bg-primary text-white font-bold text-sm tracking-wide hover:bg-red-700 transition-colors"
+            >
+              Start Booking
+            </Link>
+            <Link
+              href="/become-a-host"
+              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full border-2 border-white/20 text-white font-bold text-sm tracking-wide hover:border-white/50 hover:bg-white/5 transition-colors"
+            >
+              Become a Host
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
