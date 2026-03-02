@@ -199,35 +199,34 @@ export default function Home() {
           {/* Hero Content */}
           {/* <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10"> */}
 
-          <div className="max-w-[1200px] px-6 md:px-10 mt-6 md:mt-0 flex flex-col items-center space-y-8 z-10">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
-              Experience Luxury
-              <span className="block mt-2">Away from Home</span>
-            </h1>
+        <div className="max-w-[1200px] px-6 md:px-10 pt-28 md:pt-0 flex flex-col items-center space-y-8 z-10">
+  <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
+    Experience Luxury
+    <span className="block mt-2">Away from Home</span>
+  </h1>
 
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
-              Discover exceptional stays across Nigeria. Your perfect home away
-              from home awaits, combining comfort, style, and authentic local
-              experiences.
-            </p>
+  <p className="text-lg md:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
+    Discover exceptional stays across Nigeria. Your perfect home away
+    from home awaits, combining comfort, style, and authentic local
+    experiences.
+  </p>
 
-            {/* Search Component with Extra Padding Below */}
-            <div className="w-full max-w-4xl animate-slide-up pb-24 md:pb-8">
-              {/* ↑ Increased from pb-20 to pb-28 (mobile), md:pb-8 (desktop) */}
-              <CustomSearch />
-            </div>
+  {/* Search Component */}
+  <div className="w-full max-w-4xl animate-slide-up pb-24 md:pb-8">
+    <CustomSearch />
+  </div>
 
-            {/* Scroll Indicator */}
-            <Link
-              href="#how-it-works"
-              className="absolute bottom-4 md:bottom-8 flex flex-col items-center space-y-1 md:space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
-            >
-              <span className="text-xs md:text-sm font-medium">
-                Scroll to explore
-              </span>
-              <ArrowDown size={18} className="md:w-5 md:h-5" />
-            </Link>
-          </div>
+  {/* Scroll Indicator */}
+  <Link
+    href="#how-it-works"
+    className="absolute bottom-4 md:bottom-8 flex flex-col items-center space-y-1 md:space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
+  >
+    <span className="text-xs md:text-sm font-medium">
+      Scroll to explore
+    </span>
+    <ArrowDown size={18} className="md:w-5 md:h-5" />
+  </Link>
+</div>
         </header>
       </div>
 
