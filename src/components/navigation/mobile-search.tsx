@@ -103,13 +103,22 @@ export default () => {
           !showMobileSearchAndFilter ? "block" : "hidden"
         } sm:block`}
       >
-        <Image
+        {/* <Image
           src="/assets/logo/soj_logo.png"
           alt="sojourn logo"
           width={108.13}
           height={29.06}
           priority={true}
-        />
+        /> */}
+      
+       <Image
+            src="/assets/logo/sojourn-logo-white-full.svg"
+            alt="sojourn logo"
+            width={110}
+            height={34}
+            priority={true}
+            className="w-[100px] sm:w-[110px] md:w-[120px] h-auto relative z-[1]"
+          />
       </Link>
       {showMobileSearchAndFilter && (
         <div
