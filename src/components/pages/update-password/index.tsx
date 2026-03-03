@@ -120,6 +120,7 @@
 //     </div>
 //   );
 // };
+
 "use client";
 
 import Spinner from "@/components/svgs/Spinner";
@@ -128,6 +129,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 interface IUpdatePassword {
   oldPassword: string;
@@ -144,6 +146,10 @@ export default function ChangePassword() {
 
   const [match, setMatch] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [showOld, setShowOld] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const mutation = useMutation({
     mutationKey: ["update-password"],
@@ -187,81 +193,95 @@ export default function ChangePassword() {
     }
   }, [state.newPassword, state.confirmPassword]);
 
+  const borderStyle =
+    state.confirmPassword.length > 0
+      ? match
+        ? "border-green-500"
+        : "border-red-500"
+      : "border-gray-400";
+
   return (
-    <div className="w-full p-5 md:px-20 md:py-[50px] mb-24">
-      {/* Centered inner container */}
-      <div className="max-w-2xl ml-auto">
-        <h2 className="font-semibold text-2xl text-gray-900">
-          Change password
-        </h2>
-        <p className="text-gray-600 mt-1">
-          Here you can change your password
+    <div className="w-full mt-20 p-5 mb-24 ml-[12px]">
+      <h2 className="font-semibold text-2xl">Change password</h2>
+      <p className="text-gray-600">Here you can change your password</p>
+
+      {errorMessage && (
+        <p className="text-red-600 text-sm font-semibold mt-3">
+          {errorMessage}
         </p>
+      )}
 
-        {errorMessage && (
-          <p className="text-red-600 text-sm font-semibold mt-4">
-            {errorMessage}
-          </p>
-        )}
-
-        <form onSubmit={onSubmit} className="space-y-8 mt-8">
-          {/* Old Password */}
+      <form onSubmit={onSubmit} className="space-y-8 w-full md:w-5/6 mt-6">
+        {/* Old Password */}
+        <div className="relative">
           <input
-            type="password"
+            type={showOld ? "text" : "password"}
             name="oldPassword"
             onChange={handleChange}
             value={state.oldPassword}
             placeholder="Old password"
-            className="w-full py-4 px-3 outline-none border-b-2 border-gray-300
-                       focus:border-primary transition-colors
-                       text-gray-900 font-medium placeholder:text-gray-500"
+            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400 focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500"
           />
+          <div
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+            onClick={() => setShowOld(!showOld)}
+          >
+            {showOld ? <EyeOff size={18} /> : <Eye size={18} />}
+          </div>
+        </div>
 
-          {/* New Password */}
+        {/* New Password */}
+        <div className="relative">
           <input
-            type="password"
+            type={showNew ? "text" : "password"}
             name="newPassword"
             onChange={handleChange}
             value={state.newPassword}
             placeholder="New password"
-            className="w-full py-4 px-3 outline-none border-b-2 border-gray-300
-                       focus:border-primary transition-colors
-                       text-gray-900 font-medium placeholder:text-gray-500"
+            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400 focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500"
           />
+          <div
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+            onClick={() => setShowNew(!showNew)}
+          >
+            {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+          </div>
+        </div>
 
-          {/* Confirm Password */}
+        {/* Confirm Password */}
+        <div className="relative">
           <input
-            type="password"
+            type={showConfirm ? "text" : "password"}
             name="confirmPassword"
             onChange={handleChange}
             value={state.confirmPassword}
             placeholder="Confirm password"
-            className="w-full py-4 px-3 outline-none border-b-2 border-gray-300
-                       focus:border-primary transition-colors
-                       text-gray-900 font-medium placeholder:text-gray-500"
+            className={`w-full py-4 pr-10 px-2 outline-none border-b-2 ${borderStyle} focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500`}
           />
-
-          <button
-            disabled={
-              !state.confirmPassword ||
-              !state.newPassword ||
-              !state.oldPassword ||
-              !match
-            }
-            className="flex items-center justify-center px-10 py-4
-                       border-2 border-primary rounded-full
-                       text-primary font-semibold
-                       hover:bg-red-50 transition-colors
-                       disabled:opacity-50 disabled:cursor-not-allowed"
+          <div
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+            onClick={() => setShowConfirm(!showConfirm)}
           >
-            {!mutation.isPending ? (
-              <span>Change password</span>
-            ) : (
-              <Spinner color="red" size={25} />
-            )}
-          </button>
-        </form>
-      </div>
+            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+          </div>
+        </div>
+
+        <button
+          disabled={
+            !state.confirmPassword ||
+            !state.newPassword ||
+            !state.oldPassword ||
+            !match
+          }
+          className="flex items-center justify-center px-10 py-4 border border-primary rounded-full text-primary hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {!mutation.isPending ? (
+            <span>Change password</span>
+          ) : (
+            <Spinner color="red" size={25} />
+          )}
+        </button>
+      </form>
     </div>
   );
 }
