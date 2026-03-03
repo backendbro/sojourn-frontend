@@ -142,11 +142,9 @@ type LocationType = {
 
 const MarkerWithModal = ({
   location,
-  markerKey,
   onClick,
 }: {
   location: LocationType;
-  markerKey: number;
   onClick: (ev: google.maps.MapMouseEvent) => void;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -157,18 +155,37 @@ const MarkerWithModal = ({
   };
 
   return (
-    <AdvancedMarker key={markerKey} position={position} onClick={onClick}>
+    <AdvancedMarker position={position} onClick={onClick}>
       <div
-        className="relative flex flex-col items-center group"
+        className="relative flex flex-col items-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="custom-map-marker font-sans">
-          ₦{new Number(location.price).toLocaleString()}
+        {/* PRICE STICKER */}
+        <div
+          className="
+            inline-block
+            whitespace-nowrap
+            bg-white
+            text-gray-900
+            text-sm
+            font-semibold
+            px-4
+            py-1.5
+            rounded-full
+            shadow-lg
+            border border-gray-200
+            transition-transform
+            hover:scale-105
+            flex-shrink-0
+          "
+        >
+          ₦{location.price.toLocaleString()}
         </div>
 
+        {/* HOVER CARD */}
         {isHovered && (
-          <div className="absolute bottom-full mb-2 z-[9999] w-[300px] bg-white rounded-lg shadow-xl border border-gray-200">
+          <div className="absolute bottom-full mb-3 z-[9999] w-[300px] bg-white rounded-xl shadow-2xl border border-gray-200">
             <SearchResultCardRedesign {...location} />
           </div>
         )}
@@ -177,27 +194,16 @@ const MarkerWithModal = ({
   );
 };
 
-export default ({ locations = [] }: { locations: LocationType[] }) => {
+export default function MapComponent({
+  locations = [],
+}: {
+  locations: LocationType[];
+}) {
   const map = useMap();
   const { router } = useQueryString();
 
   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
   const clusterer = useRef<MarkerClusterer | null>(null);
-
-  const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && markers[key]) return;
-    if (!marker && !markers[key]) return;
-
-    setMarkers((prev) => {
-      if (marker) {
-        return { ...prev, [key]: marker };
-      } else {
-        const newMarkers = { ...prev };
-        delete newMarkers[key];
-        return newMarkers;
-      }
-    });
-  };
 
   const handleClick =
     (l: { href: string }) => (ev: google.maps.MapMouseEvent) => {
@@ -209,42 +215,44 @@ export default ({ locations = [] }: { locations: LocationType[] }) => {
     lng: locations.length ? locations[0].coords[1] : 0,
   };
 
-  const Places = locations.map((l, key) => (
-    <MarkerWithModal
-      location={l}
-      markerKey={key}
-      key={key}
-      onClick={handleClick(l)}
-    />
-  ));
-
   useEffect(() => {
     if (!map) return;
+
     if (!clusterer.current) {
       clusterer.current = new MarkerClusterer({ map });
     }
   }, [map]);
 
   useEffect(() => {
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(markers));
+    if (!clusterer.current) return;
+
+    clusterer.current.clearMarkers();
+    clusterer.current.addMarkers(Object.values(markers));
   }, [markers]);
 
   return (
     <APIProvider
-      apiKey={process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY as string}
+      apiKey={
+        process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY as string
+      }
     >
       <div className="relative w-full h-full">
         <Map
-          className="w-full h-[600px] md:w-full md:h-[450px]"
+          className="w-full h-[600px] md:h-[500px]"
           center={center}
           defaultZoom={12}
-          gestureHandling={"greedy"}
+          gestureHandling="greedy"
           mapId="cfbe00b2d8ba58ba"
         >
-          {Places}
+          {locations.map((location) => (
+            <MarkerWithModal
+              key={location.id}
+              location={location}
+              onClick={handleClick(location)}
+            />
+          ))}
         </Map>
       </div>
     </APIProvider>
   );
-};
+}
