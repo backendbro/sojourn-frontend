@@ -14,7 +14,7 @@ export default function RootLayout({
     // <div className="w-full h-full flex">
     //   <div className="w-full min-h-[88.5vh] ">{children}</div>
     // </div>
-    <div className="w-full py-20">
+    <div className="w-full">
       {children}
     </div>
   );
