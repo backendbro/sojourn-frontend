@@ -12,8 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="w-full">
+    <div className="w-full py-10">
       <Suspense fallback={<div>loading...</div>}>{children}</Suspense>
     </div>
   );
 }
+

@@ -20,7 +20,6 @@ import axios from "axios";
 
 type FormFields = z.infer<typeof LoginSchema>;
 
-console.log("Coming from login");
 const Login = () => {
   const [user, setUser] = useState({ access_token: "" });
   const [profile, setProfile] = useState({
