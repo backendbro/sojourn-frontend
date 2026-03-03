@@ -127,7 +127,7 @@ import Spinner from "@/components/svgs/Spinner";
 import { updatePassword } from "@/http/api";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -144,12 +144,26 @@ export default function ChangePassword() {
     confirmPassword: "",
   });
 
-  const [match, setMatch] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [showOld, setShowOld] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const passwordsMatch = useMemo(() => {
+    return (
+      state.newPassword.length > 0 &&
+      state.confirmPassword.length > 0 &&
+      state.newPassword === state.confirmPassword
+    );
+  }, [state.newPassword, state.confirmPassword]);
+
+  const passwordsDoNotMatch = useMemo(() => {
+    return (
+      state.confirmPassword.length > 0 &&
+      state.newPassword !== state.confirmPassword
+    );
+  }, [state.newPassword, state.confirmPassword]);
 
   const mutation = useMutation({
     mutationKey: ["update-password"],
@@ -175,33 +189,16 @@ export default function ChangePassword() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!passwordsMatch) return;
+
     mutation.mutate({
       password: state.newPassword,
       oldPassword: state.oldPassword,
     });
   }
 
-  useEffect(() => {
-    if (
-      state.newPassword === state.confirmPassword &&
-      state.newPassword &&
-      state.confirmPassword
-    ) {
-      setMatch(true);
-    } else {
-      setMatch(false);
-    }
-  }, [state.newPassword, state.confirmPassword]);
-
-  const borderStyle =
-    state.confirmPassword.length > 0
-      ? match
-        ? "border-green-500"
-        : "border-red-500"
-      : "border-gray-400";
-
   return (
-    <div className="w-full mt-20 p-5 mb-24 ml-[12px]">
+    <div className="w-full p-5 md:px-20 md:py-[50px] mb-24 mt-20">
       <h2 className="font-semibold text-2xl">Change password</h2>
       <p className="text-gray-600">Here you can change your password</p>
 
@@ -220,11 +217,13 @@ export default function ChangePassword() {
             onChange={handleChange}
             value={state.oldPassword}
             placeholder="Old password"
-            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400 focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500"
+            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400
+                       focus:border-primary transition-colors
+                       text-gray-900 font-medium placeholder:text-gray-500"
           />
           <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-            onClick={() => setShowOld(!showOld)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
+            onClick={() => setShowOld((prev) => !prev)}
           >
             {showOld ? <EyeOff size={18} /> : <Eye size={18} />}
           </div>
@@ -238,11 +237,13 @@ export default function ChangePassword() {
             onChange={handleChange}
             value={state.newPassword}
             placeholder="New password"
-            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400 focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500"
+            className="w-full py-4 pr-10 px-2 outline-none border-b-2 border-gray-400
+                       focus:border-primary transition-colors
+                       text-gray-900 font-medium placeholder:text-gray-500"
           />
           <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-            onClick={() => setShowNew(!showNew)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
+            onClick={() => setShowNew((prev) => !prev)}
           >
             {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
           </div>
@@ -256,22 +257,44 @@ export default function ChangePassword() {
             onChange={handleChange}
             value={state.confirmPassword}
             placeholder="Confirm password"
-            className={`w-full py-4 pr-10 px-2 outline-none border-b-2 ${borderStyle} focus:border-primary text-[16px] font-medium text-gray-900 placeholder:text-gray-500`}
+            className={`w-full py-4 pr-10 px-2 outline-none border-b-2 transition-colors
+              ${
+                passwordsMatch
+                  ? "border-green-500"
+                  : passwordsDoNotMatch
+                  ? "border-red-500"
+                  : "border-gray-400"
+              }
+              focus:border-primary
+              text-gray-900 font-medium placeholder:text-gray-500`}
           />
           <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-            onClick={() => setShowConfirm(!showConfirm)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600"
+            onClick={() => setShowConfirm((prev) => !prev)}
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </div>
         </div>
 
+        {/* Match message */}
+        {passwordsMatch && (
+          <p className="text-green-600 text-sm font-medium">
+            Passwords match ✓
+          </p>
+        )}
+
+        {passwordsDoNotMatch && (
+          <p className="text-red-600 text-sm font-medium">
+            Passwords do not match
+          </p>
+        )}
+
         <button
           disabled={
-            !state.confirmPassword ||
-            !state.newPassword ||
             !state.oldPassword ||
-            !match
+            !state.newPassword ||
+            !state.confirmPassword ||
+            !passwordsMatch
           }
           className="flex items-center justify-center px-10 py-4 border border-primary rounded-full text-primary hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
