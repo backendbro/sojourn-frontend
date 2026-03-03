@@ -179,18 +179,24 @@ return (
     )}
 
 {/* Notification Bell */}
+<div className="flex items-center gap-2 sm:gap-4 shrink-0">
+
       {user?.loggedIn && user?.me?.user?.id && (
         <NotificationBell
           userId={user.me.user.id}
           role={isOnHosts ? "host" : "guest"}
         />
       )}
+</div>
 
     {/* Avatar + Hamburger */}
     <div
       onClick={() => setMenuOpen(!isMenuOpen)}
-      className="flex items-center ml-4 cursor-pointer px-2.5 py-2.5 rounded-md hover:bg-white/10 transition-colors shrink-0"
-    >
+      // className="flex items-center ml-4 cursor-pointer px-2.5 py-2.5 rounded-md hover:bg-white/10 transition-colors shrink-0"
+//className="flex items-center ml-2 sm:ml-4 cursor-pointer px-2.5 py-2.5 rounded-md hover:bg-white/10 transition-colors shrink-0"
+      className="flex items-center cursor-pointer px-2 py-2 rounded-md hover:bg-white/10 transition-colors"
+
+>
       {user?.loggedIn && (
         <div className="rounded-full relative overflow-hidden bg-white/20 w-[40px] h-[40px] flex items-center justify-center text-md mr-2.5">
           {user?.me?.photo ? (

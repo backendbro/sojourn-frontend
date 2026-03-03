@@ -92,7 +92,7 @@ export default function NotificationBell({ userId, role }: NotificationBellProps
   }, [open]);
 
   return (
-    <div ref={ref} className="relative ml-3 shrink-0">
+    <div ref={ref} className="relative shrink-0">
       {/* Bell Button */}
       <button
         onClick={() => setOpen((prev) => !prev)}
