@@ -182,7 +182,7 @@ export default function Home() {
     //   <Footer />
     // </div>
 
-    <div className="w-full min-h-screen py-20 overflow-x-hidden">
+    <div className="w-full min-h-screen overflow-x-hidden">
       <Animations />
 
       {/* Hero Section */}
