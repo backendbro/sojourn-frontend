@@ -198,7 +198,7 @@ export default function ChangePassword() {
   }
 
   return (
-    <div className="w-full p-5 md:px-20 md:py-[50px] mb-24 mt-20">
+    <div className="w-full p-5 md:px-20 md:py-[50px] mb-24">
       <h2 className="font-semibold text-2xl">Change password</h2>
       <p className="text-gray-600">Here you can change your password</p>
 

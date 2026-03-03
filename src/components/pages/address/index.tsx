@@ -554,7 +554,7 @@ export default () => {
   }
 
   return (
-    <div className="w-full mt-20 p-5 md:px-20 md:py-[50px] mb-24 flex justify-center">
+    <div className="w-full p-5 md:px-20 md:py-[50px] mb-24 flex justify-center">
       <div className="w-full md:w-5/6">
         <div className="mt-4 md:mt-0">
           <h3 className="text-[1rem] md:text-[1.5rem]">Address</h3>
