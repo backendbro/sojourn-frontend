@@ -86,7 +86,7 @@ export default function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
-      <div className="w-full min-h-screen py-20">
+      <div className="w-full min-h-screen">
         {shouldShowNav && sidebarChild}
         <div className="w-full">
           {contentChildren}

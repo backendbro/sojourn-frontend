@@ -1,29 +1,4 @@
-// import { HOW_IT_WORKS } from "@/constants";
-// import HowItWorksCard from "../property/how-it-works-card";
-
-// export default () => {
-//   return (
-//     <div className="w-full flex flex-col max-w-[1400px]  mx-auto items-center">
-//       <h3 className="font-[500] text-[#310000] mb-10">How it works</h3>
-//       <div className="w-full md:w-5/6 px-5 grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-//         {HOW_IT_WORKS.map((hiw, idx: number) => {
-//           return (
-//             <HowItWorksCard
-//               key={idx}
-//               title={hiw.title}
-//               list={hiw.list}
-//               imageUrl={hiw.imageUrl}
-//               index={idx + 1}
-//             />
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// };
-
-
-"use client"
+"use client";
 
 import { HOW_IT_WORKS } from "@/constants";
 import {
@@ -61,7 +36,6 @@ export default function HowItWorks() {
             className="relative rounded-2xl overflow-hidden bg-cover bg-center px-4 py-3 sm:px-6 sm:py-5 shadow-lg shadow-red-900/15 sm:mb-2"
             style={{
               backgroundImage: "url('/assets/imgs/discover-bg.png')",
-              
             }}
           >
             <div className="absolute inset-0 bg-black/15" />
@@ -73,13 +47,13 @@ export default function HowItWorks() {
 
         {/* Steps — horizontal scrolling row */}
         <div className="flex gap-3 sm:gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-3 px-3 sm:-mx-0 sm:px-0 sm:grid sm:grid-cols-3 lg:grid-cols-5 sm:overflow-visible">
-          {HOW_IT_WORKS && HOW_IT_WORKS.map((hiw, idx) => {
+          {HOW_IT_WORKS.map((hiw, idx) => {
             const Icon = STEP_ICONS[idx];
             const colorClass = STEP_COLORS[idx];
-            
-            // Safety check - if Icon is undefined, don't render or use a fallback
+
+            // ✅ Safety guard (from fixed version)
             if (!Icon) return null;
-            
+
             return (
               <div
                 key={idx}
@@ -96,17 +70,19 @@ export default function HowItWorks() {
                       {String(idx + 1).padStart(2, "0")}
                     </span>
                   </div>
+
                   <h3 className="text-base sm:text-lg font-extrabold text-gray-900 tracking-tight leading-snug mt-2">
                     {hiw.title}
                   </h3>
                 </div>
 
+                {/* ✅ Safe list rendering (design untouched) */}
                 {hiw.list && hiw.list.length > 0 && (
                   <ul className="mt-3 space-y-1.5">
                     {hiw.list.map((item, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-2 text-[13px] sm:text-xs text-gray-700 leading-relaxed"
+                        className="flex items-start gap-2 text-[11px] sm:text-xs text-gray-400 leading-relaxed"
                       >
                         <span className="w-1 h-1 rounded-full bg-gray-300 mt-1.5 flex-shrink-0 group-hover:bg-primary transition-colors duration-300" />
                         {item}
