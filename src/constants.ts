@@ -15,7 +15,7 @@ import {
   Wifi,
 } from "lucide-react";
 
-export const Backend_URL = "https://sojourn-backend-gczm.onrender.com/api/v1";
+export const Backend_URL = "https://sojourn-backend-gczm.onrender.com";
 // export const Backend_URL = "http://localhost:4000";
 export const EMAIL_REGEX = /^[a-zA-Z0-9. _-]+@[a-zA-Z0-9. -]+\. [a-zA-Z]{2,4}$/;
 export const REFRESH_TOKEN_KEY = "refresh_token";
