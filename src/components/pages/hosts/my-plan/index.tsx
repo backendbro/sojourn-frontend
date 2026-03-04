@@ -1,14 +1,28 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { PLANS } from "@/constants";
+import { PLANS, PLAN_LISTING_LIMITS } from "@/constants";
 import { useState } from "react";
-import Image from "next/image";
-import { CircleChevronRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { cancelSubscriptionById, getSubscriptionsById } from "@/http/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import {
+  Banknote,
+  Building2,
+  Calendar,
+  Check,
+  Crown,
+  Home,
+  Sparkles,
+  Wallet,
+  Zap,
+} from "lucide-react";
+import {
+  cancelSubscriptionById,
+  getProperties,
+  getSubscriptionsById,
+} from "@/http/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import Spinner from "@/components/svgs/Spinner";
@@ -16,20 +30,37 @@ import { toast } from "sonner";
 
 const SubscriptionTable = dynamic(() => import("./subscription-table"));
 
+const PLAN_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  Basic: Home,
+  Lite: Zap,
+  Premium: Crown,
+};
+
 export default () => {
   const id = useSelector((state: RootState) => state.user.me?.host?.id);
   const [checked, setChecked] = useState(false);
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const isNewHost = searchParams.get("newHost") === "true";
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["get-subscriptions"],
+    queryKey: ["get-subscriptions", id],
     queryFn: () => getSubscriptionsById(id),
     refetchOnReconnect: true,
+    enabled: !!id,
+  });
+
+  const { data: propertiesData } = useQuery({
+    queryKey: ["get-properties-for-plan", id],
+    queryFn: () => getProperties(id),
+    enabled: !!id,
   });
 
   const mutation = useMutation({
     mutationKey: ["cancel-subscription"],
     mutationFn: cancelSubscriptionById,
     onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["get-subscriptions"] });
       toast("subscription cancellation", {
         description: "successful",
         closeButton: true,
@@ -82,9 +113,17 @@ export default () => {
       ? new Date(data.nextPaymentDate).toDateString()
       : "Not set";
 
+  const propertiesList = Array.isArray(propertiesData)
+    ? propertiesData
+    : propertiesData?.properties ?? propertiesData?.data ?? [];
+  const propertyCount = Array.isArray(propertiesList) ? propertiesList.length : 0;
+  const listingLimit =
+    PLAN_LISTING_LIMITS[planPaidFor?.name ?? "Basic"] ?? 1;
+  const listingUsageText = `${propertyCount} / ${listingLimit === 999 ? "∞" : listingLimit} listings`;
+
   if (isLoading) {
     return (
-      <div className="w-full flex flex-col jsutify-center items-center min-h-[200px]">
+      <div className="w-full flex flex-col justify-center items-center min-h-[200px]">
         <Spinner color="red" size={20} />
       </div>
     );
@@ -92,210 +131,301 @@ export default () => {
 
   if (error) {
     return (
-      <div className="w-full flex flex-col jsutify-center items-center min-h-[200px]">
-        <p>Sorry, could not get subscription datta at this time</p>
+      <div className="w-full flex flex-col justify-center items-center min-h-[200px]">
+        <p>Sorry, could not get subscription data at this time</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex flex-col space-y-5 px-3">
-      <div className="w-full flex flex-col space-y-4 md:space-y-0 md:flex-row items-center space-x-2 mb-4">
-        <h3 className="text-[2rem] sm:text-[2.5rem] text-black text-[#310000]">
-          Plans & Billing
-        </h3>
-        <div className="py-3 px-4 flex bg-[#FFF1D7] rounded-full space-x-3 items-center">
-          <span className={`font-[700] text-[16px] ${monthlyActiveCss}`}>
-            Monthly Plan
+    <div className="w-full flex flex-col space-y-8 px-3 pb-12">
+      {isNewHost && (
+        <div className="rounded-xl bg-primary/10 border border-primary/20 px-4 py-3 flex items-start gap-3">
+          <Sparkles className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-gray-900">Welcome! Choose your plan</p>
+            <p className="text-sm text-gray-600 mt-0.5">
+              Select a subscription plan to start listing your properties. You can
+              also verify your email from the link we sent you.
+            </p>
+          </div>
+        </div>
+      )}
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h3 className="text-2xl sm:text-3xl font-bold text-[#310000] tracking-tight">
+            Plans & Billing
+          </h3>
+          <p className="text-gray-500 mt-1 text-sm sm:text-base">
+            Manage your subscription and track your listing limits
+          </p>
+        </div>
+        <div className="flex items-center gap-3 py-2 px-4 bg-[#FFF1D7] rounded-full shadow-sm transition-all hover:shadow-md">
+          <span className={`font-semibold text-sm ${monthlyActiveCss}`}>
+            Monthly
           </span>
           <Switch
             id="plan"
             checked={checked}
-            onCheckedChange={(checked) => {
-              setChecked(checked);
-            }}
+            onCheckedChange={setChecked}
             className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-primary"
           />
-          <span className={`font-[700] text-[16px] ${yearlyActiveCss}`}>
-            Yearly Plan
+          <span className={`font-semibold text-sm ${yearlyActiveCss}`}>
+            Yearly <span className="text-xs text-primary">(10% off)</span>
           </span>
         </div>
       </div>
+
+      {/* Education: 100% earnings */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#FFF1D7] to-[#FFE4B5] border border-primary/10 p-5 sm:p-6 shadow-lg transition-all duration-300 hover:shadow-xl hover:border-primary/20 group">
+        <div className="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-primary/5 blur-2xl group-hover:bg-primary/10 transition-colors" />
+        <div className="relative flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary transition-transform group-hover:scale-110">
+            <Banknote className="h-6 w-6" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-[#310000] text-base sm:text-lg">
+              You keep 100% of your booking earnings
+            </p>
+            <p className="mt-1.5 text-sm text-gray-600 leading-relaxed">
+              On every plan, you receive the full amount guests pay. Sojourn charges
+              a fixed monthly subscription—never a percentage per booking.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Listing usage pill */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="inline-flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-4 py-2.5 shadow-sm transition-shadow hover:shadow">
+          <Building2 className="h-5 w-5 text-primary" />
+          <span className="font-medium text-gray-800">{planPaidFor?.name ?? "Basic"}</span>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-xl bg-white border border-gray-200 px-4 py-2.5 shadow-sm">
+          <span className="text-sm text-gray-600">Listings:</span>
+          <span className="font-semibold text-gray-900">
+            {listingUsageText}
+            {listingLimit < 999 && propertyCount >= listingLimit && (
+              <span className="ml-1 text-primary text-sm font-medium">(at limit)</span>
+            )}
+          </span>
+        </div>
+      </div>
+
       {planPaidFor?.name === "Basic" ? (
-        <div className="w-full flex bg-white grid gap-y-5 md:grid-cols-3 md:gap-x-10 ">
-          {PLANS.map((plan, idx: number) => (
-            <div
-              key={idx}
-              className={`flex cursor-pointer flex-col space-y-4 items-center py-7 rounded-3xl relative rounded-2xl border border-gray-300 hover:border-primary ${
-                "Basic" === plan.name ? "bg-primary text-white" : ""
-              }`}
-            >
-              <div className="flex space-x-2">
-                <div className="relative w-[50px] h-[50px] overflow-hidden flex items-center justify-center">
-                  <Image
-                    src={"Basic" === plan.name ? plan.iconWhite : plan.icon}
-                    alt={plan.name}
-                    width={70}
-                    height={70}
-                  />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PLANS.map((plan, idx) => {
+            const PlanIcon = PLAN_ICONS[plan.name] ?? Home;
+            const isActive = plan.name === "Basic";
+            const isBlurred = plan.name !== "Basic" && plan.name !== "Lite";
+            const href =
+              plan.name !== "Basic"
+                ? checked
+                  ? `/hosts/checkout/${plan.price.annually.id}/?name=${plan.name}&type=${plan.price.annually.type}&price=${plan.price.annually.amount}`
+                  : `/hosts/checkout/${plan.price.monthly.id}/?name=${plan.name}&type=${plan.price.monthly.type}&price=${plan.price.monthly.amount}`
+                : null;
+            const cardClassName = `group flex flex-col items-center rounded-2xl border-2 p-6 transition-all duration-300 ${
+              isActive
+                ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                : "border-gray-200 bg-white hover:border-primary/50 hover:shadow-xl hover:-translate-y-0.5 cursor-pointer"
+            }`;
+            return href ? (
+              <Link
+                key={idx}
+                href={href}
+                prefetch={true}
+                className={cardClassName}
+              >
+                <div
+                  className={`mb-4 flex h-14 w-14 items-center justify-center rounded-xl transition-transform duration-300 ${
+                    isActive ? "bg-white/20" : "bg-primary/10 text-primary group-hover:scale-110"
+                  }`}
+                >
+                  <PlanIcon className="h-7 w-7" />
                 </div>
-                <div className="flex flex-col">
-                  <h4 className="font-[700] text-[20px]">{plan.name}</h4>
-                  <div className="flex space-x-5">
-                    {checked ? (
-                      <div
-                        className={`${
-                          plan.name === "Basic" || plan.name === "Lite"
-                            ? ""
-                            : "blur-lg"
-                        } text-[32px] font-[600] ${
-                          plan.name === "Basic" ? "text-white" : "text-primary"
-                        } font-inter`}
-                      >
-                        ₦{Number(plan.price.annually.amount)}
-                      </div>
-                    ) : (
-                      <div
-                        className={`${
-                          plan.name === "Basic" || plan.name === "Lite"
-                            ? ""
-                            : "blur-lg"
-                        } text-[32px] font-[600] ${
-                          plan.name === "Basic" ? "text-white" : "text-primary"
-                        } font-inter`}
-                      >
-                        ₦{Number(plan.price.monthly.amount)}
-                      </div>
-                    )}
-                    <div className="border flex flex-col justify-center border-transparent border-l-gray-300 w-[50px] h-[50px] px-2">
-                      <span>Per</span>
-                      <span>{checked ? "Year" : "Month"}</span>
-                    </div>
-                  </div>
+                <h4 className="text-xl font-bold">{plan.name}</h4>
+                <div className="mt-3 flex items-baseline gap-1">
+                  <span
+                    className={`text-2xl font-bold tabular-nums ${
+                      isBlurred ? "blur-md" : ""
+                    }`}
+                  >
+                    ₦
+                    {checked
+                      ? plan.price.annually.amount
+                      : plan.price.monthly.amount}
+                  </span>
+                  <span className="text-sm opacity-80">/{checked ? "yr" : "mo"}</span>
+                </div>
+              </Link>
+            ) : (
+              <div key={idx} className={cardClassName}>
+                <div
+                  className={`mb-4 flex h-14 w-14 items-center justify-center rounded-xl transition-transform duration-300 ${
+                    isActive ? "bg-white/20" : "bg-primary/10 text-primary group-hover:scale-110"
+                  }`}
+                >
+                  <PlanIcon className="h-7 w-7" />
+                </div>
+                <h4 className="text-xl font-bold">{plan.name}</h4>
+                <div className="mt-3 flex items-baseline gap-1">
+                  <span
+                    className={`text-2xl font-bold tabular-nums ${
+                      isBlurred ? "blur-md" : ""
+                    }`}
+                  >
+                    ₦
+                    {checked
+                      ? plan.price.annually.amount
+                      : plan.price.monthly.amount}
+                  </span>
+                  <span className="text-sm opacity-80">/{checked ? "yr" : "mo"}</span>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : null}
       {planPaidFor?.name !== "Basic" ? (
-        <div className="w-full flex flex-col  border border-gray-300 rounded-2xl py-7 px-10 md:px-20">
-          <div className="w-full flex flex-col space-y-3 md:space-y-0 md:flex-row  md:space-x-[10rem] py-3">
-            <div className="flex flex-col">
-              <h5 className="text-[18px]">Plan</h5>
-              <span className="font-semibold text-[28px]">{data.planName}</span>
-            </div>
-            <div className="flex flex-col">
-              <h5 className="text-[18px]">Payment</h5>
-              <div className="flex space-x-5">
-                <div className="text-[32px] font-[600] font-semibold font-inter">
-                  ₦
-                  {checked
-                    ? planPaidFor?.price.annually.amount
-                    : planPaidFor?.price.monthly.amount}
-                </div>
-                <div className="border flex flex-col justify-center border-transparent border-l-gray-300 w-[50px] h-[50px] px-2">
-                  <span>Per</span>
-                  <span>{checked ? "Year" : "Month"}</span>
-                </div>
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-shadow hover:shadow-xl">
+          <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Plan</p>
+                <p className="mt-0.5 text-xl font-bold text-gray-900">{data.planName}</p>
               </div>
             </div>
-            <div className="flex flex-col space-y-5 md:space-y-0 md:flex-row md:items-center md:space-x-4">
-              <button
-                disabled={!isNotBasicPlan}
-                onClick={disableSubscription}
-                className="w-full flex items-center justify-center text-gray-500 text-[18px] border-0 outline-none bg-transparent text-left disabled:cursor-not-allowed disabled:bg-gray-300"
-              >
-                {mutation.isPending ? (
-                  <Spinner color="red" size={18} />
-                ) : (
-                  <span>Cancel</span>
-                )}
-              </button>
-              {isNotBasicPlan ? (
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Banknote className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Payment</p>
+                <p className="mt-0.5 text-xl font-bold text-gray-900 tabular-nums">
+                  ₦{checked ? planPaidFor?.price.annually.amount : planPaidFor?.price.monthly.amount}
+                  <span className="text-sm font-normal text-gray-500">/{checked ? "year" : "month"}</span>
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Calendar className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Renewal</p>
+                <p className="mt-0.5 font-semibold text-gray-900">{nextPaymentDate}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Wallet className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">Revenue</p>
                 <Link
-                  href={upgradeLink}
-                  className="text-primary font-semibold text-[18px] border-0 outline-none bg-transparent text-left"
+                  href="/hosts/dashboard/wallet"
+                  className="mt-0.5 inline-block font-semibold text-primary transition-colors hover:text-primary/80"
                 >
-                  Upgrade
+                  View in Wallet →
                 </Link>
-              ) : null}
+              </div>
             </div>
           </div>
-          <div className="w-full flex flex-col space-y-4 md:space-y-0 md:flex-row  md:space-x-[9rem] py-3 mt-4 border-t border-t-gray-300">
-            <div className="flex flex-col">
-              <h5 className="text-[18px]">Renewal Date</h5>
-              <span className="font-semibold text-[20px]">
-                {nextPaymentDate}
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <h5 className="text-[18px]">Total Revenue</h5>
-              <span className="font-semibold text-[20px] font-inter">₦0</span>
-            </div>
+          <div className="flex flex-wrap items-center gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4">
+            <button
+              disabled={!isNotBasicPlan}
+              onClick={disableSubscription}
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {mutation.isPending ? (
+                <Spinner color="red" size={16} />
+              ) : (
+                "Cancel subscription"
+              )}
+            </button>
+            {isNotBasicPlan && (
+              <Link
+                href={upgradeLink}
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-md"
+              >
+                Upgrade to Premium
+              </Link>
+            )}
           </div>
         </div>
       ) : null}
-      <div className="w-full flex items-center justify-between">
-        <div className="w-1/4 md:w-1/3 h-[1px] bg-gray-300"></div>
-        <div>
-          <span className="text-[16px] md:text-[25px]">Compare our plans</span>
+      {/* Compare plans section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+          <h4 className="text-lg font-semibold text-gray-700">Compare plans</h4>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
         </div>
-        <div className="w-1/4 md:w-1/3 h-[1px] bg-gray-300"></div>
-      </div>
-      <div className="w-full flex bg-white grid gap-y-5 md:grid-cols-3 md:gap-x-10 md:gap-y-0">
-        {PLANS.map((plan, idx: number) => {
-          const q = checked
-            ? `/hosts/checkout/${plan.price.annually.id}/?name=${plan.name}&type=${plan.price.annually.type}&price=${plan.price.annually.amount}`
-            : `/hosts/checkout/${plan.price.monthly.id}/?name=${plan.name}&type=${plan.price.monthly.type}&price=${plan.price.monthly.amount}`;
-          return (
-            <div
-              key={idx}
-              className={`${
-                plan.name === "Basic" || plan.name === "Lite"
-                  ? ""
-                  : "blur-lg pointer-events-none"
-              } min-h-[350px] flex flex-col space-y-4 items-center py-10 rounded-3xl relative border border-gray-300 hover:border-primary cursor-pointer sj-shadow`}
-            >
-              <h4 className="font-[700] text-[20px]">{plan.name}</h4>
-              <div className="flex space-x-5">
-                {checked ? (
-                  <div className="text-[32px] font-[600] text-primary font-inter ">
-                    ₦{Number(plan.price.annually.amount)}
-                  </div>
-                ) : (
-                  <div className="text-[32px] font-[600] text-primary font-inter">
-                    ₦{Number(plan.price.monthly.amount)}
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {PLANS.map((plan, idx) => {
+            const PlanIcon = PLAN_ICONS[plan.name] ?? Home;
+            const q = checked
+              ? `/hosts/checkout/${plan.price.annually.id}/?name=${plan.name}&type=${plan.price.annually.type}&price=${plan.price.annually.amount}`
+              : `/hosts/checkout/${plan.price.monthly.id}/?name=${plan.name}&type=${plan.price.monthly.type}&price=${plan.price.monthly.amount}`;
+            const isBlurred = plan.name !== "Basic" && plan.name !== "Lite";
+            const isPopular = plan.popular;
+
+            return (
+              <div
+                key={idx}
+                className={`group relative flex flex-col rounded-2xl border-2 bg-white p-6 transition-all duration-300 ${
+                  isBlurred
+                    ? "pointer-events-none blur-sm"
+                    : "border-gray-200 hover:border-primary/50 hover:shadow-xl hover:-translate-y-1"
+                }`}
+              >
+                {isPopular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-0.5 text-xs font-semibold text-white shadow">
+                    Popular
                   </div>
                 )}
-                <div className="border flex flex-col justify-center border-transparent border-l-gray-300 w-[50px] h-[50px] px-2">
-                  <span>Per</span>
-                  <span>{checked ? "Year" : "Month"}</span>
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                  <PlanIcon className="h-6 w-6" />
                 </div>
+                <h4 className="text-xl font-bold text-gray-900">{plan.name}</h4>
+                <p className="mt-1 text-sm text-gray-500">{plan.desc}</p>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-primary tabular-nums">
+                    ₦{checked ? plan.price.annually.amount : plan.price.monthly.amount}
+                  </span>
+                  <span className="text-sm text-gray-500">/{checked ? "year" : "month"}</span>
+                </div>
+                {plan.yearlySavings && plan.yearlySavings !== "₦0" && checked && (
+                  <p className="mt-1 text-xs font-medium text-primary">
+                    Save {plan.yearlySavings} yearly
+                  </p>
+                )}
+                <ul className="mt-6 space-y-3">
+                  {plan.list.map((item, key) => (
+                    <li key={key} className="flex items-start gap-2">
+                      <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <span className="text-sm text-gray-700">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                {planPaidFor?.name === "Basic" && plan.name !== "Basic" && (
+                  <Link
+                    href={q}
+                    prefetch
+                    className="mt-8 block w-full rounded-xl bg-primary py-3 text-center font-semibold text-white transition-all hover:bg-primary/90 hover:shadow-lg"
+                  >
+                    Get {plan.name}
+                  </Link>
+                )}
               </div>
-              <p className="text-[#676363] text-[18px] font-[500]">
-                {plan.desc}
-              </p>
-              <ul className="w-5/6 space-y-3">
-                {plan.list.map((item, key: number) => (
-                  <li key={key} className="flex space-x-1">
-                    <CircleChevronRight className="fill-primary stroke-white w-[20px] h-[20px]" />
-                    <div className="text-[16px]">{item}</div>
-                  </li>
-                ))}
-              </ul>
-              {planPaidFor?.name === "Basic" && plan.name !== "Basic" ? (
-                <Link
-                  prefetch={true}
-                  href={q}
-                  className="px-4 py-2 bg-primary text-white rounded-md font-semibold ease duration-300 hover:bg-red-900"
-                >
-                  Get plan
-                </Link>
-              ) : null}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
       <SubscriptionTable />
     </div>
