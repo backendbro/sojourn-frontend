@@ -96,13 +96,8 @@ export default function MobileSearch() {
         </div>
       )}
 
-      {/* LOGO (VISIBLE ON MOBILE) */}
-      <Link
-        href="/"
-        className={`w-current ${
-          !showMobileSearchAndFilter ? "block" : "block"
-        }`}
-      >
+      {/* LOGO */}
+      <Link href="/" className="block">
         <Image
           src="/assets/logo/sojourn-logo-white-full.svg"
           alt="sojourn logo"
@@ -113,13 +108,13 @@ export default function MobileSearch() {
         />
       </Link>
 
-      {/* SEARCH BAR (VISIBLE FROM sm AND ABOVE) */}
-      {showMobileSearchAndFilter && (
+      {/* SEARCH BAR (DISABLED / HIDDEN) */}
+      {false && showMobileSearchAndFilter && (
         <div
           onClick={(e: MouseEvent<HTMLDivElement>) => {
             dispatch(setMobileSearchStatus(true));
           }}
-          className="hidden sm:flex w-5/6 items-center pl-3 pr-4 bg-white cursor-pointer rounded-full sj-shadow h-[53px] border border-gray-200 hover:bg-gray-50"
+          className="w-5/6 items-center pl-3 pr-4 bg-white cursor-pointer rounded-full sj-shadow h-[53px] border border-gray-200 hover:bg-gray-50"
         >
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center">
