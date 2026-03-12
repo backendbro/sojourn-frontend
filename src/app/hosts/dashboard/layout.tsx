@@ -73,7 +73,7 @@ export default function RootLayout({
       {shouldShowNav && (
         <HostTopNav isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       )}
-      <div className="w-full py-20">
+      <div className="w-full">
         {children}
       </div>
     </div>
