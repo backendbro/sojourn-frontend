@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useState, MouseEvent, useRef } from "react";
-import PropertySearch from "../property/PropertySearch";
+import { useState, MouseEvent } from "react";
 import useQueryString from "@/hooks/useQueryString";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -13,7 +12,7 @@ import { RootState } from "@/store";
 import { setMobileSearchStatus } from "@/store/features/mobile-search-slice";
 import FilterSearch from "../property/filter-search";
 
-export default () => {
+export default function MobileSearch() {
   const { params } = useQueryString();
 
   const open = useSelector(
@@ -23,7 +22,6 @@ export default () => {
   const dispatch = useDispatch();
 
   const [tab, setTab] = useState<"filters" | "search">("search");
-
   const [openSearch, setOpen] = useState(false);
 
   const city = params.get("city") as string;
@@ -53,8 +51,9 @@ export default () => {
 
   return (
     <>
+      {/* MOBILE SEARCH MODAL */}
       {open && (
-        <div className="block md:hidden fixed top-0 left-0  w-full z-[9999] about-two h-screen bg-gray-50">
+        <div className="block md:hidden fixed top-0 left-0 w-full z-[9999] h-screen bg-gray-50">
           <div className="w-full flex items-center justify-end p-3">
             <span
               onClick={(e: MouseEvent<HTMLSpanElement>) => {
@@ -64,31 +63,30 @@ export default () => {
             >
               <X color="black" size={13} strokeWidth={5} />
             </span>
+
             <div className="w-5/6 flex items-center justify-center space-x-10">
               <button
-                onClick={(e) => {
-                  setTab("search");
-                }}
-                className={`border-0 outline-none bg-transparent  ${isSearchTabActive} text-sm font-semibold py-1`}
+                onClick={() => setTab("search")}
+                className={`border-0 outline-none bg-transparent ${isSearchTabActive} text-sm font-semibold py-1`}
               >
                 Search
               </button>
+
               <button
-                onClick={(e) => {
-                  setTab("filters");
-                }}
-                className={`border-0 outline-none  bg-transparent ${isFiltersTabActive} text-sm font-semibold py-1`}
+                onClick={() => setTab("filters")}
+                className={`border-0 outline-none bg-transparent ${isFiltersTabActive} text-sm font-semibold py-1`}
               >
                 Filters
               </button>
             </div>
           </div>
+
           {tab === "search" ? (
-            <div className="about-one w-full px-2 min-h-[76vh] flex items-center justify-center">
+            <div className="w-full px-2 min-h-[76vh] flex items-center justify-center">
               <CustomSearch />
             </div>
           ) : (
-            <div className="about-two w-full px-5  min-h-[76vh] flex items-center justify-center">
+            <div className="w-full px-5 min-h-[76vh] flex items-center justify-center">
               <FilterSearch
                 setMobileSearchStatus={setMobileSearchStatus}
                 setOpen={setOpen}
@@ -97,41 +95,39 @@ export default () => {
           )}
         </div>
       )}
+
+      {/* LOGO (VISIBLE ON MOBILE) */}
       <Link
         href="/"
         className={`w-current ${
-          !showMobileSearchAndFilter ? "block" : "hidden"
-        } sm:block`}
+          !showMobileSearchAndFilter ? "block" : "block"
+        }`}
       >
-        {/* <Image
-          src="/assets/logo/soj_logo.png"
+        <Image
+          src="/assets/logo/sojourn-logo-white-full.svg"
           alt="sojourn logo"
-          width={108.13}
-          height={29.06}
-          priority={true}
-        /> */}
-      
-       <Image
-            src="/assets/logo/sojourn-logo-white-full.svg"
-            alt="sojourn logo"
-            width={110}
-            height={34}
-            priority={true}
-            className="w-[100px] sm:w-[110px] md:w-[120px] h-auto relative z-[1]"
-          />
+          width={110}
+          height={34}
+          priority
+          className="w-[100px] sm:w-[110px] md:w-[120px] h-auto relative z-[1]"
+        />
       </Link>
+
+      {/* SEARCH BAR (VISIBLE FROM sm AND ABOVE) */}
       {showMobileSearchAndFilter && (
         <div
           onClick={(e: MouseEvent<HTMLDivElement>) => {
             dispatch(setMobileSearchStatus(true));
           }}
-          className="w-5/6 flex items-center pl-3 pr-4 flex bg-white cursor-pointer sm:hidden rounded-full sj-shadow h-[53px] border border-gray-200 hover:bg-gray-50"
+          className="hidden sm:flex w-5/6 items-center pl-3 pr-4 bg-white cursor-pointer rounded-full sj-shadow h-[53px] border border-gray-200 hover:bg-gray-50"
         >
           <div className="w-full flex items-center justify-between">
             <div className="flex items-center">
               <Search color="#444" size={25} strokeWidth={3} />
+
               <div className="flex flex-col px-3 font-semibold">
-                <span className="">Where to ?</span>
+                <span>Where to ?</span>
+
                 <div className="flex items-center space-x-2">
                   <span className="text-[10px]">Anywhere</span>
                   <span className="text-[10px]">Any week</span>
@@ -139,10 +135,11 @@ export default () => {
                 </div>
               </div>
             </div>
+
             <SlidersHorizontal color="#444" size={18} strokeWidth={3} />
           </div>
         </div>
       )}
     </>
   );
-};
+}
