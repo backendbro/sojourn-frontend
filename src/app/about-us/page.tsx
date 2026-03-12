@@ -462,6 +462,115 @@ export default () => {
             </div>
           </div>
         </section>
+
+        {/* The Sojourn Ecosystem */}
+        <section className="combine-section_team3">
+          <div className="combine-padding-global-5">
+            <div className="combine-padding-section-medium-2">
+              <div className="uui-text-align-center">
+                <div className="uui-max-width-large align-center">
+                  <h2 className="sojourn_head font-sans">The Sojourn Ecosystem</h2>
+                </div>
+              </div>
+              <div className="combine-container-small-2">
+                <div className="combine-text-align-center-2">
+                  <div className="combine-text-size-regular-2 font-sans">
+                    Sojourn operates as more than a booking platform. We function
+                    simultaneously as a marketplace, a host management
+                    infrastructure, and a financial and payment system. Our focus
+                    is on long-term ecosystem building in Nigeria&apos;s hospitality
+                    sector—creating sustainable value for hosts, guests, and the
+                    broader industry.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Host Management Tool */}
+        <section className="combine-section_team3 bg-gray-50/50">
+          <div className="combine-padding-global-5">
+            <div className="combine-padding-section-medium-2">
+              <div className="combine-container-small-2">
+                <h2 className="sojourn_head font-sans text-center mb-6">
+                  Sojourn as a Host Management Tool
+                </h2>
+                <div className="combine-text-size-regular-2 font-sans space-y-4 max-w-3xl mx-auto text-center">
+                  <p>
+                    Hosts on Sojourn keep 100% of their earnings. We operate on a
+                    flat ₦20,000 subscription model—no commission on bookings,
+                    no hidden fees. This is technology-driven empowerment, not
+                    just listing exposure.
+                  </p>
+                  <p>
+                    Hosts gain access to booking metrics, revenue insights, guest
+                    satisfaction tracking, and performance analytics. These tools
+                    enable data-informed decisions and structured operations,
+                    helping hosts run their properties as professional
+                    hospitality businesses.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Secure Community for Guests */}
+        <section className="combine-section_team3">
+          <div className="combine-padding-global-5">
+            <div className="combine-padding-section-medium-2">
+              <div className="combine-container-small-2">
+                <h2 className="sojourn_head font-sans text-center mb-6">
+                  A Secure Community for Guests
+                </h2>
+                <div className="combine-text-size-regular-2 font-sans space-y-4 max-w-3xl mx-auto text-center">
+                  <p>
+                    Guests book with confidence. Sojourn offers secure payments
+                    via Paystack and crypto payment support, providing flexible
+                    options for Nigerian and diaspora travelers. Every transaction
+                    is transparent and protected.
+                  </p>
+                  <p>
+                    We are committed to a trusted booking experience—clear
+                    pricing, verified properties, and reliable support. Whether
+                    you are traveling within Nigeria or visiting from abroad,
+                    Sojourn delivers a straightforward, secure way to find and
+                    book short-term stays.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Technology-Driven Platform */}
+        <section className="combine-section_team3 bg-gray-50/50">
+          <div className="combine-padding-global-5">
+            <div className="combine-padding-section-medium-2">
+              <div className="combine-container-small-2">
+                <h2 className="sojourn_head font-sans text-center mb-6">
+                  A Technology-Driven Platform
+                </h2>
+                <div className="combine-text-size-regular-2 font-sans space-y-4 max-w-3xl mx-auto text-center">
+                  <p>
+                    Sojourn is built on data-informed hosting and structured
+                    digital hospitality operations. Our platform supports hosts
+                    with analytics and workflows designed for professional
+                    property management, while guests benefit from a streamlined
+                    search and booking experience.
+                  </p>
+                  <p>
+                    We are committed to long-term infrastructure building in
+                    African tourism. This means investing in technology,
+                    standards, and processes that scale—creating a foundation for
+                    sustainable growth in Nigeria&apos;s hospitality sector.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
       <div className="later">
         <div className="container-regular">
