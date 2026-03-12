@@ -13,9 +13,8 @@ import {
 import useQueryString from "@/hooks/useQueryString";
 import { searchProperties } from "@/http/api";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState, MouseEvent } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Map, X } from "lucide-react";
+import { useState, MouseEvent } from "react";
+import { Map, X, MapPin, SearchX } from "lucide-react";
 import PropertySearch from "@/components/property/PropertySearch";
 import Filter from "@/components/property/Filter";
 import { PropertyCardType } from "@/components/property/recommended-properties";
@@ -24,10 +23,9 @@ import SearchResultsGoogleMap from "@/components/maps/search-results-google-map"
 import SearchResultCard from "@/components/property/search-result-card";
 
 export default () => {
-  const client = useQueryClient();
   const { params } = useQueryString();
+
   const [page, setPage] = useState(1);
-  const [viewMap, setViewMap] = useState(false);
 
   const city = params.get("city") as string;
   const adults = Number(params.get("adults"));
@@ -55,13 +53,17 @@ export default () => {
   };
 
   const { data, error, isLoading, isRefetching } = useQuery({
-    queryKey: ["search-properties"],
-    queryFn: () => {
-      return searchProperties(searchParams);
-    },
+    queryKey: [
+      "search-properties",
+      city, adults, children, checkInDate, checkOutDate,
+      typesOfProperty, numberOfRooms, price, amenities, page,
+    ],
+    queryFn: () => searchProperties(searchParams),
     refetchOnMount: true,
     refetchOnWindowFocus: false,
   });
+
+  const [viewMap, setViewMap] = useState(false);
 
   const results = data ? data[0] : [];
   const numberOfPages = data ? Math.ceil((data[1] as number) / 6) : 0;
@@ -71,7 +73,7 @@ export default () => {
         (r: {
           title: any;
           price: any;
-          house_number: any;
+          houseNumber: any;
           street: any;
           zip: any;
           city: any;
@@ -80,18 +82,22 @@ export default () => {
           id: string;
           photos: string[];
           country: string;
-          reviews: string[];
+          reviews: { rating: number }[];
+          numberOfRooms: number;
+          typeOfProperty: string;
         }) => ({
+          id: r.id,
           title: r.title,
           price: r.price,
-          address: `${r.house_number} ${r.street}  ${r.city}`,
+          address: `${r.houseNumber} ${r.street}  ${r.city}`,
           coords: [+r.lat, +r.lng],
           href: `/properties/${r.id}`,
           photos: Array.isArray(r.photos) ? r.photos : [],
           city: r.city,
-          country: r.country,
-          reviews: r.reviews || [],
-          id: r.id,
+          country: r.country || "Nigeria",
+          reviews: Array.isArray(r.reviews) ? r.reviews : [],
+          numberOfRooms: r.numberOfRooms || 0,
+          typeOfProperty: r.typeOfProperty || "",
         })
       )
     : [];
@@ -106,7 +112,6 @@ export default () => {
       setPage((prevPage) => prevPage - 1);
     }
   };
-  
   const nextPage = async (e: MouseEvent<HTMLLIElement>) => {
     e.preventDefault();
     if (page < numberOfPages) {
@@ -117,23 +122,6 @@ export default () => {
     }
   };
 
-  useEffect(() => {
-    const invalidateQueries = async () => {
-      await client.invalidateQueries({ queryKey: ["search-properties"] });
-    };
-    invalidateQueries();
-  }, [
-    page,
-    city,
-    adults,
-    checkInDate,
-    checkOutDate,
-    children,
-    price,
-    amenities,
-    typesOfProperty,
-    numberOfRooms,
-  ]);
 
   if (isLoading)
     return (
@@ -144,171 +132,320 @@ export default () => {
 
   if (error)
     return (
-      <div className="w-full flex flex-col space-y-1 items-center justify-center min-h-[88vh] text-sm max-w-[1400px] mx-auto px-4">
-        <p className="font-[400]"> Could not get properties at this time.</p>
+      <div className="w-full flex flex-col items-center justify-center min-h-[88vh] gap-4">
+        <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
+          <SearchX className="text-primary" size={28} />
+        </div>
+        <p className="text-gray-600 text-sm">
+          Could not get properties at this time.
+        </p>
         <button
-          onClick={(e) => {
-            location.reload();
-          }}
-          className="outline-none border py-2 px-4 border-0 rounded-full font-bold bg-primary text-white"
+          onClick={() => location.reload()}
+          className="px-6 py-2.5 rounded-full font-semibold bg-primary text-white text-sm hover:bg-red-700 transition-colors"
         >
-          Reload
+          Try again
         </button>
       </div>
     );
 
+  const totalGuests = adults + children + infants;
+  const guestLabel = totalGuests === 1 ? "guest" : "guests";
+
   return (
     <>
-      {/* Mobile Map Modal */}
+      {/* Mobile fullscreen map overlay */}
       {viewMap && (
-        <div className="fixed inset-0 z-[99999] bg-white block lg:hidden flex flex-col">
-          <div className="w-full px-4 h-[60px] flex justify-between items-center border-b">
-            <span className="font-semibold">{locations.length} properties nearby</span>
-            <button
-              onClick={() => setViewMap(false)}
-              className="rounded-full border p-2 border-gray-300 hover:bg-gray-100 transition-colors"
-              aria-label="Close map"
+        <div className="fixed w-full inset-0 z-[99999] bg-white block sm:hidden">
+          <div className="w-full px-4 h-[50px] flex justify-center items-center">
+            <span
+              onClick={(e: MouseEvent<HTMLSpanElement>) => {
+                setViewMap(false);
+              }}
+              className="rounded-full border-[.7px] p-2 border-gray-400 cursor-pointer hover:shadow-xl hover:border-0"
             >
-              <X size={20} />
-            </button>
+              <X color="red" size={13} strokeWidth={5} />
+            </span>
           </div>
-          <div className="flex-1 w-full">
-            <SearchResultsGoogleMap locations={locations} />
-          </div>
+          <SearchResultsGoogleMap locations={locations} />
         </div>
       )}
 
-      <div className="w-full min-h-[88vh] bg-white">
-        {/* Mobile View Map Button - Fixed at bottom */}
-        <button
-          onClick={() => setViewMap(true)}
-          className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+      <div className="w-full min-h-screen bg-gray-50/60">
+        {/* Search bar — scrolls away, then compact version appears in the navbar */}
+        <div
+          id="properties-search-bar"
+          className="w-full bg-white border-b border-gray-100 z-[100]"
         >
-          <Map size={20} />
-          <span className="font-medium">View on map</span>
-        </button>
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 py-3 sm:py-4">
+              <div className="flex-1 min-w-0">
+                <PropertySearch searchParams={searchParams} />
+              </div>
+              <Filter />
+            </div>
+          </div>
+        </div>
 
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-          {/* Search and Filter Bar - Desktop only */}
-          <div className="hidden lg:flex justify-center items-center gap-3 mb-8">
-            <PropertySearch searchParams={searchParams} />
-            <Filter />
+        {/* Main content */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Results header */}
+          <div className="py-5 sm:py-6">
+            {(results as number[]).length ? (
+              <div className="flex items-center gap-2">
+                <MapPin size={16} className="text-primary shrink-0" />
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 capitalize">
+                  {city}
+                </h1>
+                <span className="text-gray-400 font-light">|</span>
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-gray-700">
+                    {(results as number[]).length}
+                  </span>{" "}
+                  {(results as number[]).length === 1 ? "property" : "properties"}{" "}
+                  available
+                  {totalGuests > 0 && (
+                    <span className="hidden sm:inline">
+                      {" "}
+                      · {totalGuests} {guestLabel}
+                    </span>
+                  )}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 gap-4">
+                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
+                  <SearchX className="text-gray-400" size={24} />
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-gray-800 text-base">
+                    No properties found
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Try adjusting your search or filters
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Results count */}
-          {(results as number[]).length ? (
-            <p className="font-semibold text-lg mb-4">
-              {results.length} {results.length === 1 ? 'property' : 'properties'} available
-            </p>
-          ) : (
-            <p className="font-semibold text-lg mb-4">
-              Sorry, we couldn't find any matching results.
-            </p>
-          )}
+          {/* Grid: Cards + Map */}
+          {(results as number[]).length > 0 && (
+            <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 pb-10">
+              {/* Property cards */}
+              <div className="w-full order-2 lg:order-1">
+                {isRefetching ? (
+                  <div className="flex items-center justify-center py-20">
+                    <Spinner size={30} color="red" />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 content-start">
+                    {results.map(
+                      (property: PropertyCardType, idx: number) => (
+                        <SearchResultCard
+                          key={idx}
+                          {...property}
+                          city={property.city}
+                        />
+                      )
+                    )}
+                  </div>
+                )}
 
-          {/* Main Content Grid */}
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-            {/* Property Cards Section */}
-            <div className="flex-1">
-              {isRefetching ? (
-                <div className="flex justify-center py-12">
-                  <Spinner size={30} color="red" />
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
-                  {results.map((property: PropertyCardType, idx: number) => (
-                    <SearchResultCard
-                      key={property.id || idx}
-                      {...property}
-                      city={property.city}
-                    />
-                  ))}
-                </div>
-              )}
+                {/* Pagination */}
+                {numberOfPages > 1 && (
+                  <div className="mt-8 sm:mt-10 pb-4">
+                    <Pagination>
+                      <PaginationContent className="gap-1.5">
+                        <PaginationItem
+                          onClick={previousPage}
+                          className="list-none"
+                        >
+                          <PaginationPrevious
+                            href="#"
+                            className={`hover:bg-red-50 border border-gray-200 rounded-lg text-xs sm:text-sm h-9 ${
+                              page <= 1
+                                ? "pointer-events-none opacity-40"
+                                : ""
+                            }`}
+                          />
+                        </PaginationItem>
 
-              {/* Pagination */}
-              {numberOfPages > 0 && (
-                <div className="mt-10">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem onClick={previousPage}>
-                        <PaginationPrevious href="#" className="hover:bg-red-50" />
-                      </PaginationItem>
-                      
-                      <div className="hidden md:flex items-center gap-1">
-                        {Array.from({ length: Math.min(5, numberOfPages) }, (_, i) => {
-                          let pageNumber = i + 1;
-                          if (numberOfPages > 5) {
-                            if (page > 3) {
-                              pageNumber = page - 3 + i;
-                            }
-                          }
-                          
-                          if (pageNumber <= numberOfPages) {
-                            return (
-                              <PaginationItem key={pageNumber}>
-                                <PaginationLink
-                                  href="#"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    getDataByPage(pageNumber);
-                                  }}
-                                  className={`hover:bg-red-50 ${
-                                    page === pageNumber
-                                      ? "bg-primary text-white hover:bg-primary hover:text-white"
-                                      : ""
-                                  }`}
-                                >
-                                  {pageNumber}
-                                </PaginationLink>
-                              </PaginationItem>
-                            );
-                          }
-                          return null;
-                        })}
-                        
-                        {numberOfPages > 5 && page < numberOfPages - 2 && (
+                        {/* Mobile page indicator */}
+                        <div className="flex md:hidden items-center px-3">
+                          <span className="text-sm font-medium text-gray-600">
+                            {page} / {numberOfPages}
+                          </span>
+                        </div>
+
+                        {/* Desktop pagination numbers */}
+                        <div className="hidden md:flex md:items-center gap-1">
                           <>
-                            <PaginationEllipsis />
-                            <PaginationItem>
-                              <PaginationLink
-                                href="#"
+                            {page >= 6 ? (
+                              <PaginationItem
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  getDataByPage(numberOfPages);
+                                  getDataByPage(1);
                                 }}
-                                className={`hover:bg-red-50 ${
+                                className="list-none"
+                              >
+                                <PaginationLink
+                                  href="#"
+                                  className={`list-none hover:bg-red-50 rounded-lg h-9 w-9 ${
+                                    page === 1
+                                      ? "bg-primary text-white hover:bg-primary hover:text-white"
+                                      : "border border-gray-200"
+                                  }`}
+                                >
+                                  1
+                                </PaginationLink>
+                              </PaginationItem>
+                            ) : null}
+                            {numberOfPages > 3 && page >= 6 && (
+                              <PaginationItem className="list-none">
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            )}
+                            {page <= 3 &&
+                              new Array(numberOfPages)
+                                .fill(0)
+                                .map((_, idx: number) => {
+                                  const pageNumber = idx + 1;
+                                  if (pageNumber > 3) return;
+                                  return (
+                                    <PaginationItem
+                                      onClick={(
+                                        e: MouseEvent<HTMLLIElement>
+                                      ) => {
+                                        e.preventDefault();
+                                        getDataByPage(pageNumber);
+                                      }}
+                                      key={pageNumber}
+                                      className="list-none"
+                                    >
+                                      <PaginationLink
+                                        href="#"
+                                        aria-current={
+                                          page === pageNumber
+                                            ? "page"
+                                            : undefined
+                                        }
+                                        className={`hover:bg-red-50 rounded-lg h-9 w-9 ${
+                                          page === pageNumber
+                                            ? "bg-primary text-white hover:bg-primary hover:text-white"
+                                            : "border border-gray-200"
+                                        }`}
+                                      >
+                                        {pageNumber}
+                                      </PaginationLink>
+                                    </PaginationItem>
+                                  );
+                                })}
+                            {page > 3 &&
+                              new Array(3).fill(0).map((_, idx: number) => {
+                                const pageNumber = page + idx;
+                                if (
+                                  pageNumber <= 3 ||
+                                  pageNumber >= numberOfPages
+                                )
+                                  return;
+                                return (
+                                  <PaginationItem
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      getDataByPage(pageNumber);
+                                    }}
+                                    key={idx}
+                                    className="list-none"
+                                  >
+                                    <PaginationLink
+                                      href="#"
+                                      className={`hover:bg-red-50 rounded-lg h-9 w-9 ${
+                                        page === pageNumber
+                                          ? "bg-primary text-white hover:bg-primary hover:text-white"
+                                          : "border border-gray-200"
+                                      }`}
+                                    >
+                                      {pageNumber}
+                                    </PaginationLink>
+                                  </PaginationItem>
+                                );
+                              })}
+                          </>
+                          {numberOfPages > 3 && page <= 3 && (
+                            <PaginationItem className="list-none">
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          )}
+                          {numberOfPages > 3 &&
+                            page > 3 &&
+                            page < numberOfPages - 3 && (
+                              <PaginationItem className="list-none">
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            )}
+                          {numberOfPages > 3 ? (
+                            <PaginationItem
+                              onClick={(e) => {
+                                e.preventDefault();
+                                getDataByPage(numberOfPages);
+                              }}
+                              className="list-none"
+                            >
+                              <PaginationLink
+                                href="#"
+                                className={`list-none hover:bg-red-50 rounded-lg h-9 w-9 ${
                                   page === numberOfPages
                                     ? "bg-primary text-white hover:bg-primary hover:text-white"
-                                    : ""
+                                    : "border border-gray-200"
                                 }`}
                               >
                                 {numberOfPages}
                               </PaginationLink>
                             </PaginationItem>
-                          </>
-                        )}
-                      </div>
-                      
-                      <PaginationItem onClick={nextPage}>
-                        <PaginationNext href="#" className="hover:bg-red-50" />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </div>
-              )}
-            </div>
+                          ) : null}
+                        </div>
 
-            {/* Desktop Map Section - Sticky */}
-            <div className="hidden lg:block lg:w-[380px] xl:w-[450px] flex-shrink-0">
-              <div className="sticky top-24 h-[calc(100vh-120px)] rounded-lg overflow-hidden shadow-lg border border-gray-200">
-                {data && locations.length > 0 && (
-                  <SearchResultsGoogleMap locations={locations} />
+                        <PaginationItem
+                          className="list-none"
+                          onClick={nextPage}
+                        >
+                          <PaginationNext
+                            href="#"
+                            className={`hover:bg-red-50 border border-gray-200 rounded-lg text-xs sm:text-sm h-9 ${
+                              page >= numberOfPages
+                                ? "pointer-events-none opacity-40"
+                                : ""
+                            }`}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
                 )}
               </div>
+
+              {/* Map — perfect square on desktop, rectangular on tablet */}
+              <div className="w-full order-1 lg:order-2 hidden sm:block">
+                <div className="lg:sticky lg:top-[100px]">
+                  {data ? (
+                    <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg border border-gray-200/60 bg-gray-200">
+                      <SearchResultsGoogleMap locations={locations} />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* Mobile Map FAB */}
+        <button
+          onClick={() => setViewMap(true)}
+          className="fixed flex items-center gap-2 rounded-full py-3 px-6 shadow-xl z-[999] bg-gray-900 bottom-20 left-1/2 -translate-x-1/2 sm:hidden hover:bg-gray-800 transition-colors"
+        >
+          <Map color="white" size={16} />
+          <span className="text-white font-semibold text-sm">Map</span>
+        </button>
       </div>
     </>
   );

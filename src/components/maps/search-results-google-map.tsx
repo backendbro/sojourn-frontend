@@ -1,122 +1,12 @@
-// "use client";
-
-// import React, { useEffect, useRef, useState } from "react";
-// import {
-//   APIProvider,
-//   Map,
-//   AdvancedMarker,
-//   useMap,
-// } from "@vis.gl/react-google-maps";
-// import { MarkerClusterer } from "@googlemaps/markerclusterer";
-// import type { Marker } from "@googlemaps/markerclusterer";
-
-// import useQueryString from "@/hooks/useQueryString";
-
-// export const dynamic = "force-dynamic";
-
-// type LocationType = {
-//   title: string;
-//   price: number;
-//   address: string;
-//   coords: number[];
-//   href: string;
-// };
-
-// export default ({ locations = [] }: { locations: LocationType[] }) => {
-//   const map = useMap();
-
-//   const { router } = useQueryString();
-
-//   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
-
-//   const clusterer = useRef<MarkerClusterer | null>(null);
-
-//   const setMarkerRef = (marker: Marker | null, key: string) => {
-//     if (marker && markers[key]) return;
-//     if (!marker && !markers[key]) return;
-
-//     setMarkers((prev) => {
-//       if (marker) {
-//         return { ...prev, [key]: marker };
-//       } else {
-//         const newMarkers = { ...prev };
-//         delete newMarkers[key];
-//         return newMarkers;
-//       }
-//     });
-//   };
-
-//   const handleClick =
-//     (l: { href: string }) => (ev: google.maps.MapMouseEvent) => {
-//       router.push(l.href);
-//     };
-
-//   const center = {
-//     lat: locations.length ? locations[0].coords[0] : 0,
-//     lng: locations.length ? locations[0].coords[1] : 0,
-//   };
-
-//   const Places = locations.map((l, key: number) => {
-//     const position = {
-//       lat: l.coords[0],
-//       lng: l.coords[1],
-//     };
-
-//     return (
-//       <AdvancedMarker
-//         key={key}
-//         position={position}
-//         onClick={handleClick(l)}
-//         ref={(marker) => setMarkerRef(marker, `${key}`)}
-//       >
-//         <div className="custom-map-marker font-sans">
-//           ₦{new Number(l.price).toLocaleString()}
-//         </div>
-//       </AdvancedMarker>
-//     );
-//   });
-
-//   useEffect(() => {
-//     if (!map) return;
-//     if (!clusterer.current) {
-//       clusterer.current = new MarkerClusterer({ map });
-//     }
-//   }, [map]);
-
-//   useEffect(() => {
-//     clusterer.current?.clearMarkers();
-//     clusterer.current?.addMarkers(Object.values(markers));
-//   }, [markers]);
-
-//   return (
-//     <APIProvider
-//       apiKey={process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY as string}
-//     >
-//       <Map
-//         className="w-full h-[600px] md:w-full md:h-[450px]"
-//         center={center}
-//         defaultZoom={12}
-//         gestureHandling={"greedy"}
-//         // disableDefaultUI={true}
-//         mapId="cfbe00b2d8ba58ba"
-//       >
-//         {Places}
-//       </Map>
-//     </APIProvider>
-//   );
-// };
-
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   APIProvider,
   Map,
   AdvancedMarker,
-  useMap,
+  InfoWindow,
 } from "@vis.gl/react-google-maps";
-import { MarkerClusterer } from "@googlemaps/markerclusterer";
-import type { Marker } from "@googlemaps/markerclusterer";
 
 import useQueryString from "@/hooks/useQueryString";
 import SearchResultCardRedesign from "./search-result-card-design";
@@ -124,135 +14,114 @@ import SearchResultCardRedesign from "./search-result-card-design";
 export const dynamic = "force-dynamic";
 
 type LocationType = {
-  id: string;
+  id?: string;
   title: string;
   price: number;
   address: string;
   coords: number[];
   href: string;
-  image?: string;
-  description?: string;
   photos: string[];
   city: string;
   country: string;
-  reviews: {
-    rating: number;
-  }[];
+  reviews: { rating: number }[];
+  numberOfRooms?: number;
+  typeOfProperty?: string;
 };
 
-const MarkerWithModal = ({
-  location,
-  onClick,
-}: {
-  location: LocationType;
-  onClick: (ev: google.maps.MapMouseEvent) => void;
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const position = {
-    lat: location.coords[0],
-    lng: location.coords[1],
-  };
-
-  return (
-    <AdvancedMarker position={position} onClick={onClick}>
-      <div
-        className="relative flex flex-col items-center"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* PRICE STICKER */}
-        <div
-          className="
-            inline-block
-            whitespace-nowrap
-            bg-white
-            text-gray-900
-            text-sm
-            font-semibold
-            px-4
-            py-1.5
-            rounded-full
-            shadow-lg
-            border border-gray-200
-            transition-transform
-            hover:scale-105
-            flex-shrink-0
-          "
-        >
-          ₦{location.price.toLocaleString()}
-        </div>
-
-        {/* HOVER CARD */}
-        {isHovered && (
-          <div className="absolute bottom-full mb-3 z-[9999] w-[300px] bg-white rounded-xl shadow-2xl border border-gray-200">
-            <SearchResultCardRedesign {...location} />
-          </div>
-        )}
-      </div>
-    </AdvancedMarker>
-  );
-};
-
-export default function MapComponent({
-  locations = [],
-}: {
-  locations: LocationType[];
-}) {
-  const map = useMap();
+function MapContent({ locations }: { locations: LocationType[] }) {
   const { router } = useQueryString();
-
-  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
-  const clusterer = useRef<MarkerClusterer | null>(null);
-
-  const handleClick =
-    (l: { href: string }) => (ev: google.maps.MapMouseEvent) => {
-      router.push(l.href);
-    };
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const center = {
-    lat: locations.length ? locations[0].coords[0] : 0,
-    lng: locations.length ? locations[0].coords[1] : 0,
+    lat: locations.length ? locations[0].coords[0] : 9.06,
+    lng: locations.length ? locations[0].coords[1] : 7.49,
   };
 
-  useEffect(() => {
-    if (!map) return;
-
-    if (!clusterer.current) {
-      clusterer.current = new MarkerClusterer({ map });
-    }
-  }, [map]);
-
-  useEffect(() => {
-    if (!clusterer.current) return;
-
-    clusterer.current.clearMarkers();
-    clusterer.current.addMarkers(Object.values(markers));
-  }, [markers]);
+  const handleClick = useCallback(
+    (href: string) => () => {
+      router.push(href);
+    },
+    [router]
+  );
 
   return (
+    <Map
+      className="w-full h-full map-popup-clean"
+      defaultCenter={center}
+      defaultZoom={12}
+      gestureHandling="greedy"
+      mapId="cfbe00b2d8ba58ba"
+    >
+      {locations.map((location, idx) => {
+        const position = {
+          lat: location.coords[0],
+          lng: location.coords[1],
+        };
+        const isHovered = hoveredIndex === idx;
+
+        return (
+          <React.Fragment key={idx}>
+            <AdvancedMarker
+              position={position}
+              onClick={handleClick(location.href)}
+              zIndex={isHovered ? 999 : 1}
+            >
+              <div
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              >
+                <div
+                  className={`px-2.5 py-1.5 rounded-full text-xs font-bold shadow-md cursor-pointer transition-all duration-150 whitespace-nowrap border ${
+                    isHovered
+                      ? "bg-black text-white border-black scale-110"
+                      : "bg-white text-black border-gray-200 hover:bg-gray-900 hover:text-white hover:border-gray-900"
+                  }`}
+                >
+                  ₦{Number(location.price).toLocaleString()}
+                </div>
+              </div>
+            </AdvancedMarker>
+
+            {isHovered && (
+              <InfoWindow
+                position={position}
+                pixelOffset={[0, -35]}
+                onCloseClick={() => setHoveredIndex(null)}
+              >
+                <div
+                  className="map-popup-card cursor-pointer"
+                  onClick={handleClick(location.href)}
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <SearchResultCardRedesign
+                    title={location.title}
+                    city={location.city}
+                    country={location.country}
+                    price={location.price}
+                    photos={location.photos}
+                    reviews={location.reviews}
+                    numberOfRooms={location.numberOfRooms}
+                    typeOfProperty={location.typeOfProperty}
+                  />
+                </div>
+              </InfoWindow>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </Map>
+  );
+}
+
+export default ({ locations = [] }: { locations: LocationType[] }) => {
+  return (
     <APIProvider
-      apiKey={
-        process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY as string
-      }
+      apiKey={process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY as string}
     >
       <div className="relative w-full h-full">
-        <Map
-          className="w-full h-[600px] md:h-[500px]"
-          center={center}
-          defaultZoom={12}
-          gestureHandling="greedy"
-          mapId="cfbe00b2d8ba58ba"
-        >
-          {locations.map((location) => (
-            <MarkerWithModal
-              key={location.id}
-              location={location}
-              onClick={handleClick(location)}
-            />
-          ))}
-        </Map>
+        <MapContent locations={locations} />
       </div>
     </APIProvider>
   );
-}
+};
