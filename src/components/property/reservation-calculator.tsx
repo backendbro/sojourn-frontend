@@ -350,7 +350,7 @@ export default ({
           </p>
         )}
         {!isTownHouse && longStayDiscountPercent > 0 && (
-          <p className="text-xs text-emerald-600 -mt-3 mb-2">
+          <p className="text-xs text-emerald-600 mt-1 mb-2">
             {longStayDiscountPercent}% off for stays of 7+ days
           </p>
         )}
