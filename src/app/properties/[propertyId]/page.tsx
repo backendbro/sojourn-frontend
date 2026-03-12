@@ -35,6 +35,7 @@ import {
 import { MONTHS_OF_THE_YEAR } from "@/constants";
 import useQueryString from "@/hooks/useQueryString";
 import { addToWishList, createTicket, getPropertyById } from "@/http/api";
+import useCurrency from "@/hooks/useCurrency";
 import { RootState } from "@/store";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -43,6 +44,8 @@ import {
   Clock,
   Heart,
   Mail,
+  MailCheck,
+  Mailbox,
   ShieldBan,
   X,
   Shield,
@@ -54,11 +57,14 @@ import {
   UtensilsCrossed,
   ShoppingCart,
   Beer,
+  View,
+  Send,
+  MessageCircle,
 } from "lucide-react";
 import dynamicImport from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { ChangeEvent, FormEvent, useState, MouseEvent } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -67,6 +73,11 @@ export const dynamic = "force-dynamic";
 
 const ReservationCalculator = dynamicImport(
   () => import("@/components/property/reservation-calculator"),
+  { ssr: false }
+);
+
+const VirtualTourViewer = dynamicImport(
+  () => import("@/components/property/virtual-tour-viewer"),
   { ssr: false }
 );
 
@@ -145,20 +156,15 @@ export default ({
   };
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["single-property"],
-    queryFn: () => {
-      return getPropertyById(propertyId);
-    },
+    queryKey: ["single-property", propertyId],
+    queryFn: () => getPropertyById(propertyId),
   });
 
-  const photoUrl = data ? data.photos[0] : "";
+  const photos: string[] = data?.photos ?? [];
+  const photoUrl = photos[0] ?? "";
   const firstImageUrl = photoUrl;
 
-  const images = data
-    ? data.photos.map((photo: string, idx: number) => {
-        return photo;
-      })
-    : [];
+  const images = photos;
 
   const hostUrl = data?.photo
     ? data.photo
@@ -168,16 +174,32 @@ export default ({
     mutationKey: ["create-ticket"],
     mutationFn: createTicket,
     async onSuccess() {
-      router.push("/dashboard/inbox");
+      setNewChatDetails((prev) => ({ ...prev, message: "" }));
+      setMessageSent(true);
+      setTimeout(() => {
+        setMessageSent(false);
+        router.push("/dashboard/inbox");
+      }, 2800);
     },
-    onError() {
-      toast("Error message", {
-        description: "Soory, we could not send your message at this time.",
-        action: {
-          label: "OK",
-          onClick: () => null,
-        },
-      });
+    onError(error: any) {
+      const status = error?.response?.status;
+      if (status === 401) {
+        toast("Session expired", {
+          description: "Please log in again to send a message.",
+          action: {
+            label: "Log in",
+            onClick: () => router.push("/login"),
+          },
+        });
+      } else {
+        toast("Could not send message", {
+          description: "Something went wrong. Please try again.",
+          action: {
+            label: "OK",
+            onClick: () => null,
+          },
+        });
+      }
     },
   });
 
@@ -191,28 +213,67 @@ export default ({
           onClick: () => null,
         },
       });
-    } else if (!newChat.title || !newChat.message) {
+    } else if (!newChat.message.trim()) {
       return toast("Message Host Error", {
-        description: "No field can be left empty",
+        description: "Please enter a message",
         action: {
           label: "Ok",
           onClick: () => null,
         },
       });
     } else {
+      const hostId = data?.hostId || newChat.hostId;
       ticket.mutate({
         senderId: userId,
         userId: userId,
         message: newChat.message,
-        hostId: newChat.hostId,
-        title: newChat.title,
+        hostId,
+        title: newChat.title || "Property Inquiry",
         propertyId: propertyId,
       });
     }
   }
 
+  const [showVirtualTour, setShowVirtualTour] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
+  const [showStickyBook, setShowStickyBook] = useState(false);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+
+
+  const bookingCardRef = useRef<HTMLDivElement>(null);
+
+  const { exchangeRate, loading: currencyLoading } = useCurrency();
+  const currency = useSelector((state: RootState) => state.currency?.currency);
+  const currSymbol = currency === "NGN" ? "₦" : "$";
+
+  useEffect(() => {
+    if (!bookingCardRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBook(!entry.isIntersecting),
+      { threshold: 0.15 }
+    );
+    observer.observe(bookingCardRef.current);
+    return () => observer.disconnect();
+  }, [data]);
+
+  const scrollToBooking = useCallback(() => {
+    bookingCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(() => {
+      const btn = document.querySelector("[data-check-availability]") as HTMLElement | null;
+      if (btn) {
+        btn.style.transform = "scale(1.08)";
+        btn.style.boxShadow = "0 0 20px rgba(239,68,68,0.5)";
+        btn.style.transition = "all 0.3s ease";
+        setTimeout(() => {
+          btn.style.transform = "";
+          btn.style.boxShadow = "";
+        }, 800);
+      }
+    }, 700);
+  }, []);
+
   const [newChat, setNewChatDetails] = useState({
-    title: "",
+    title: "Property Inquiry",
     message: "",
     hostId: "",
   });
@@ -221,11 +282,7 @@ export default ({
 
   const userLoggedIn = useSelector((state: RootState) => state.user.loggedIn);
 
-  const [wish, setWish] = useState(() =>
-    data
-      ? data.wishlist.map((w: { userId: any }) => w.userId).includes(guestId)
-      : false
-  );
+  const [wish, setWish] = useState(false);
 
   const mutation = useMutation({
     mutationKey: ["add-to-wishlist"],
@@ -278,20 +335,36 @@ export default ({
     setNewChatDetails((prevState) => ({ ...prevState, [name]: value }));
   }
 
+  const reviews: { rating: string | number }[] = data?.reviews ?? [];
+  const wishlistArr: { userId: string }[] = data?.wishlist ?? [];
+  const nearbyPlaces: string[] = data?.nearbyPlaces ?? [];
+  const houseRules: string[] = data?.houseRules ?? [];
+  const ammenities: string[] = data?.ammenities ?? [];
+  const rawPanoramas = data?.panoramas ?? [];
+  const panoramas: { id: string; label: string; imageUrl: string }[] = Array.isArray(rawPanoramas)
+    ? rawPanoramas
+        .filter((p): p is { id: string; label: string; imageUrl: string } => p && typeof p === "object" && "imageUrl" in p)
+        .map((p) => ({
+          id: String(p.id ?? ""),
+          label: String(p.label ?? ""),
+          imageUrl: String(p.imageUrl ?? ""),
+        }))
+    : [];
+
+
+
   useEffect(() => {
     if (data) {
-      const isSaved = data.wishlist
-        .map((w: { userId: string }) => w.userId)
-        .includes(guestId);
+      const isSaved = wishlistArr
+        .map((w) => w.userId)
+        .includes(guestId as string);
       setWish(isSaved);
     }
-  }, [data]);
-
-  const reviews = data ? data.reviews : [];
+  }, [data, wishlistArr, guestId]);
 
   let averageRating = 0;
 
-  reviews.forEach((review: { rating: string | number }) => {
+  reviews.forEach((review) => {
     averageRating += +review.rating;
   });
 
@@ -307,25 +380,40 @@ export default ({
       </div>
     );
 
+  if (error || !data)
+    return (
+      <div className="w-full flex flex-col items-center min-h-[88vh] py-10 bg-white px-5 md:px-5 lg:px-20 max-w-[1400px] mx-auto">
+        <div className="mt-20 text-center">
+          <h2 className="text-xl font-semibold mb-2">Property not found</h2>
+          <p className="text-gray-500 mb-4">
+            {error?.message || "This property may have been removed or the link is incorrect."}
+          </p>
+          <Link href="/properties" className="text-primary font-semibold underline">
+            Browse properties
+          </Link>
+        </div>
+      </div>
+    );
+
   return (
     <>
-      <div className="w-full flex flex-col min-h-[88vh] py-10 bg-paper px-5 md:px-5 lg:px-20 max-w-[1400px] mx-auto">
-        <div className="min-h-[80px] hidden sm:flex w-full  items-center justify-center space-x-3 mb-3">
+      <div className="w-full flex flex-col min-h-[88vh] py-6 sm:py-10 bg-paper px-3 sm:px-5 lg:px-20 max-w-[1400px] mx-auto">
+        <div className="min-h-[80px] hidden sm:flex w-full items-center justify-center space-x-3 mb-3">
           <PropertySearch searchParams={searchParams} />
           <Filter />
         </div>
         <div className="w-full h-full flex flex-col">
           <div className="w-full flex space-y-2 md:space-y-0 md:flex-row items-center justify-between">
-            <div className="w-4/6 flex flex-col">
-              <h3 className="text-[20px] font-semibold capitalize">
+            <div className="w-full sm:w-4/6 flex flex-col">
+              <h3 className="text-[17px] sm:text-[20px] font-semibold capitalize">
                 {data?.title}
               </h3>
-              <div className="w-full flex items-center mt-2">
+              <div className="w-full flex items-center mt-1 sm:mt-2">
                 <Rating
                   rating={averageRating === 0 ? 5 : averageRating}
                   numberOfComments={reviews.length}
                 />
-                <p className="text-xs font-semibold capitalize truncate">
+                <p className="text-[11px] sm:text-xs font-semibold capitalize truncate">
                   {data.zip}, {data.city}
                 </p>
               </div>
@@ -341,7 +429,7 @@ export default ({
           </div>
           <Carousel className="w-full block mb-24 mt-5 sm:hidden">
             <CarouselContent>
-              {data.photos.map((photo: string, idx: number) => {
+              {photos.map((photo: string, idx: number) => {
                 return (
                   <CarouselItem key={idx}>
                     <ImageViewer images={images} url={photo}>
@@ -379,15 +467,25 @@ export default ({
                   className="rounded-xl"
                 />
               </SplideCarousel>
-              {data?.photos?.length > 5 ? (
-                <SplideCarousel images={images} url={data.photos[5]}>
+              {photos.length > 5 ? (
+                <SplideCarousel images={images} url={photos[5]}>
                   <div className="absolute bottom-4 left-4  px-5 py-3 rounded-full bg-white shadow-md text-black font-semibold text-center ease duration-300 hover:bg-red-100">
                     Show more photos
                   </div>
                 </SplideCarousel>
               ) : null}
+              {panoramas.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowVirtualTour(true)}
+                  className="absolute bottom-4 right-4 px-4 py-2.5 rounded-full bg-black/80 text-white text-sm font-semibold flex items-center gap-2 shadow-lg hover:bg-black transition-colors z-10"
+                >
+                  <View size={16} />
+                  360° Tour
+                </button>
+              )}
             </div>
-            {data.photos.map((photo: string, idx: number) => {
+            {photos.map((photo: string, idx: number) => {
               if (idx === 0) return;
               if (idx === 5) return;
               return (
@@ -408,9 +506,18 @@ export default ({
             })}
           </div>
 
-          <div className="w-full flex min-h-[300px] flex flex-col pb-5 border-b-2 border-b-secondary md:flex-row">
+          {/* 360° Virtual Tour Viewer */}
+          {showVirtualTour && panoramas.length > 0 && (
+              <VirtualTourViewer
+              panoramas={panoramas}
+              onClose={() => setShowVirtualTour(false)}
+              isFullscreen
+            />
+          )}
+
+          <div className="w-full flex min-h-[200px] sm:min-h-[300px] flex flex-col pb-5 border-b-2 border-b-secondary md:flex-row">
             <article className="w-full h-full lg:w-3/5">
-              <div className="w-full flex mb-4 flex-col md:flex-row md:justify-between shadow-md bg-white rounded-md p-4 ">
+              <div className="w-full flex mb-4 flex-col md:flex-row md:justify-between shadow-md bg-white rounded-md p-3 sm:p-4">
                 {/* <div className="w-full py-4 flex flex-col space-y-3 md:space-y-0 md:flex-row items-center md:items-start justify-between">
                   <div className="w-full flex flex-col space-y-2 md:space-y-0 md:flex-row items-center md:space-x-2">
                     <div className="w-[130px] h-[130px] md:w-[80px] md:h-[80px] relative rounded-full overflow-hidden">
@@ -509,9 +616,9 @@ export default ({
                   </Tooltip>
                 </div> */}
 
-                <div className="w-full flex flex-col space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-16 h-16 relative rounded-full overflow-hidden ring-2 ring-offset-2 ring-gray-100">
+                <div className="w-full flex flex-col space-y-4 sm:space-y-6">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 relative rounded-full overflow-hidden ring-2 ring-offset-2 ring-gray-100 shrink-0">
                       <Image
                         src={hostUrl}
                         alt={`${data.contactName}'s profile photo`}
@@ -519,8 +626,8 @@ export default ({
                         className="object-cover"
                       />
                     </div>
-                    <div className="flex flex-col">
-                      <h3 className="text-xl font-medium">
+                    <div className="flex flex-col min-w-0">
+                      <h3 className="text-base sm:text-xl font-medium truncate">
                         Hosted by{" "}
                         <span className="font-semibold">
                           {data.contactName}
@@ -545,98 +652,108 @@ export default ({
                   </div>
 
                   <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center space-x-2">
-                      <Shield className="w-4 h-4 text-green-600" />
-                      <span className="text-gray-600">Identity verified</span>
-                    </div>
-
+                    {data.hostVerified && (
+                      <div className="flex items-center space-x-2">
+                        <Shield className="w-4 h-4 text-green-600" />
+                        <span className="text-gray-600">Identity verified</span>
+                      </div>
+                    )}
                     <div className="flex items-center space-x-2">
                       <Home className="w-4 h-4 text-primary" />
                       <span className="text-gray-600">Superhost</span>
                     </div>
                   </div>
 
-                  <Dialog>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <DialogTrigger className="w-full md:w-auto flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-primary to-primary/90 text-white rounded-lg transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-sm">
-                            <div className="flex items-center space-x-2">
-                              <Mail className="w-4 h-4" />
-                              <span className="font-medium">Message host</span>
+                  <Dialog open={messageDialogOpen} onOpenChange={setMessageDialogOpen}>
+                    <DialogTrigger className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-900 text-white rounded-full transition-all hover:bg-gray-800 active:scale-[0.97] shadow-sm">
+                      <Mail className="w-4 h-4" />
+                      <span className="font-medium text-sm">Message host</span>
+                    </DialogTrigger>
+                    <DialogContent className="!max-w-[440px] !p-0 !gap-0 overflow-hidden rounded-2xl [&>button]:hidden">
+                      {messageSent ? (
+                        <div className="flex flex-col items-center justify-center py-12 px-6 gap-3">
+                          <div className="envelope-mailbox-scene">
+                            <div className="mailbox-icon">
+                              <Mailbox className="w-14 h-14 text-gray-700" strokeWidth={1.5} />
                             </div>
-                          </DialogTrigger>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Send a message to the host</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <DialogContent className="md:max-w-md">
-                      <div className="w-full flex justify-between items-center">
-                        <DialogHeader>
-                          <DialogTitle className="text-xl font-semibold">
-                            Message the Host
-                          </DialogTitle>
-                          <DialogDescription className="text-gray-600">
-                            Send a message to {data.contactName}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogClose className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
-                          <X className="w-4 h-4" />
-                        </DialogClose>
-                      </div>
-                      <form
-                        className="w-full space-y-4 mt-4"
-                        onSubmit={createNewTicket}
-                      >
-                        <div className="w-full">
-                          <label
-                            htmlFor="title"
-                            className="block text-sm font-medium text-gray-700 mb-1"
-                          >
-                            Subject
-                          </label>
-                          <input
-                            id="title"
-                            name="title"
-                            onChange={handleChange}
-                            value={newChat.title}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                            placeholder="What would you like to discuss?"
-                          />
+                            <div className="envelope-icon">
+                              <Mail className="w-7 h-7 text-primary" strokeWidth={2} />
+                            </div>
+                          </div>
+                          <div className="sent-check-icon mt-2">
+                            <MailCheck className="w-8 h-8 text-emerald-500" />
+                          </div>
+                          <p className="sent-text text-base font-semibold text-gray-900">
+                            Message sent!
+                          </p>
+                          <p className="sent-subtext text-sm text-gray-500">
+                            Taking you to your inbox&hellip;
+                          </p>
                         </div>
-                        <div className="w-full">
-                          <label
-                            htmlFor="message"
-                            className="block text-sm font-medium text-gray-700 mb-1"
+                      ) : (
+                        <>
+                          {/* Host header */}
+                          <div className="flex items-center gap-3 px-6 pt-6 pb-4">
+                            <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-200 shrink-0 ring-2 ring-gray-100 ring-offset-1">
+                              <img
+                                src={hostUrl}
+                                alt={data.contactName}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <DialogHeader className="!space-y-0.5 !text-left">
+                                <DialogTitle className="text-base font-semibold text-gray-900">
+                                  Message {data.contactName}
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-gray-500">
+                                  Typically responds within a few hours
+                                </DialogDescription>
+                              </DialogHeader>
+                            </div>
+                            <DialogClose className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 shrink-0 transition-colors">
+                              <X className="w-4 h-4 text-gray-500" />
+                            </DialogClose>
+                          </div>
+
+                          <div className="h-px bg-gray-100" />
+
+                          {/* Message form */}
+                          <form
+                            onSubmit={createNewTicket}
+                            className="px-6 pt-4 pb-6 space-y-4"
                           >
-                            Message
-                          </label>
-                          <textarea
-                            id="message"
-                            name="message"
-                            value={newChat.message}
-                            onChange={handleChange}
-                            rows={4}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                            placeholder="Type your message here..."
-                          />
-                        </div>
-                        <button
-                          type="submit"
-                          className="w-full py-2.5 rounded-lg flex items-center justify-center space-x-2 bg-primary text-white font-medium transition-transform hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                          {ticket.isPending ? (
-                            <Spinner color="white" size={20} />
-                          ) : (
-                            <>
-                              <span>Send message</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </>
-                          )}
-                        </button>
-                      </form>
+                            <textarea
+                              name="message"
+                              value={newChat.message}
+                              onChange={handleChange}
+                              rows={5}
+                              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all duration-200 text-sm text-gray-800 placeholder:text-gray-400 resize-none outline-none"
+                              placeholder={`Hi ${data.contactName}, I have a question about your property...`}
+                            />
+                            <button
+                              type="submit"
+                              disabled={!newChat.message.trim() || ticket.isPending}
+                              className="w-full py-3 rounded-xl flex items-center justify-center gap-2 bg-primary text-white font-semibold text-sm transition-all hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary shadow-sm"
+                            >
+                              {ticket.isPending ? (
+                                <Spinner color="white" size={18} />
+                              ) : (
+                                <>
+                                  <Send className="w-4 h-4" />
+                                  <span>Send message</span>
+                                </>
+                              )}
+                            </button>
+                            <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+                              You&apos;ll be able to continue this conversation in your{" "}
+                              <a href="/dashboard/inbox" className="text-primary hover:underline font-medium">
+                                inbox
+                              </a>
+                            </p>
+                          </form>
+                        </>
+                      )}
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -644,29 +761,34 @@ export default ({
               <div className="w-full flex flex-col shadow-md bg-white rounded-md p-4">
                 <PropertyDescription type={data.typeOfProperty} />
               </div>
-              <p className="w-full leading-7 lg:w-4/5 font-[500] mt-6 italicize">
+              <p className="w-full leading-6 sm:leading-7 lg:w-4/5 font-[500] mt-4 sm:mt-6 text-sm sm:text-base italicize break-words overflow-wrap-anywhere">
                 {data.description}
               </p>
             </article>
-            <div className="w-full h-full mt-5 flex justify-end lg:w-2/5 md:px-4 md:mt-0">
+            <div ref={bookingCardRef} className="w-full h-full mt-5 flex flex-col lg:justify-end lg:w-2/5 md:px-4 md:mt-0">
               <ReservationCalculator
-                cautionFee={data.cautionFee}
+                cautionFee={+(data.cautionFee ?? 0)}
                 propertyId={propertyId}
-                price={data.price}
+                price={+(data.price ?? 0)}
+                typeOfProperty={data.typeOfProperty}
+                monthlyPrice={+(data.monthlyPrice || 0)}
+                minStayMonths={+(data.minStayMonths || 3)}
+                maxStayMonths={+(data.maxStayMonths || 6)}
+                longStayDiscountPercent={+(data.longStayDiscountPercent || 5)}
                 {...calculatorParams}
               />
             </div>
           </div>
-          <div className="w-full flex flex-col space-y-5 mt-5">
-            <div className="w-full items-center space-x-2">
-              <span className="font-semibold text-[20px]">Number of rooms</span>
-              <span className="text-[20px]">{data.numberOfRooms}</span>
+          <div className="w-full flex flex-col space-y-4 sm:space-y-5 mt-4 sm:mt-5">
+            <div className="w-full flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="font-semibold text-[16px] sm:text-[20px]">Number of rooms</span>
+              <span className="text-[16px] sm:text-[20px]">{data.numberOfRooms}</span>
             </div>
-            <div className="w-full items-center space-x-2">
-              <span className="font-semibold text-[20px]">
+            <div className="w-full flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="font-semibold text-[16px] sm:text-[20px]">
                 Max. number of people allowed in your house
               </span>
-              <span className="text-[20px]">{data.maxNumberOfPeople}</span>
+              <span className="text-[16px] sm:text-[20px]">{data.maxNumberOfPeople}</span>
             </div>
           </div>
           {/* <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-2 mt-10 lg:w-1/2">
@@ -681,11 +803,11 @@ export default ({
             ))}
           </div> */}
 
-          <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-y-2 mt-10 lg:w-1/2">
-            <div className="col-span-2 md:col-span-3">
-              <h4 className="text-[20px] font-semibold">What is near</h4>
+          <div className="w-full min-h-[100px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-2 mt-8 sm:mt-10 lg:w-1/2">
+            <div className="col-span-1 sm:col-span-2 md:col-span-3">
+              <h4 className="text-[17px] sm:text-[20px] font-semibold">What is near</h4>
             </div>
-            {data.nearbyPlaces.map((place: string, idx: number) => (
+            {nearbyPlaces.map((place: string, idx: number) => (
               <div
                 key={idx}
                 className="flex items-center space-x-2 py-1.5 px-3 rounded-md bg-white/50 hover:bg-white transition-colors duration-200"
@@ -696,14 +818,14 @@ export default ({
             ))}
           </div>
 
-          <div className="w-full my-10 pb-10 border-b-2 border-b-secondary">
-            <div className="w-full min-h-[100px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-4 lg:gap-y-3 gap-3 md:w-4/5">
-              <div className="col-span-2 md:col-span-3 lg:col-span-5 ">
-                <h4 className="text-[20px] font-semibold">
+          <div className="w-full my-6 sm:my-10 pb-6 sm:pb-10 border-b-2 border-b-secondary">
+            <div className="w-full min-h-[100px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-3 sm:gap-y-4 gap-2 sm:gap-3 md:w-4/5">
+              <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-5">
+                <h4 className="text-[17px] sm:text-[20px] font-semibold">
                   Available Amenities
                 </h4>
               </div>
-              {data.ammenities.map((ammenity: string, idx: number) => (
+              {ammenities.map((ammenity: string, idx: number) => (
                 <div
                   key={idx}
                   className="flex items-center space-x-2 py-1 px-4 rounded-md bg-white shadow-md"
@@ -714,9 +836,9 @@ export default ({
               ))}
             </div>
           </div>
-          <div className="w-full  pb-10 border-b-2 border-b-secondary">
-            <div className="w-full flex flex-col space-y-5 text-[14px[">
-              <h4 className="text-[20px] font-semibold">House Rules</h4>
+          <div className="w-full pb-6 sm:pb-10 border-b-2 border-b-secondary">
+            <div className="w-full flex flex-col space-y-3 sm:space-y-5">
+              <h4 className="text-[17px] sm:text-[20px] font-semibold">House Rules</h4>
               <p className="text-md w-full">
                 You'll be staying in someone's home, so please treat it with
                 care and respect.
@@ -726,18 +848,18 @@ export default ({
               <div className="flex items-center space-x-3">
                 <Clock size={20} />
                 <h4 className="text-md">Check-in after</h4>
-                <span className="text-md font-inter">{data.checkInAfter}</span>
+                <span className="text-md font-inter">{data?.checkInAfter ?? "2:00 PM"}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Clock size={20} />
                 <h4 className="text-md">Checkout before</h4>
                 <span className="text-md font-inter">
-                  {data.checkOutBefore}
+                  {data?.checkOutBefore ?? "11:00 AM"}
                 </span>
               </div>
             </div>
-            <div className="w-full min-h-[100px] grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:w-4/5">
-              {data.houseRules.map((rule: string, idx: number) => (
+            <div className="w-full min-h-[100px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:w-4/5">
+              {houseRules.map((rule: string, idx: number) => (
                 <div key={idx} className="flex items-center space-x-2">
                   <ShieldBan size={14} />
                   <span className="capitalize text-[14px] ">{rule}</span>
@@ -753,7 +875,7 @@ export default ({
                 {data.zip} {data.city}
               </p>
             </div>
-            <div className="w-full h-[600px] md:w-full md:h-[450px]">
+            <div className="w-full h-[300px] sm:h-[400px] md:h-[450px]">
               <GoogleMap
                 title={data.title}
                 address={`${data.houseNumber}, ${data.street} ${data.zip} ${data.city}`}
@@ -762,12 +884,12 @@ export default ({
             </div>
           </div>
           <div className="w-full flex flex-col py-4 mt-5 space-y-2 border-b-2 border-b-secondary">
-            <h4 className="text-[20px] font-semibold">Cancellation Policy</h4>
+            <h4 className="text-[17px] sm:text-[20px] font-semibold">Cancellation Policy</h4>
             <p>Free cancellations up until 48hrs before booking date</p>
             <p>
               Reviews the Host's full{" "}
               <Link
-                href="/terms-of-use#refund-policy"
+                href="/cancellation-policy"
                 className="font-bold underline"
               >
                 Cancellation Policy
@@ -775,11 +897,41 @@ export default ({
             </p>
           </div>
           <div className="w-full flex flex-col py-4 mt-2 space-y-2 border-b-2 border-b-secondary">
-            <h4 className="text-[20px] font-semibold">Recommended</h4>
+            <h4 className="text-[17px] sm:text-[20px] font-semibold">Recommended</h4>
             <SingleCityRecommendedProperty
               currentPropertyId={propertyId}
               city={data.city}
             />
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky bottom booking bar */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-[999] transition-all duration-300 ${
+          showStickyBook
+            ? "translate-y-0 opacity-100"
+            : "translate-y-full opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-center">
+            <button
+              onClick={scrollToBooking}
+              className="w-full max-w-xl bg-primary hover:bg-primary/90 active:scale-[0.98] text-white font-bold text-lg sm:text-xl px-8 py-4 sm:py-5 rounded-full transition-all shadow-lg shadow-primary/25 flex flex-col items-center gap-1"
+            >
+              <span>Check availability</span>
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMessageDialogOpen(true);
+                }}
+                className="text-sm font-medium text-white/80 hover:text-white underline underline-offset-2 decoration-white/40 hover:decoration-white transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-3.5 h-3.5 animate-bounce" />
+                or chat with host
+              </span>
+            </button>
           </div>
         </div>
       </div>

@@ -28,6 +28,11 @@ export default ({
   checkOutDate,
   propertyId,
   cautionFee,
+  typeOfProperty = "",
+  monthlyPrice = 0,
+  minStayMonths = 3,
+  maxStayMonths = 6,
+  longStayDiscountPercent = 5,
 }: {
   propertyId: string;
   price: number;
@@ -37,14 +42,16 @@ export default ({
   checkInDate: Date;
   checkOutDate: Date;
   cautionFee: number;
+  typeOfProperty?: string;
+  monthlyPrice?: number;
+  minStayMonths?: number;
+  maxStayMonths?: number;
+  longStayDiscountPercent?: number;
 }) => {
   const ref = useRef(null);
 
   const userId = useSelector((state: RootState) => state.user?.me?.user?.id);
   const isLoggedIn = useSelector((state: RootState) => state?.user?.loggedIn);
-  const isUserProfileComplete = useSelector(
-    (state: RootState) => state.user.me.userProfileComplete
-  );
 
   const [calculator, setCalculator] = useState(() => ({
     price,
@@ -60,8 +67,9 @@ export default ({
   const router = useRouter();
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["get-credits"],
+    queryKey: ["get-credits", userId],
     queryFn: () => getTotalSojournCredits(userId),
+    enabled: !!isLoggedIn && !!userId,
   });
 
   const [deals, setDeals] = useState({
@@ -101,16 +109,23 @@ export default ({
     mutationFn: checkListingAvailability,
     onSuccess(data) {
       if (!data) {
-        toast("Listing message", {
-          description: "This listing is unvailable on the dates specified.",
-          action: {
-            label: "Ok",
-            onClick: () => console.log("Ok"),
-          },
+        toast("Unavailable", {
+          description: "This listing is unavailable on the dates specified.",
+          closeButton: true,
         });
       } else {
         setOpenSummary(true);
       }
+    },
+    onError(error: any) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Could not check availability. Please try again.";
+      toast("Availability check failed", {
+        description: msg,
+        closeButton: true,
+      });
     },
   });
 
@@ -129,20 +144,44 @@ export default ({
 
   const symbol = currency === "NGN" ? "₦" : "$";
 
-  const estimatedPrice = symbol === "$" ? price / exchangeRate : price;
+  const isTownHouse = typeOfProperty === "town-house";
+  const stayMonths = Math.ceil(howManyNights / 30);
+  const numericPrice = typeof price === "string" ? parseFloat(price) || 0 : price;
+  const numericMonthlyPrice = typeof monthlyPrice === "string" ? parseFloat(monthlyPrice as any) || 0 : monthlyPrice;
+  const numericCautionFee = typeof cautionFee === "string" ? parseFloat(cautionFee as any) || 0 : cautionFee;
+  const effectiveMonthlyPrice =
+    symbol === "$" ? numericMonthlyPrice / exchangeRate : numericMonthlyPrice;
+
+  const estimatedPrice = symbol === "$" ? numericPrice / exchangeRate : numericPrice;
+
+  const baseStayTotal =
+    isTownHouse && monthlyPrice > 0
+      ? effectiveMonthlyPrice * stayMonths
+      : estimatedPrice * howManyNights;
+
+  const longStayDiscount =
+    !isTownHouse && howManyNights >= 7 && longStayDiscountPercent > 0
+      ? Math.round((longStayDiscountPercent / 100) * baseStayTotal)
+      : 0;
+
+  const stayTotal = baseStayTotal - longStayDiscount;
 
   const estimatedCautionFee =
-    symbol === "$" ? cautionFee / exchangeRate : cautionFee;
+    symbol === "$" ? numericCautionFee / exchangeRate : numericCautionFee;
 
-  const estimatedVat = (7.5 / 100) * (estimatedPrice * howManyNights);
+  const estimatedVat = (7.5 / 100) * stayTotal;
 
-  const estimatedServiceFee = (10 / 100) * (estimatedPrice * howManyNights);
+  const estimatedServiceFee = (10 / 100) * stayTotal;
   const [fees, setFee] = useState({
     serviceFee: estimatedServiceFee,
     vat: estimatedVat,
     maintenanceFee: 0,
     damageFee: estimatedCautionFee,
   });
+
+  useEffect(() => {
+    setCalculator((prev) => ({ ...prev, price }));
+  }, [price]);
 
   const checkInDateString = calculator.checkInDate.toDateString();
   const checkOutDateString = calculator.checkOutDate.toDateString();
@@ -197,13 +236,8 @@ export default ({
 
   async function checkAvailability(e: MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    if (!isLoggedIn) {
-      toast("Login Error.", {
-        description: "You need to be logged in.",
-        closeButton: true,
-      });
-      return;
-    }
+
+
     const numberOfDaysBetweenDates = numberOfNights(
       calculator.checkInDate,
       calculator.checkOutDate
@@ -230,6 +264,30 @@ export default ({
       });
       return;
     }
+
+    if (isTownHouse) {
+      const months = Math.ceil(numberOfDaysBetweenDates / 30);
+      if (months < minStayMonths) {
+        toast("Stay too short", {
+          description: `This property requires a minimum stay of ${minStayMonths} month(s).`,
+          closeButton: true,
+        });
+        return;
+      }
+      if (months > maxStayMonths) {
+        toast("Stay too long", {
+          description: `This property allows a maximum stay of ${maxStayMonths} month(s).`,
+          closeButton: true,
+        });
+        return;
+      }
+    }
+
+    if (!isLoggedIn) {
+      setOpenSummary(true);
+      return;
+    }
+
     availabilityMutation.mutate(queryString);
   }
 
@@ -251,10 +309,10 @@ export default ({
   useEffect(() => {
     setFee((prevState) => ({
       ...prevState,
-      serviceFee: Math.round((10 / 100) * (price * howManyNights)),
-      vat: Math.round((7.5 / 100) * (price * howManyNights)),
+      serviceFee: Math.round((10 / 100) * stayTotal),
+      vat: Math.round((7.5 / 100) * stayTotal),
     }));
-  }, [calculator.checkInDate, calculator.checkOutDate]);
+  }, [calculator.checkInDate, calculator.checkOutDate, stayTotal]);
 
   useEffect(() => {
     if (data) {
@@ -264,7 +322,7 @@ export default ({
 
   return (
     <form
-      className={`w-full min-h-[300px] shadow-md bg-white rounded-xl p-4 md:w-5/6  ${
+      className={`w-full min-h-[300px] shadow-md bg-white rounded-xl p-3 sm:p-4 md:w-5/6  ${
         openSummary ? "lg:min-h-[250px]" : "lg:h-[250px]"
       } `}
     >
@@ -275,13 +333,27 @@ export default ({
           ) : (
             <div className="flex items-center">
               <span className="font-bold text-xl font-inter">
-                {`${symbol}${estimatedPrice.toFixed(2)}`}
+                {isTownHouse && monthlyPrice > 0
+                  ? `${symbol}${effectiveMonthlyPrice.toFixed(2)}`
+                  : `${symbol}${estimatedPrice.toFixed(2)}`}
               </span>
-              <span className="text-sm">/night</span>
+              <span className="text-sm">
+                {isTownHouse && monthlyPrice > 0 ? "/month" : "/night"}
+              </span>
             </div>
           )}
           <Rating />
         </div>
+        {isTownHouse && (
+          <p className="text-xs text-gray-500 -mt-3 mb-2">
+            Min {minStayMonths} months · Max {maxStayMonths} months
+          </p>
+        )}
+        {!isTownHouse && longStayDiscountPercent > 0 && (
+          <p className="text-xs text-emerald-600 -mt-3 mb-2">
+            {longStayDiscountPercent}% off for stays of 7+ days
+          </p>
+        )}
         <div className="w-full min-h-[120px] my-5 border border-gray-300 rounded-md">
           <div className="w-full h-[80px] flex border-b border-b-gray-300 lg:h-[60px]">
             <Popover>
@@ -298,37 +370,29 @@ export default ({
               <PopoverContent className="w-auto">
                 <Calendar
                   onSelect={(date) => {
+                    if (!date) return;
                     const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const selected = new Date(date as Date);
+                    selected.setHours(0, 0, 0, 0);
 
-                    const isNumberOfDaysBetweenCheckInDatesValid =
-                      numberOfNights(
-                        calculator.checkInDate,
-                        calculator.checkOutDate
-                      ) >= 1;
-
-                    const isNumberOfDaysBetweenCheckInDateAndTodayValid =
-                      numberOfNights(today, calculator.checkInDate) < 1;
-                    if (!isNumberOfDaysBetweenCheckInDatesValid) {
-                      toast(
-                        "You cannot select a date later than your checkout date.",
-                        {
-                          action: {
-                            label: "Ok",
-                            onClick() {
-                              return;
-                            },
-                          },
-                        }
-                      );
-                    } else if (isNumberOfDaysBetweenCheckInDateAndTodayValid) {
+                    if (selected < today) {
                       toast("You cannot select a date earlier than today.", {
                         action: {
                           label: "Ok",
-                          onClick() {
-                            return;
-                          },
+                          onClick() { return; },
                         },
                       });
+                    } else if (selected >= new Date(new Date(calculator.checkOutDate).setHours(0, 0, 0, 0))) {
+                      toast(
+                        "You cannot select a date later than or equal to your checkout date.",
+                        {
+                          action: {
+                            label: "Ok",
+                            onClick() { return; },
+                          },
+                        }
+                      );
                     } else {
                       setCalculator((prevState) => ({
                         ...prevState,
@@ -413,14 +477,14 @@ export default ({
                 </span>
               )}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-sm truncate w-[60px] cursor-pointer capitalize">
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-semibold text-xs sm:text-sm truncate flex-1 cursor-pointer capitalize">
                 {adultsString}
               </span>
-              <span className="font-semibold text-sm truncate  w-[60px] cursor-pointer capitalize">
+              <span className="font-semibold text-xs sm:text-sm truncate flex-1 cursor-pointer capitalize">
                 {childrenString}
               </span>
-              <span className="font-semibold text-sm truncate  w-[60px] cursor-pointer capitalize">
+              <span className="font-semibold text-xs sm:text-sm truncate flex-1 cursor-pointer capitalize">
                 {infantsString}
               </span>
             </div>
@@ -453,23 +517,45 @@ export default ({
           >
             <div className="w-full flex items-center justify-between">
               <div className="flex items-center space-x-1">
-                <span className="text-sm">{`${symbol}${estimatedPrice.toFixed(
-                  2
-                )}`}</span>
-                <X color="black" size={14} />
-                <span className="text-sm">{howManyNights}</span>
-                <span className="text-sm">
-                  {howManyNights > 1 ? "nights" : "night"}
-                </span>
+                {isTownHouse && monthlyPrice > 0 ? (
+                  <>
+                    <span className="text-sm">{`${symbol}${effectiveMonthlyPrice.toFixed(2)}`}</span>
+                    <X color="black" size={14} />
+                    <span className="text-sm">{stayMonths}</span>
+                    <span className="text-sm">
+                      {stayMonths > 1 ? "months" : "month"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm">{`${symbol}${estimatedPrice.toFixed(2)}`}</span>
+                    <X color="black" size={14} />
+                    <span className="text-sm">{howManyNights}</span>
+                    <span className="text-sm">
+                      {howManyNights > 1 ? "nights" : "night"}
+                    </span>
+                  </>
+                )}
               </div>
               <span className="text-sm font-inter">
-                {`${symbol}${(estimatedPrice * howManyNights)
-                  .toFixed(2)
-                  .toLocaleString()}`}
+                {`${symbol}${baseStayTotal.toFixed(2)}`}
               </span>
             </div>
+            {longStayDiscount > 0 && (
+              <div className="w-full flex items-center justify-between text-emerald-600">
+                <span className="text-sm">Long-stay discount ({longStayDiscountPercent}%)</span>
+                <span className="text-sm font-inter">
+                  -{symbol}{longStayDiscount.toFixed(2)}
+                </span>
+              </div>
+            )}
             <div className="w-full flex items-center justify-between">
-              <div className="flex text-sm items-center">Service fee</div>
+              <div className="flex text-sm flex-col items-start">
+                <span>Service fee (10%)</span>
+                <span className="text-xs text-gray-500">
+                  2% back as Sojourn Credits after booking
+                </span>
+              </div>
               <div className="text-sm font-inter">
                 {symbol}
                 {estimatedServiceFee.toFixed(2)}
@@ -495,64 +581,68 @@ export default ({
               </div>
             </div>
 
-            <div className="w-full flex items-center justify-between">
-              <div className="w-full flex items-center  space-x-2">
-                <label htmlFor="discount" className="text-sm">
-                  Discount code
-                </label>
-                <Switch
-                  id="discount"
-                  checked={calculator.openDiscount}
-                  onCheckedChange={(checked) => {
-                    setCalculator((prevState) => ({
-                      ...prevState,
-                      openDiscount: checked,
-                    }));
-                  }}
-                />
-              </div>
-              {calculator.openDiscount ? (
-                isLoading ? (
-                  <Spinner size={13} color="red" />
-                ) : (
-                  <input
-                    name="discountCode"
-                    onChange={handleDealChange}
-                    value={deals.discountCode}
-                    className="px-1 py-1 outline-none border border-black rounded-md w-[80px] text-md"
-                  />
-                )
-              ) : null}
-            </div>
-            <div className="w-full flex items-center justify-between">
-              <div className="w-full flex items-center  space-x-2">
-                <label htmlFor="credits" className="text-sm">
-                  Sojourn credits
-                </label>
-                <Switch
-                  id="credits"
-                  checked={calculator.openCredits}
-                  onCheckedChange={(checked) => {
-                    setCalculator((prevState) => ({
-                      ...prevState,
-                      openCredits: checked,
-                    }));
-                  }}
-                />
-              </div>
-              {calculator.openCredits ? (
-                isLoading ? (
-                  <Spinner size={13} color="red" />
-                ) : (
-                  <input
-                    name="credits"
-                    onChange={handleDealChange}
-                    value={deals.credits}
-                    className="px-1 py-1 outline-none border border-black rounded-md w-[80px] text-md"
-                  />
-                )
-              ) : null}
-            </div>
+            {isLoggedIn && (
+              <>
+                <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center  space-x-2">
+                    <label htmlFor="discount" className="text-sm">
+                      Discount code
+                    </label>
+                    <Switch
+                      id="discount"
+                      checked={calculator.openDiscount}
+                      onCheckedChange={(checked) => {
+                        setCalculator((prevState) => ({
+                          ...prevState,
+                          openDiscount: checked,
+                        }));
+                      }}
+                    />
+                  </div>
+                  {calculator.openDiscount ? (
+                    isLoading ? (
+                      <Spinner size={13} color="red" />
+                    ) : (
+                      <input
+                        name="discountCode"
+                        onChange={handleDealChange}
+                        value={deals.discountCode}
+                        className="px-1 py-1 outline-none border border-black rounded-md w-[80px] text-md"
+                      />
+                    )
+                  ) : null}
+                </div>
+                <div className="w-full flex items-center justify-between">
+                  <div className="w-full flex items-center  space-x-2">
+                    <label htmlFor="credits" className="text-sm">
+                      Sojourn credits
+                    </label>
+                    <Switch
+                      id="credits"
+                      checked={calculator.openCredits}
+                      onCheckedChange={(checked) => {
+                        setCalculator((prevState) => ({
+                          ...prevState,
+                          openCredits: checked,
+                        }));
+                      }}
+                    />
+                  </div>
+                  {calculator.openCredits ? (
+                    isLoading ? (
+                      <Spinner size={13} color="red" />
+                    ) : (
+                      <input
+                        name="credits"
+                        onChange={handleDealChange}
+                        value={deals.credits}
+                        className="px-1 py-1 outline-none border border-black rounded-md w-[80px] text-md"
+                      />
+                    )
+                  ) : null}
+                </div>
+              </>
+            )}
             <div className="w-full flex items-center justify-between border-t py-2">
               <div className="flex text-sm items-center font-bold">total</div>
               <div className="text-sm font-inter font-bold">
@@ -563,7 +653,7 @@ export default ({
                   estimatedServiceFee +
                   estimatedVat +
                   addOrRemoveDeals +
-                  estimatedPrice * howManyNights
+                  stayTotal
                 )
                   .toFixed(2)
                   .toLocaleString()}
@@ -575,26 +665,6 @@ export default ({
           <button
             onClick={(e) => {
               e.preventDefault();
-              if (!isUserProfileComplete) {
-                toast("Incomplete profile", {
-                  description: (
-                    <p className="text-[12px] font-semibold">
-                      Please complete your{" "}
-                      <Link
-                        className="text-primary underline"
-                        prefetch
-                        href="/dashboard/profile"
-                      >
-                        profile
-                      </Link>
-                      {" \r"}
-                      before you can reserve this listing
-                    </p>
-                  ),
-                  closeButton: true,
-                });
-                return;
-              }
               router.push(checkoutQueryString);
             }}
             className="w-full bg-primary text-white text-sm rounded-full p-2 flex items-center justify-center"
@@ -603,6 +673,7 @@ export default ({
           </button>
         ) : (
           <button
+            data-check-availability
             onClick={checkAvailability}
             className="w-full bg-primary text-white text-sm rounded-full p-2 flex items-center justify-center"
           >
