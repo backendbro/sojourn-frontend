@@ -1,507 +1,20 @@
-// // "use client";
-
-// // import Link from "next/link";
-// // import Image from "next/image";
-// // import { X, ChevronRight } from "lucide-react";
-// // import { numberOfNights } from "@/lib/utils";
-// // import { useEffect, useState } from "react";
-// // import { getPropertyById } from "@/http/api";
-
-// // interface ListingDetailsProps {
-// //   ticketData: any;
-// //   onClose: () => void;
-// // }
-
-// // export default function ListingDetails({
-// //   ticketData,
-// //   onClose,
-// // }: ListingDetailsProps) {
-// //   const [property, setProperty] = useState<any>(null);
-
-// //   useEffect(() => {
-// //     if (!ticketData?.propertyId) return;
-
-// //     const fetchProperty = async () => {
-// //       try {
-// //         const response = await getPropertyById(ticketData.propertyId);
-// //         setProperty(response);
-// //       } catch (error) {
-// //         console.error("❌ Failed to fetch property:", error);
-// //       }
-// //     };
-
-// //     fetchProperty();
-// //   }, [ticketData]);
-
-// //   if (!ticketData) return null;
-
-// //   const {
-// //     propertyId,
-// //     propertyPhoto,
-// //     propertyTitle,
-// //     location,
-// //     price,
-// //     amountPaid,
-// //     cautionFee,
-// //     bookingCheckInDate,
-// //     bookingCheckOutDate,
-// //     hostFullName,
-// //     hostPhoto,
-// //   } = ticketData;
-
-// //   // Fix for amenities (API returns "ammenities")
-// //   const amenities =
-// //     property?.ammenities ||
-// //     property?.amenities ||
-// //     property?.data?.amenities ||
-// //     [];
-
-// //   const nights =
-// //     bookingCheckInDate && bookingCheckOutDate
-// //       ? numberOfNights(
-// //           new Date(bookingCheckInDate),
-// //           new Date(bookingCheckOutDate),
-// //         )
-// //       : undefined;
-
-// //   return (
-// //     <div className="w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg animate-slide-in">
-// //       <div className="flex-1 overflow-y-auto">
-// //         {/* Property Image */}
-// //         <div className="p-4">
-// //           <div className="relative w-full h-64 bg-gray-200 rounded-lg border-4 border-white shadow-xl overflow-hidden group">
-// //             {propertyPhoto ? (
-// //               <Image
-// //                 src={propertyPhoto}
-// //                 alt={propertyTitle}
-// //                 fill
-// //                 className="object-cover transition-transform duration-300 group-hover:scale-105"
-// //               />
-// //             ) : (
-// //               <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-// //                 Property Image
-// //               </div>
-// //             )}
-
-// //             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
-
-// //             <Link
-// //               href={`/properties/${propertyId}`}
-// //               target="_blank"
-// //               className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition shadow-md z-10"
-// //             >
-// //               View Listing
-// //             </Link>
-
-// //             <button
-// //               onClick={onClose}
-// //               className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition z-20 shadow-md"
-// //             >
-// //               <X className="w-5 h-5 text-gray-700" />
-// //             </button>
-// //           </div>
-// //         </div>
-
-// //         {/* Property Title */}
-// //         <div className="p-4 border-b border-gray-200">
-// //           <h2 className="font-bold text-lg text-gray-900 mb-1">
-// //             {propertyTitle}
-// //           </h2>
-// //           {location && (
-// //             <p className="text-sm text-gray-600 capitalize">{location}</p>
-// //           )}
-// //         </div>
-
-// //         {/* ✅ NEW PROPERTY DETAILS CARD */}
-// //         {property && (
-// //           <div className="p-4 border-b border-gray-200">
-// //             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-// //               Property Details
-// //             </h4>
-
-// //             <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
-// //               <div className="grid grid-cols-2 gap-4">
-// //                 {property.numberOfRooms !== undefined && (
-// //                   <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
-// //                     <p className="text-xs text-blue-600 font-medium">Rooms</p>
-// //                     <p className="text-sm font-semibold text-gray-900">
-// //                       {property.numberOfRooms}
-// //                     </p>
-// //                   </div>
-// //                 )}
-
-// //                 {property.maxNumberOfPeople !== undefined && (
-// //                   <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-// //                     <p className="text-xs text-emerald-600 font-medium">
-// //                       Max Guests
-// //                     </p>
-// //                     <p className="text-sm font-semibold text-gray-900">
-// //                       {property.maxNumberOfPeople}
-// //                     </p>
-// //                   </div>
-// //                 )}
-
-// //                 {property.typeOfProperty && (
-// //                   <div className="p-3 rounded-xl bg-purple-50 border border-purple-100">
-// //                     <p className="text-xs text-purple-600 font-medium">Type</p>
-// //                     <p className="text-sm font-semibold text-gray-900 capitalize">
-// //                       {property.typeOfProperty}
-// //                     </p>
-// //                   </div>
-// //                 )}
-
-// //                 {amenities.length > 0 && (
-// //                   <div className="p-3 rounded-xl bg-amber-50 border border-amber-100">
-// //                     <p className="text-xs text-amber-600 font-medium">
-// //                       Amenities
-// //                     </p>
-// //                     <p className="text-sm font-semibold text-gray-900">
-// //                       {amenities.length}
-// //                     </p>
-// //                   </div>
-// //                 )}
-// //               </div>
-
-// //               {/* Amenities List */}
-// //               {amenities.length > 0 && (
-// //                 <div className="pt-3 border-t border-gray-200">
-// //                   <p className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-// //                     Amenities
-// //                   </p>
-
-// //                   <div className="flex flex-wrap gap-2">
-// //                     {amenities.map((amenity: string, index: number) => (
-// //                       <div
-// //                         key={index}
-// //                         className="px-2.5 py-1.5 bg-gray-100 rounded-full border border-gray-200"
-// //                       >
-// //                         <span className="text-xs text-gray-700 font-medium capitalize">
-// //                           {amenity}
-// //                         </span>
-// //                       </div>
-// //                     ))}
-// //                   </div>
-// //                 </div>
-// //               )}
-// //             </div>
-// //           </div>
-// //         )}
-
-// //         {/* Pricing */}
-// //         {price !== undefined && (
-// //           <div className="p-4 border-b border-gray-200">
-// //             <div className="flex justify-between items-baseline">
-// //               <div>
-// //                 <p className="text-xs text-gray-500 mb-1">Price per night</p>
-// //                 <p className="text-2xl font-bold text-gray-900">
-// //                   ₦{Number(price).toLocaleString()}
-// //                 </p>
-// //               </div>
-// //               {nights && (
-// //                 <p className="text-sm text-gray-500">
-// //                   × {nights} {nights === 1 ? "night" : "nights"}
-// //                 </p>
-// //               )}
-// //             </div>
-// //           </div>
-// //         )}
-
-// //         {/* Payment Details */}
-// //         {amountPaid && (
-// //           <div className="p-4 border-b border-gray-200 space-y-3">
-// //             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-// //               Payment details
-// //             </h4>
-
-// //             <div className="flex justify-between">
-// //               <span className="text-sm text-gray-600">Total</span>
-// //               <span className="font-semibold">
-// //                 ₦{Number(amountPaid).toLocaleString()}
-// //               </span>
-// //             </div>
-
-// //             <div className="flex justify-between">
-// //               <span className="text-sm text-gray-600">Price</span>
-// //               <span className="font-semibold">
-// //                 ₦{Number(price).toLocaleString()}{" "}
-// //                 <span className="text-xs">/night</span>
-// //               </span>
-// //             </div>
-
-// //             <div className="flex justify-between">
-// //               <span className="text-sm text-gray-600">Caution fee</span>
-// //               <span className="font-semibold">
-// //                 ₦{Number(cautionFee).toLocaleString()}
-// //               </span>
-// //             </div>
-
-// //             <div className="flex justify-between">
-// //               <span className="text-sm text-gray-600">Duration</span>
-// //               <span className="font-semibold">{nights} nights</span>
-// //             </div>
-// //           </div>
-// //         )}
-
-// //         {/* Guest */}
-// //         <div className="p-4 border-b border-gray-200">
-// //           <p className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-// //             Guest
-// //           </p>
-
-// //           <div className="flex items-center gap-3">
-// //             {hostPhoto ? (
-// //               <Image
-// //                 src={hostPhoto}
-// //                 alt={hostFullName}
-// //                 width={48}
-// //                 height={48}
-// //                 className="w-12 h-12 rounded-full object-cover"
-// //               />
-// //             ) : (
-// //               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
-// //                 {hostFullName?.charAt(0) || "?"}
-// //               </div>
-// //             )}
-
-// //             <div>
-// //               <p className="font-semibold text-sm text-gray-900">
-// //                 {hostFullName}
-// //               </p>
-// //               <p className="text-xs text-gray-500">Guest</p>
-// //             </div>
-// //           </div>
-// //         </div>
-
-// //         {/* Cancellation */}
-// //         <div className="p-4">
-// //           <Link href="/terms-of-use#refund-policy" target="_blank">
-// //             <button className="flex items-center justify-between w-full text-left group">
-// //               <div>
-// //                 <p className="text-xs text-gray-500 mb-1">
-// //                   Cancellation policy
-// //                 </p>
-// //                 <p className="text-sm text-gray-700 font-medium">
-// //                   {bookingCheckInDate ? "Flexible" : "Standard"}
-// //                 </p>
-// //               </div>
-// //               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition" />
-// //             </button>
-// //           </Link>
-// //         </div>
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-// "use client";
-
-// import Link from "next/link";
-// import Image from "next/image";
-// import { X, ChevronRight } from "lucide-react";
-// import { numberOfNights } from "@/lib/utils";
-// import { useEffect, useState } from "react";
-// import { getPropertyById } from "@/http/api";
-
-// interface ListingDetailsProps {
-//   ticketData: any;
-//   onClose: () => void;
-// }
-
-// export default function ListingDetails({
-//   ticketData,
-//   onClose,
-// }: ListingDetailsProps) {
-//   const [property, setProperty] = useState<any>(null);
-
-//   useEffect(() => {
-//     if (!ticketData?.propertyId) return;
-
-//     const fetchProperty = async () => {
-//       try {
-//         const response = await getPropertyById(ticketData.propertyId);
-//         setProperty(response);
-//       } catch (error) {
-//         console.error("Failed to fetch property:", error);
-//       }
-//     };
-
-//     fetchProperty();
-//   }, [ticketData]);
-
-//   if (!ticketData) return null;
-
-//   const {
-//     propertyId,
-//     propertyPhoto,
-//     propertyTitle,
-//     location,
-//     price,
-//     amountPaid,
-//     cautionFee,
-//     bookingCheckInDate,
-//     bookingCheckOutDate,
-//     hostFullName,
-//     hostPhoto,
-//   } = ticketData;
-
-//   const amenities =
-//     property?.ammenities ||
-//     property?.amenities ||
-//     property?.data?.amenities ||
-//     [];
-
-//   const nights =
-//     bookingCheckInDate && bookingCheckOutDate
-//       ? numberOfNights(
-//           new Date(bookingCheckInDate),
-//           new Date(bookingCheckOutDate),
-//         )
-//       : undefined;
-
-//   return (
-//     <div className="w-full md:w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg">
-//       <div className="flex-1 overflow-y-auto">
-//         {/* Image */}
-//         <div className="p-4">
-//           <div className="relative w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
-//             {propertyPhoto ? (
-//               <Image
-//                 src={propertyPhoto}
-//                 alt={propertyTitle}
-//                 fill
-//                 className="object-cover"
-//               />
-//             ) : (
-//               <div className="w-full h-full flex items-center justify-center">
-//                 Property Image
-//               </div>
-//             )}
-
-//             <Link
-//               href={`/properties/${propertyId}`}
-//               target="_blank"
-//               className="absolute top-3 left-3 px-3 py-1.5 bg-white text-sm rounded-md shadow"
-//             >
-//               View Listing
-//             </Link>
-
-//             <button
-//               onClick={onClose}
-//               className="absolute top-3 right-3 p-2 bg-white rounded-full shadow"
-//             >
-//               <X size={18} />
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* Title */}
-//         <div className="p-4 border-b">
-//           <h2 className="font-bold text-lg">{propertyTitle}</h2>
-//           <p className="text-sm text-gray-600">{location}</p>
-//         </div>
-
-//         {/* Pricing */}
-//         {price && (
-//           <div className="p-4 border-b">
-//             <p className="text-xs text-gray-500">Price per night</p>
-//             <p className="text-xl font-bold">
-//               ₦{Number(price).toLocaleString()}
-//             </p>
-//             {nights && (
-//               <p className="text-sm text-gray-500 mt-1">
-//                 {nights} nights
-//               </p>
-//             )}
-//           </div>
-//         )}
-
-//         {/* Payment */}
-//         {amountPaid && (
-//           <div className="p-4 border-b space-y-2">
-//             <div className="flex justify-between">
-//               <span>Total</span>
-//               <span>₦{Number(amountPaid).toLocaleString()}</span>
-//             </div>
-//             <div className="flex justify-between">
-//               <span>Caution</span>
-//               <span>₦{Number(cautionFee).toLocaleString()}</span>
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Guest */}
-//         <div className="p-4 border-b">
-//           <p className="text-xs text-gray-500 mb-2">Guest</p>
-//           <div className="flex items-center gap-3">
-//             {hostPhoto ? (
-//               <Image
-//                 src={hostPhoto}
-//                 alt={hostFullName}
-//                 width={40}
-//                 height={40}
-//                 className="rounded-full object-cover"
-//               />
-//             ) : (
-//               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-//                 {hostFullName?.charAt(0)}
-//               </div>
-//             )}
-//             <p className="font-medium">{hostFullName}</p>
-//           </div>
-//         </div>
-
-//         {/* Cancellation */}
-//         <div className="p-4">
-//           <Link href="/terms-of-use#refund-policy" target="_blank">
-//             <button className="flex justify-between w-full">
-//               <span>Cancellation policy</span>
-//               <ChevronRight size={16} />
-//             </button>
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
-import { X, ChevronRight, Eye, EyeOff } from "lucide-react";
+import { X, ChevronRight, Clock, CheckCircle, ShieldCheck, ShieldBan, BedDouble, Bath, Users } from "lucide-react";
+import DefaultAvatar from "@/components/ui/default-avatar";
 import { numberOfNights } from "@/lib/utils";
-import { useEffect, useState } from "react";
-import { getPropertyById } from "@/http/api";
 
 interface ListingDetailsProps {
   ticketData: any;
   onClose: () => void;
-  isVisible?: boolean;
-  onToggle?: () => void;
 }
 
 export default function ListingDetails({
   ticketData,
   onClose,
-  isVisible = true,
-  onToggle,
 }: ListingDetailsProps) {
-  const [property, setProperty] = useState<any>(null);
-
-  useEffect(() => {
-    if (!ticketData?.propertyId) return;
-
-    const fetchProperty = async () => {
-      try {
-        const response = await getPropertyById(ticketData.propertyId);
-        setProperty(response);
-      } catch (error) {
-        console.error("❌ Failed to fetch property:", error);
-      }
-    };
-
-    fetchProperty();
-  }, [ticketData]);
-
   if (!ticketData) return null;
 
   const {
@@ -516,14 +29,14 @@ export default function ListingDetails({
     bookingCheckOutDate,
     hostFullName,
     hostPhoto,
+    hostVerified,
+    propertyCheckInTime,
+    propertyCheckOutTime,
+    ammenities,
+    houseRules,
+    numberOfRooms,
+    maxNumberOfPeople,
   } = ticketData;
-
-  // Fix for amenities (API returns "ammenities")
-  const amenities =
-    property?.ammenities ||
-    property?.amenities ||
-    property?.data?.amenities ||
-    [];
 
   const nights =
     bookingCheckInDate && bookingCheckOutDate
@@ -534,39 +47,7 @@ export default function ListingDetails({
       : undefined;
 
   return (
-    <div className="w-full md:w-80 bg-white flex flex-col h-full shadow-lg border-l border-gray-200 relative">
-      {/* Header with toggle button for mobile/desktop */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 md:hidden">
-        <h3 className="font-semibold text-gray-900">Listing Details</h3>
-        <div className="flex items-center gap-2">
-          {onToggle && (
-            <button
-              onClick={onToggle}
-              className="p-2 hover:bg-gray-100 rounded-full transition"
-              title={isVisible ? "Hide details" : "Show details"}
-            >
-              {isVisible ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          )}
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition"
-            title="Close"
-          >
-            <X className="w-5 h-5 text-gray-700" />
-          </button>
-        </div>
-      </div>
-
-      {/* Desktop close button - always visible */}
-      <button
-        onClick={onClose}
-        className="hidden md:flex absolute top-4 right-4 p-2 bg-white/90 hover:bg-white rounded-full transition z-20 shadow-md"
-        title="Close listing details"
-      >
-        <X className="w-5 h-5 text-gray-700" />
-      </button>
-
+    <div className="w-80 border-l border-gray-200 bg-white flex flex-col h-full shadow-lg animate-slide-in">
       <div className="flex-1 overflow-y-auto">
         {/* Property Image */}
         <div className="p-4">
@@ -579,20 +60,52 @@ export default function ListingDetails({
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white">
-                Property Image
+              <div
+                className="w-full h-full bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                }}
+              >
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <svg
+                      className="w-16 h-16 mx-auto mb-2 opacity-80"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
+                    </svg>
+                    <p className="text-sm font-medium opacity-90">
+                      Property Image
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
-
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none"></div>
-
             <Link
               href={`/properties/${propertyId}`}
               target="_blank"
-              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 transition shadow-md z-10"
+              className="absolute top-3 left-3 px-3 py-1.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 z-10"
             >
               View Listing
             </Link>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200 active:scale-95 z-20 shadow-md hover:shadow-lg"
+              aria-label="Close listing details"
+            >
+              <X className="w-5 h-5 text-gray-700" />
+            </button>
           </div>
         </div>
 
@@ -607,76 +120,99 @@ export default function ListingDetails({
         </div>
 
         {/* Property Details Card */}
-        {property && (
+        <div className="p-4 border-b border-gray-200">
+          <div className="rounded-xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 shadow-sm overflow-hidden">
+            {/* Room Info Row */}
+            <div className="grid grid-cols-3 divide-x divide-gray-100 p-3">
+              <div className="flex flex-col items-center gap-1.5 px-1">
+                <div className="listing-icon-glow listing-icon-glow--blue">
+                  <BedDouble className="w-4 h-4 text-blue-500" />
+                </div>
+                <p className="text-lg font-bold text-gray-900">{numberOfRooms || "—"}</p>
+                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Bedrooms</p>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 px-1">
+                <div className="listing-icon-glow listing-icon-glow--purple">
+                  <Bath className="w-4 h-4 text-purple-500" />
+                </div>
+                <p className="text-lg font-bold text-gray-900">{numberOfRooms ? Math.max(1, Math.ceil(numberOfRooms / 2)) : "—"}</p>
+                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Bathrooms</p>
+              </div>
+              <div className="flex flex-col items-center gap-1.5 px-1">
+                <div className="listing-icon-glow listing-icon-glow--amber">
+                  <Users className="w-4 h-4 text-amber-500" />
+                </div>
+                <p className="text-lg font-bold text-gray-900">{maxNumberOfPeople || "—"}</p>
+                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">Max guests</p>
+              </div>
+            </div>
+
+            {/* Schedule Row */}
+            {(propertyCheckInTime || propertyCheckOutTime) && (
+              <>
+                <div className="h-px bg-gray-100" />
+                <div className="grid grid-cols-2 divide-x divide-gray-100 p-3">
+                  {propertyCheckInTime && (
+                    <div className="flex items-center gap-2 px-1">
+                      <div className="listing-icon-glow listing-icon-glow--emerald">
+                        <Clock className="w-3.5 h-3.5 text-emerald-500" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wide">Check-in</p>
+                        <p className="text-xs font-semibold text-gray-900">{propertyCheckInTime}</p>
+                      </div>
+                    </div>
+                  )}
+                  {propertyCheckOutTime && (
+                    <div className="flex items-center gap-2 px-1">
+                      <div className="listing-icon-glow listing-icon-glow--rose">
+                        <Clock className="w-3.5 h-3.5 text-rose-500" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wide">Check-out</p>
+                        <p className="text-xs font-semibold text-gray-900">{propertyCheckOutTime}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Amenities */}
+        {ammenities?.length > 0 && (
           <div className="p-4 border-b border-gray-200">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-              Property Details
+              Amenities
             </h4>
+            <div className="flex flex-wrap gap-1.5">
+              {ammenities.map((item: string, idx: number) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-50 border border-gray-100 text-xs font-medium text-gray-700 capitalize shadow-sm"
+                >
+                  <CheckCircle className="w-3 h-3 text-emerald-500" />
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
-            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                {property.numberOfRooms !== undefined && (
-                  <div className="p-3 rounded-xl bg-blue-50 border border-blue-100">
-                    <p className="text-xs text-blue-600 font-medium">Rooms</p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {property.numberOfRooms}
-                    </p>
-                  </div>
-                )}
-
-                {property.maxNumberOfPeople !== undefined && (
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                    <p className="text-xs text-emerald-600 font-medium">
-                      Max Guests
-                    </p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {property.maxNumberOfPeople}
-                    </p>
-                  </div>
-                )}
-
-                {property.typeOfProperty && (
-                  <div className="p-3 rounded-xl bg-purple-50 border border-purple-100">
-                    <p className="text-xs text-purple-600 font-medium">Type</p>
-                    <p className="text-sm font-semibold text-gray-900 capitalize">
-                      {property.typeOfProperty}
-                    </p>
-                  </div>
-                )}
-
-                {amenities.length > 0 && (
-                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-100">
-                    <p className="text-xs text-amber-600 font-medium">
-                      Amenities
-                    </p>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {amenities.length}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Amenities List */}
-              {amenities.length > 0 && (
-                <div className="pt-3 border-t border-gray-200">
-                  <p className="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">
-                    Amenities
-                  </p>
-
-                  <div className="flex flex-wrap gap-2">
-                    {amenities.map((amenity: string, index: number) => (
-                      <div
-                        key={index}
-                        className="px-2.5 py-1.5 bg-gray-100 rounded-full border border-gray-200"
-                      >
-                        <span className="text-xs text-gray-700 font-medium capitalize">
-                          {amenity}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+        {/* House Rules */}
+        {houseRules?.length > 0 && (
+          <div className="p-4 border-b border-gray-200">
+            <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+              House rules
+            </h4>
+            <div className="space-y-1.5">
+              {houseRules.map((rule: string, idx: number) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <ShieldBan className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                  <span className="text-xs text-gray-600 capitalize">{rule}</span>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
@@ -688,7 +224,7 @@ export default function ListingDetails({
               <div>
                 <p className="text-xs text-gray-500 mb-1">Price per night</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ₦{Number(price).toLocaleString()}
+                  ₦{new Number(price).toLocaleString()}
                 </p>
               </div>
               {nights && (
@@ -700,35 +236,31 @@ export default function ListingDetails({
           </div>
         )}
 
-        {/* Payment Details */}
-        {amountPaid && (
+        {/* Payment details (if booking) */}
+        {!!amountPaid && (
           <div className="p-4 border-b border-gray-200 space-y-3">
             <h4 className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
               Payment details
             </h4>
-
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Total</span>
               <span className="font-semibold">
-                ₦{Number(amountPaid).toLocaleString()}
+                ₦{new Number(amountPaid).toLocaleString()}
               </span>
             </div>
-
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Price</span>
               <span className="font-semibold">
-                ₦{Number(price).toLocaleString()}{" "}
+                ₦{new Number(price).toLocaleString()}{" "}
                 <span className="text-xs">/night</span>
               </span>
             </div>
-
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Caution fee</span>
               <span className="font-semibold">
-                ₦{Number(cautionFee).toLocaleString()}
+                ₦{new Number(cautionFee).toLocaleString()}
               </span>
             </div>
-
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Duration</span>
               <span className="font-semibold">{nights} nights</span>
@@ -736,40 +268,104 @@ export default function ListingDetails({
           </div>
         )}
 
-        {/* Guest */}
+        {/* Check-in/out (if booking) */}
+        {bookingCheckInDate && bookingCheckOutDate && (
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex justify-between">
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Check in</p>
+                <p className="text-sm font-medium">{bookingCheckInDate}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 mb-1">Check out</p>
+                <p className="text-sm font-medium">{bookingCheckOutDate}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Host Information */}
         <div className="p-4 border-b border-gray-200">
           <p className="text-xs font-semibold text-gray-700 mb-3 uppercase tracking-wide">
-            Guest
+            Host
           </p>
-
           <div className="flex items-center gap-3">
             {hostPhoto ? (
-              <Image
-                src={hostPhoto}
-                alt={hostFullName}
-                width={48}
-                height={48}
-                className="w-12 h-12 rounded-full object-cover"
-              />
+              <div className="relative">
+                <Image
+                  src={hostPhoto}
+                  alt={hostFullName}
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 rounded-full object-cover shadow-sm ring-2 ring-offset-2 ring-gray-100"
+                />
+                {hostVerified && (
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
-                {hostFullName?.charAt(0) || "?"}
+              <div className="relative">
+                <DefaultAvatar size="md" />
+                {hostVerified && (
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <svg
+                      className="w-3 h-3 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
             )}
-
-            <div>
-              <p className="font-semibold text-sm text-gray-900">
-                {hostFullName}
-              </p>
-              <p className="text-xs text-gray-500">Guest</p>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-sm text-gray-900">
+                  {hostFullName}
+                </p>
+                {hostVerified && (
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-600 rounded-full">
+                    <ShieldCheck className="w-3 h-3 text-white" />
+                    <span className="text-xs font-medium text-white">
+                      Verified
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">Property host</p>
             </div>
           </div>
         </div>
 
-        {/* Cancellation */}
+        {/* Cancellation Policy */}
         <div className="p-4">
-          <Link href="/terms-of-use#refund-policy" target="_blank">
-            <button className="flex items-center justify-between w-full text-left group">
+          <Link
+            href="/terms-of-use#refund-policy"
+            target="_blank"
+            className="block"
+          >
+            <button className="flex items-center justify-between w-full text-left group p-2 -m-2 rounded-lg hover:bg-gray-50 transition-colors">
               <div>
                 <p className="text-xs text-gray-500 mb-1">
                   Cancellation policy
@@ -778,7 +374,7 @@ export default function ListingDetails({
                   {bookingCheckInDate ? "Flexible" : "Standard"}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition" />
+              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-transform group-hover:translate-x-1" />
             </button>
           </Link>
         </div>

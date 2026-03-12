@@ -9,20 +9,25 @@ import { Conversation, MessageType } from "@/types/messages";
 import Spinner from "@/components/svgs/Spinner";
 import { format } from "date-fns";
 import Image from "next/image";
+import DefaultAvatar from "@/components/ui/default-avatar";
 
 interface ChatWindowProps {
   conversation: Conversation;
+  isHostView?: boolean;
 }
 
-export default function ChatWindow({ conversation }: ChatWindowProps) {
+export default function ChatWindow({ conversation, isHostView = false }: ChatWindowProps) {
   const userId = useSelector((state: RootState) => state.user.me?.user?.id);
+  const hostId = useSelector((state: RootState) => state.user.me?.host?.id);
   const queryClient = useQueryClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
 
-  // Fetch messages for this ticket
+  const queryKeyPrefix = isHostView ? "ticket-messages-host" : "ticket-messages-user";
+  const listQueryKey = isHostView ? "messages-host" : "messages-user";
+
   const { data, isLoading } = useQuery({
-    queryKey: ["ticket-messages-user", conversation.id],
+    queryKey: [queryKeyPrefix, conversation.id],
     queryFn: () => getTicketMessages(conversation.id),
     enabled: !!conversation.id,
     refetchInterval: 200,
@@ -32,10 +37,9 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
     mutationFn: sendMessage,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["ticket-messages-user", conversation.id],
+        queryKey: [queryKeyPrefix, conversation.id],
       });
-      // Optionally update the last message in the conversation list
-      queryClient.invalidateQueries({ queryKey: ["messages-user"] });
+      queryClient.invalidateQueries({ queryKey: [listQueryKey] });
     },
   });
 
@@ -51,12 +55,13 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
     e.preventDefault();
     if (!messageText.trim()) return;
 
+    const senderId = isHostView ? hostId : userId;
     mutation.mutate({
       ticketId: conversation.id,
-      hostId: conversation.guestId,
+      hostId: isHostView ? hostId : conversation.guestId,
       message: messageText,
-      senderId: userId,
-      userId: userId,
+      senderId,
+      userId: isHostView ? data?.userId : userId,
     } as MessageType);
     setMessageText("");
   };
@@ -104,9 +109,7 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
               />
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold shadow-sm ring-2 ring-offset-2 ring-gray-100">
-              {conversation.guestName.charAt(0)}
-            </div>
+            <DefaultAvatar size="sm" />
           )}
           <div className="flex-1">
             <h2 className="font-semibold text-gray-900">
@@ -125,6 +128,8 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
             const showDateSeparator =
               index === 0 || !isSameDay(msg.date, messages[index - 1].date);
 
+            const isFromOther = isHostView ? !isHost : isHost;
+
             return (
               <div key={index}>
                 {showDateSeparator && (
@@ -137,10 +142,10 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
 
                 <div
                   className={`flex items-end gap-2 mb-1 ${
-                    isHost ? "justify-start" : "justify-end"
+                    isFromOther ? "justify-start" : "justify-end"
                   }`}
                 >
-                  {isHost && (
+                  {isFromOther && (
                     <>
                       {conversation.guestAvatar ? (
                         <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm flex-shrink-0">
@@ -153,19 +158,17 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
                           />
                         </div>
                       ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 shadow-sm">
-                          {conversation.guestName.charAt(0)}
-                        </div>
+                        <DefaultAvatar size="xs" />
                       )}
                     </>
                   )}
 
                   <div
                     className={`flex flex-col ${
-                      isHost ? "items-start" : "items-end"
+                      isFromOther ? "items-start" : "items-end"
                     } max-w-[75%] animate-fade-in`}
                   >
-                    {!isHost && (
+                    {!isFromOther && (
                       <span className="text-xs text-gray-500 mb-1 px-1 font-medium">
                         You
                       </span>
@@ -173,14 +176,14 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
                     <div className="relative">
                       <div
                         className={`px-4 py-3 transition-all duration-200 ${
-                          isHost
+                          isFromOther
                             ? "bg-white text-gray-900 rounded-2xl rounded-bl-sm shadow-md border border-gray-200 hover:shadow-lg hover:border-gray-300"
                             : "bg-gradient-to-br from-red-600 to-red-700 text-white rounded-2xl rounded-br-sm shadow-lg hover:shadow-xl"
                         }`}
                       >
                         <p
                           className={`text-sm whitespace-pre-wrap break-words leading-relaxed ${
-                            isHost ? "text-gray-800" : "text-white"
+                            isFromOther ? "text-gray-800" : "text-white"
                           }`}
                         >
                           {msg.message}
@@ -189,14 +192,14 @@ export default function ChatWindow({ conversation }: ChatWindowProps) {
                     </div>
                     <div
                       className={`text-xs text-gray-400 mt-1.5 px-2 ${
-                        isHost ? "text-left" : "text-right"
+                        isFromOther ? "text-left" : "text-right"
                       }`}
                     >
                       {formatMessageTime(msg.date, msg.time)}
                     </div>
                   </div>
 
-                  {!isHost && (
+                  {!isFromOther && (
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 shadow-sm">
                       <svg
                         className="w-4 h-4"

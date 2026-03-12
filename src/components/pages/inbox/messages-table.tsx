@@ -302,7 +302,7 @@ export default () => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex h-[80vh]  lg:h-[calc(100vh-70px)] 2xl:h-[calc(100vh-70px)]">
+      <div className="w-full flex h-[80vh] lg:h-[calc(100vh-140px)] 2xl:h-[calc(100vh-140px)]">
         <div
           className={`w-full md:w-[26%] flex flex-col h-full ${
             currentTicket ? "border-r border-r-gray-300" : ""
