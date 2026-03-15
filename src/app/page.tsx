@@ -1,5 +1,6 @@
 import Footer from "@/components/ui/footer";
 import CustomSearch from "@/components/ui/custom-search";
+import CTA from "@/components/ui/cta"
 import HowItWorksSection from "@/components/ui/how-it-works-section";
 import RecommendedProperties from "@/components/property/recommended-properties";
 import ReferAndEarn from "@/components/property/refer-and-earn";
@@ -11,6 +12,10 @@ import { ArrowDown } from "lucide-react";
 import Link from "next/link";
 import Animations from "@/components/ui/animations";
 import { Metadata } from "next";
+
+const today = new Date();
+const dayAfterTomorrow = new Date(Date.now() + 86400000 * 2);
+
 
 export const metadata: Metadata = {
   title: "Book Shortlet in Nigeria | Unique Stays & Travel Experiences",
@@ -71,117 +76,6 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    // <div className="w-full h-full overflow-hidden">
-    //   <div className="w-full md:px-10 relative">
-    //     <header
-    //       id="custom-search"
-    //       className="w-full pb-5 md:pb-0 hero-banner min-h-[880px] md:h-[680px] relative flex flex-col space-y-6 items-center pt-20 md:rounded-t-[30px]"
-    //     >
-    //       <div className="max-w-[800px] px-10  flex flex-col space-y-6  max-w-[1400px] mx-auto">
-    //         <h1 className=" text-[48px] p-0 m-0 leading-[60px] text-[#310000] font-[500] sm:text-[48px] fade-in-and-out-header text-center">
-    //           Luxury away from home
-    //         </h1>
-    //         <p className="m -0 text-[#310000] font-semibold max-w-[850px] text-[18px] sm:text-[24px] fade-in-and-out-caption text-center font-[500] ">
-    //           Find a place to stay while visiting anywhere in Nigeria and enjoy
-    //           luxury and comfort.
-    //         </p>
-    //       </div>
-    //       <CustomSearch />
-    //     </header>
-    //   </div>
-
-    //   <div className=" w-full min-h-[900px] mt-[-250px] md:mt-[-200px] isolate pb-20 pt-64 bg-wave-overlay flex flex-col justify-center items-center ">
-    //     <HowItWorksSection />
-    //   </div>
-    //   <RecommendedProperties />
-    //   <DiscoverProperties />
-    //   <ReferAndEarn />
-    //   <Explore />
-    //   <Reviews />
-    //   <Footer />
-    // </div>
-
-    // <div className="w-full min-h-screen overflow-x-hidden">
-    //   <Animations />
-    //   {/* Hero Section */}
-    //   <div className="w-full relative">
-    //     <header
-    //       id="custom-search"
-    //       className="w-full min-h-[100vh] relative flex flex-col items-center justify-center hero-banner"
-    //     >
-    //       {/* Overlay */}
-    //       <div className="absolute inset-0 bg-black/20" />
-
-    //       {/* Background Pattern */}
-    //       <div className="absolute inset-0 bg-grid-pattern opacity-5 mix-blend-overlay" />
-
-    //       {/* Hero Content */}
-    //       <div className="max-w-[1200px] px-6 md:px-10 flex flex-col items-center space-y-8 z-10">
-    //         <h1 className="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center leading-tight animate-fade-in">
-    //           Experience Luxury
-    //           <span className="block mt-2">Away from Home</span>
-    //         </h1>
-
-    //         <p className="text-lg md:text-xl text-white/90 max-w-2xl text-center font-medium animate-fade-in-delay">
-    //           Discover exceptional stays across Nigeria. Your perfect home away
-    //           from home awaits, combining comfort, style, and authentic local
-    //           experiences.
-    //         </p>
-
-    //         {/* Search Component with Animation */}
-    //         <div className="w-full max-w-4xl animate-slide-up">
-    //           <CustomSearch />
-    //         </div>
-
-    //         {/* Scroll Indicator */}
-    //         <Link
-    //           href="#how-it-works"
-    //           className="absolute bottom-10 flex flex-col items-center space-y-2 text-white animate-bounce cursor-pointer hover:text-white/80 transition-colors"
-    //         >
-    //           <span className="text-sm font-medium">Scroll to explore</span>
-    //           <ArrowDown size={20} />
-    //         </Link>
-    //       </div>
-    //     </header>
-    //   </div>
-
-    //   {/* How It Works Section */}
-    //   <div id="how-it-works" className="w-full bg-white relative">
-    //     <div className="absolute inset-0 bg-wave-pattern opacity-5" />
-    //     <div className="relative z-10 py-20">
-    //       <HowItWorksSection />
-    //     </div>
-    //   </div>
-
-    //   {/* Properties Showcase */}
-    //   <section className="w-full py-20 bg-white">
-    //     <RecommendedProperties />
-    //   </section>
-
-    //   {/* Discovery Section with Parallax */}
-    //   <section className="w-full py-20 bg-[#FFF1D7]">
-    //     <DiscoverProperties />
-    //   </section>
-
-    //   {/* Referral Program */}
-    //   <section className="w-full py-20 bg-white">
-    //     <ReferAndEarn />
-    //   </section>
-
-    //   {/* Explore Cities */}
-    //   <section className="w-full py-20 bg-gradient-to-b from-white to-[#FFF1D7]">
-    //     <Explore />
-    //   </section>
-
-    //   {/* Reviews Section   */}
-    //   <section className="w-full py-20 bg-white">
-    //     <Reviews />
-    //   </section>
-
-    //   {/* Footer */}
-    //   <Footer />
-    // </div>
-
     <div className="w-full min-h-screen overflow-x-hidden">
       <Animations />
 
@@ -279,36 +173,7 @@ export default function Home() {
       <Reviews />
 
       {/* CTA Banner */}
-      <section className="w-full bg-[#0a0a0a]">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 py-14 sm:py-20 md:py-28 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
-          <div className="flex flex-col items-center md:items-start text-center md:text-left max-w-[600px]">
-            <span className="text-[10px] sm:text-xs font-extrabold tracking-[0.25em] uppercase text-primary mb-3 sm:mb-4">
-              Ready to get started?
-            </span>
-            <h2 className="text-[24px] sm:text-[32px] md:text-[44px] font-black text-white leading-[1.1] tracking-tight">
-              Find your perfect stay{" "}
-              <span className="text-primary">today</span>
-            </h2>
-            <p className="mt-3 sm:mt-4 text-white/50 text-sm sm:text-base md:text-lg leading-relaxed max-w-[480px]">
-              Whether you're a guest looking for comfort or a host ready to earn — Sojourn has you covered across Nigeria.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
-            <Link
-              href="/properties"
-              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full bg-primary text-white font-bold text-sm tracking-wide hover:bg-red-700 transition-colors"
-            >
-              Start Booking
-            </Link>
-            <Link
-              href="/become-a-host"
-              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full border-2 border-white/20 text-white font-bold text-sm tracking-wide hover:border-white/50 hover:bg-white/5 transition-colors"
-            >
-              Become a Host
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CTA />
 
       {/* Footer */}
       <Footer />

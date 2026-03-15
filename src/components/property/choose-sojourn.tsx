@@ -48,7 +48,7 @@ export default function ChooseSojourn() {
             {FEATURES.map((f) => (
               <Link
                 key={f.title}
-                href="/about-us"
+                href="#"
                 className="group flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300"
               >
                 <div className="w-10 h-10 rounded-lg bg-emerald-500/15 flex items-center justify-center shrink-0">
@@ -66,10 +66,10 @@ export default function ChooseSojourn() {
           {/* Become a Host Button */}
           <div className="mt-6 sm:mt-8">
             <Link
-              href="/become-a-host"
+              href="/about-us"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600 transition-all duration-300 shadow-lg shadow-emerald-900/30"
             >
-              Become a Host
+              Learn more
               <ArrowRight size={16} />
             </Link>
           </div>
