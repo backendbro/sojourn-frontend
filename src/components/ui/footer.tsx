@@ -96,7 +96,7 @@ const Footer: React.FC = () => {
                 Terms of use
               </Link>
               <Link href="/cancellation-policy" className="hover:text-white transition-colors">
-                Cancellation Policy
+                Cancellation and Refund Policy
               </Link>
               <Link href="/safety" className="hover:text-white transition-colors">
                 Safety
@@ -119,8 +119,8 @@ const Footer: React.FC = () => {
               <Link href="/contact-us" className="hover:text-white transition-colors">
                 Contact Us
               </Link>
-              <Link href="/deals-and-offers" className="hover:text-white transition-colors">
-                Deals and Offers
+              <Link href="/sojourn-credit" className="hover:text-white transition-colors">
+                Credits and Earn
               </Link>
             </nav>
           </div>

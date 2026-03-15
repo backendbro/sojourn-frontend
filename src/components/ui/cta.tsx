@@ -45,10 +45,10 @@ export default function CTA() {
             </Link>
 
             <Link
-              href="/become-a-host"
-              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full border-2 border-white/20 text-white font-bold text-sm tracking-wide hover:border-white/50 hover:bg-white/5 transition-colors"
+              href="/safety"
+              className="w-full sm:w-auto text-center px-8 py-3.5 sm:py-4 rounded-full bg-green-600 text-white font-bold text-sm tracking-wide hover:bg-green-700 transition-colors"
             >
-              Become a Host
+              Safety
             </Link>
 
           </div>
