@@ -125,6 +125,7 @@ export default function SidebarProvider({
   const contentChildren = childArray.slice(1);
 
   const shouldShowNav = pathname.slice(0) !== "/";
+  console.log(shouldShowNav)
 
   // Decide padding dynamically:
   // - No py-20 on homepage (small screens)
@@ -132,6 +133,8 @@ export default function SidebarProvider({
   const containerPadding = pathname === "/" 
     ? "sm:py-20 py-0" // py-0 on mobile, py-20 from sm upwards
     : "py-20";        // py-20 everywhere
+
+    console.log(containerPadding)
 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed }}>
