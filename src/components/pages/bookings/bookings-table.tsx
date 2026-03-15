@@ -1044,7 +1044,7 @@ export default () => {
           const today = new Date();
           const dayAfterTomorrow = new Date(Date.now() + 86400000 * 2);
           router.push(
-            `/properties?city=abuja&adults=${1}&children=${1}&infants=${1}&check-in=${today.toISOString()}&check-out=${dayAfterTomorrow.toISOString()}`
+            `/properties?city=lagos&adults=${1}&children=${1}&infants=${1}&check-in=${today.toISOString()}&check-out=${dayAfterTomorrow.toISOString()}`
           );
         }}
         className="py-3 px-7 bg-primary text-white font-semibold rounded-full"
