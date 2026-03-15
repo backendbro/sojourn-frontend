@@ -3,6 +3,9 @@
 import useQueryString from "@/hooks/useQueryString";
 import Link from "next/link";
 
+const today = new Date();
+const dayAfterTomorrow = new Date(Date.now() + 86400000 * 2);
+
 const CARDS = [
   {
     title: "Host",
@@ -14,7 +17,7 @@ const CARDS = [
     title: "Stay",
     description: "Find your perfect stay. Book with confidence.",
     cta: "Explore stays",
-    href: "/properties?city=lagos&adults=1&children=1&infants=1&check-in=${today.toISOString()}&check-out=${dayAfterTomorrow.toISOString()}",
+    href: `/properties?city=lagos&adults=1&children=1&infants=1&check-in=${today.toISOString()}&check-out=${dayAfterTomorrow.toISOString()}`,
   },
   {
     title: "Earn",
